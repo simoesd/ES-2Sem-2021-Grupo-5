@@ -3,6 +3,23 @@
   <groupId>ES-2Sem-2021-Grupo-5</groupId>
   <artifactId>ES-2Sem-2021-Grupo-5</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+   <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi</artifactId>
+        <version>3.11-beta2</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>3.11-beta2</version>
+	</dependency>
+  </dependencies> 
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
