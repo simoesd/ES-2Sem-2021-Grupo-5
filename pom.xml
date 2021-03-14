@@ -3,9 +3,26 @@
   <groupId>ES-2Sem-2021-Grupo-5</groupId>
   <artifactId>ES-2Sem-2021-Grupo-5</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  
+  
+  
+	<dependencies>
+    <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-swing -->
+		<dependency>
+		    <groupId>org.openjfx</groupId>
+		    <artifactId>javafx-swing</artifactId>
+		    <version>15</version>
+		</dependency>
+
+	    
+	</dependencies>
+  
+  
   <build>
     <sourceDirectory>src</sourceDirectory>
+  
     <plugins>
+    
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.7.0</version>
@@ -14,6 +31,7 @@
           <target>1.8</target>
         </configuration>
       </plugin>
+      
     </plugins>
   </build>
 </project>
