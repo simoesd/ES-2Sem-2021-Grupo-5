@@ -11,17 +11,23 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import main_package.Line;
 
 public class MainWindow {
 
     private JFrame frame;
     private JTextField analysisPathTextField;
     private JTextField importPathTextField;
+    private JPanel mainPanel;
 
     /**
      * Launch the application.
@@ -62,6 +68,12 @@ public class MainWindow {
         Dimension hMargin = new Dimension(10, 0);
         Dimension vMargin = new Dimension(0, 10);
         EmptyBorder fullPadding = new EmptyBorder(10, 10, 10, 10);
+        
+
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout(0, 0));
+        mainPanel.add(new JTextField("bruh"));
+        frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
         
         //Analysis Panel
         
@@ -125,9 +137,32 @@ public class MainWindow {
         importPanel.add(Box.createRigidArea(hMargin));
         
         JButton importProjectButton = new JButton("Import Project Data");
+        importProjectButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showImportedData();
+            }
+        });
         importPanel.add(importProjectButton);
         frame.getContentPane().add(tabbedPane, BorderLayout.SOUTH);
         importPanel.add(Box.createRigidArea(hMargin));
+        
+    }
+    
+    void showImportedData() {
+        mainPanel.removeAll();
+        
+        
+        int i = 0, j = 0, h = 0, k = 0, l = 0, m = 0;
+        String[][] lines = {new Line(i++, "bruh", "bruh", "bruh", j++, h++, k++, true, l++, m++, true).toArray(), new Line(i++, "bruh", "bruh", "bruh", j++, h++, k++, true, l++, m++, true).toArray(), new Line(i++, "bruh", "bruh", "bruh", j++, h++, k++, true, l++, m++, true).toArray(), new Line(i++, "bruh", "bruh", "bruh", j++, h++, k++, true, l++, m++, true).toArray()};
+        JList<Line> tempList = new JList(lines);
+        String[] columnNames =  {"id", "nom_class", "loc_class", "wmc_class", "loc_method", "cyclo_method", "pkg", "cls", "method", "is_god", "is_long"};
+        JTable tempTable = new JTable(lines, columnNames);
+        tempTable.setAutoResizeMode(0);
+        
+        JScrollPane tableScrollPane = new JScrollPane(tempTable);
+        tableScrollPane.setBorder(new EmptyBorder(0,0,0,0));
+        mainPanel.add(tableScrollPane, BorderLayout.CENTER);
+        mainPanel.updateUI();
     }
 
 }
