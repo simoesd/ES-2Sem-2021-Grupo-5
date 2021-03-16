@@ -14,7 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class ExcelReader {
 	public static void main( String[] args ) throws IOException{
     	try { 
-    		File excel = new File("E://Downloads/Code_Smells.xlsx"); 
+    		File excel = new File("F://Transferências/Code_Smells.xlsx"); 
 	    	FileInputStream fis = new FileInputStream(excel); 
 	    	XSSFWorkbook book = new XSSFWorkbook(fis); 
 	    	XSSFSheet sheet = book.getSheetAt(0); 
@@ -24,7 +24,8 @@ public class ExcelReader {
 	    		Row row = itr.next();
 	    		Iterator<Cell> cellIterator = row.cellIterator();
 	    		Line line = new Line();
-	    		line.setValues(cellIterator);   		
+	    		if (cellIterator.hasNext())line.setValues(cellIterator);   	
+	    		else break;
 		    	System.out.println(line.toString());
 	    	}
     	} catch (FileNotFoundException fe) { 
