@@ -34,30 +34,7 @@ public class Metricas extends MetricRegistry {
 		this.projectDirectory = projectDirectory;
 	}
 
-	public static void main(String[] args) {
-
-		Metricas otario = new Metricas("E:\\ISCTE\\OneDrive - ISCTE-IUL\\eclipse-workspace\\87377_87524");
-		otario.openFolder(otario.projectDirectory + otario.sourceCodeLocation);
-//		otario.cutAbsolutePath("E:\\ISCTE\\OneDrive - ISCTE-IUL\\eclipse-workspace\\87377_87524\\src\\Workers\\DealWithTimeWorker.java");
-		otario.startMetricCounters();
-		otario.CYCLO_method.startExtracting();
-//		otario.CYCLO_method.extractMetrics();   //funciona
-//		otario.result();
-//		otario.openReadFile(otario.filesInDirectory.get(1));
-//		for (File file : otario.filesInDirectory) {
-//			otario.openReadFile(file);
-//		}
-//			Counter counterWVMnum= metricas.counter("WVM_num");
-//			counterWVMnum.inc();
-//			counterWVMnum.inc();
-//			counterWVMnum.inc();
-//			counterWVMnum.inc();
-
-//			SortedMap<String, Counter> helloMap = metricas.getCounters();
-
-//			System.out.println(helloMap.get("WVM_num").getCount());
-
-	}
+	
 
 	public void startMetricCounters() {
 		LOC_class = new LOC_class(this);
@@ -69,7 +46,7 @@ public class Metricas extends MetricRegistry {
 		metrics.add(NOM_class);
 		metrics.add(WMC_class);
 		metrics.add(LOC_method);
-		metrics.add(CYCLO_method);
+		metrics.add(getCYCLO_method());
 	}
 
 	public void result() {
@@ -96,7 +73,7 @@ public class Metricas extends MetricRegistry {
 			}
 		});
 		t.start();
-		t.interrupt();
+		
 	}
 
 	public void openFolder(String str) { // str -> diretorio do projeto
@@ -110,8 +87,6 @@ public class Metricas extends MetricRegistry {
 				listFilesForFolder(fileEntry);
 			} else {
 				if (fileEntry.getAbsolutePath().endsWith(".java")) {
-					String absoluteFileEntry = fileEntry.getAbsolutePath();
-//					absoluteFileEntry = absoluteFileEntry.replace("\\", "\\\\");
 					filesInDirectory.add(fileEntry);
 				}
 			}
@@ -119,12 +94,11 @@ public class Metricas extends MetricRegistry {
 	}
 	
 	public String cutAbsolutePath(String absolutePath){ //retorna package.class
-		String shortPath = projectDirectory + sourceCodeLocation;
+		String shortPath = getProjectDirectory() + getSourceCodeLocation();
 		int stringLength = shortPath.length() + 1;
 		shortPath = absolutePath.substring(stringLength);
 		shortPath = shortPath.replace("\\", ".");
 		shortPath = shortPath.replace(".java", "");
-//		System.out.println(shortPath);
 		return shortPath;
 	}
 	
@@ -136,8 +110,6 @@ public class Metricas extends MetricRegistry {
 
 	        Scanner sc = new Scanner(file);
 	        while (sc.hasNextLine()) {
-	        	
-	        	System.out.println("hello");
 	            String line = sc.nextLine();
 	            applyFilter(line);
 	        }
@@ -155,4 +127,31 @@ public class Metricas extends MetricRegistry {
 	public ArrayList<File> getFilesInDirectory() {
 		return filesInDirectory;
 	}
+
+	public CYCLO_method getCYCLO_method() {
+		return CYCLO_method;
+	}
+
+	public LOC_class getLOC_class() {
+		return LOC_class;
+	}
+
+	public NOM_class getNOM_class() {
+		return NOM_class;
+	}
+
+	public LOC_method getLOC_method() {
+		return LOC_method;
+	}
+
+	public String getProjectDirectory() {
+		return projectDirectory;
+	}
+
+	public String getSourceCodeLocation() {
+		return sourceCodeLocation;
+	}
+
+	
+	
 }
