@@ -13,7 +13,7 @@ public class WMC_class extends Metricas {
 	public void extractMetrics() {
 		this.counter("WMC");
 		this.counter("metodo2");
-		System.out.println("3");
+//		System.out.println("3");
 
 	}
 

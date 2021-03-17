@@ -1,7 +1,9 @@
 package metricas;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.SortedMap;
 
 import com.codahale.metrics.Counter;
@@ -19,16 +21,16 @@ public class Metricas extends MetricRegistry {
 	private String projectDirectory;
 	private String sourceCodeLocation = "\\src";
 
-	private ArrayList<String> filesInDirectory;
+	private ArrayList<File> filesInDirectory;
 
 	public Metricas() {
 		metrics = new ArrayList<Metricas>();
-		filesInDirectory = new ArrayList<String>();
+		filesInDirectory = new ArrayList<File>();
 	}
 
 	public Metricas(String projectDirectory) {
 		metrics = new ArrayList<Metricas>();
-		filesInDirectory = new ArrayList<String>();
+		filesInDirectory = new ArrayList<File>();
 		this.projectDirectory = projectDirectory;
 	}
 
@@ -36,9 +38,15 @@ public class Metricas extends MetricRegistry {
 
 		Metricas otario = new Metricas("E:\\ISCTE\\OneDrive - ISCTE-IUL\\eclipse-workspace\\87377_87524");
 		otario.openFolder(otario.projectDirectory + otario.sourceCodeLocation);
+//		otario.cutAbsolutePath("E:\\ISCTE\\OneDrive - ISCTE-IUL\\eclipse-workspace\\87377_87524\\src\\Workers\\DealWithTimeWorker.java");
 		otario.startMetricCounters();
-		otario.result();
-
+		otario.CYCLO_method.startExtracting();
+//		otario.CYCLO_method.extractMetrics();   //funciona
+//		otario.result();
+//		otario.openReadFile(otario.filesInDirectory.get(1));
+//		for (File file : otario.filesInDirectory) {
+//			otario.openReadFile(file);
+//		}
 //			Counter counterWVMnum= metricas.counter("WVM_num");
 //			counterWVMnum.inc();
 //			counterWVMnum.inc();
@@ -65,9 +73,7 @@ public class Metricas extends MetricRegistry {
 	}
 
 	public void result() {
-		// WMC_class.extractMetrics();
 		for (Metricas m : metrics) {
-
 			SortedMap<String, Counter> helloMap = m.getCounters();
 			Object[] counters = helloMap.values().toArray();
 			System.out.println(((Counter) counters[0]).getCount());
@@ -95,29 +101,58 @@ public class Metricas extends MetricRegistry {
 
 	public void openFolder(String str) { // str -> diretorio do projeto
 		File folder = new File(str);
-		int stringLength = str.length();
-		stringLength++;
-		listFilesForFolder(folder, stringLength);
+		listFilesForFolder(folder);
 	}
 
-	private void listFilesForFolder(File folder, int i) {
+	private void listFilesForFolder(File folder) {
 		for (File fileEntry : folder.listFiles()) {
 			if (fileEntry.isDirectory()) {
-				listFilesForFolder(fileEntry, i);
+				listFilesForFolder(fileEntry);
 			} else {
 				if (fileEntry.getAbsolutePath().endsWith(".java")) {
-					String absoluteFileEntry = fileEntry.getAbsolutePath().substring(i);
-					absoluteFileEntry = absoluteFileEntry.replace("\\", ".");
-					filesInDirectory.add(absoluteFileEntry);
+					String absoluteFileEntry = fileEntry.getAbsolutePath();
+//					absoluteFileEntry = absoluteFileEntry.replace("\\", "\\\\");
+					filesInDirectory.add(fileEntry);
 				}
 			}
 		}
 	}
+	
+	public String cutAbsolutePath(String absolutePath){ //retorna package.class
+		String shortPath = projectDirectory + sourceCodeLocation;
+		int stringLength = shortPath.length() + 1;
+		shortPath = absolutePath.substring(stringLength);
+		shortPath = shortPath.replace("\\", ".");
+		shortPath = shortPath.replace(".java", "");
+//		System.out.println(shortPath);
+		return shortPath;
+	}
+	
+	public void applyFilter(String line){
+	}
+
+	public void openReadFile(File file) {
+	    try {
+
+	        Scanner sc = new Scanner(file);
+	        while (sc.hasNextLine()) {
+	        	
+	        	System.out.println("hello");
+	            String line = sc.nextLine();
+	            applyFilter(line);
+	        }
+	        sc.close();
+	    } 
+	    catch (FileNotFoundException e) {
+	        e.printStackTrace();
+	    }
+	}
+
 	public WMC_class getWMC_class() {
 		return WMC_class;
 	}
 
-	public ArrayList<String> getFilesInDirectory() {
+	public ArrayList<File> getFilesInDirectory() {
 		return filesInDirectory;
 	}
 }

@@ -1,5 +1,8 @@
 package metricas;
 
+import java.io.File;
+import java.util.ArrayList;
+
 public class LOC_method extends Metricas{
 	
 	private Metricas metricas;
@@ -11,10 +14,10 @@ public class LOC_method extends Metricas{
 
 	@Override
 	public void extractMetrics() {
-		this.counter("LOC");
-		this.counter("metodo2");
-		System.out.println("4");
-
+		ArrayList<File> filesInDirectory = metricas.getFilesInDirectory();
+		for (File file : filesInDirectory) {
+			openReadFile(file);
+		}
 	}
-
+//"public, private, ( , ) , { , }"
 }
