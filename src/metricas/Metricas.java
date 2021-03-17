@@ -15,32 +15,30 @@ public class Metricas extends MetricRegistry {
 	private LOC_method LOC_method;
 	private CYCLO_method CYCLO_method;
 	private ArrayList<Metricas> metrics;
-	
+
 	private String projectDirectory;
-	private String sourceCodeLocation =  "\\src";
-	
+	private String sourceCodeLocation = "\\src";
+
 	private ArrayList<String> filesInDirectory;
-	
-	
+
 	public Metricas() {
 		metrics = new ArrayList<Metricas>();
 		filesInDirectory = new ArrayList<String>();
 	}
-	
+
 	public Metricas(String projectDirectory) {
 		metrics = new ArrayList<Metricas>();
 		filesInDirectory = new ArrayList<String>();
-		this.projectDirectory=projectDirectory;
+		this.projectDirectory = projectDirectory;
 	}
-	
 
 	public static void main(String[] args) {
 
 		Metricas otario = new Metricas("E:\\ISCTE\\OneDrive - ISCTE-IUL\\eclipse-workspace\\87377_87524");
-		otario.openFile(otario.projectDirectory + otario.sourceCodeLocation);
+		otario.openFolder(otario.projectDirectory + otario.sourceCodeLocation);
 		otario.startMetricCounters();
 		otario.result();
-		
+
 //			Counter counterWVMnum= metricas.counter("WVM_num");
 //			counterWVMnum.inc();
 //			counterWVMnum.inc();
@@ -64,11 +62,12 @@ public class Metricas extends MetricRegistry {
 		metrics.add(WMC_class);
 		metrics.add(LOC_method);
 		metrics.add(CYCLO_method);
-
 	}
 
 	public void result() {
+		// WMC_class.extractMetrics();
 		for (Metricas m : metrics) {
+
 			SortedMap<String, Counter> helloMap = m.getCounters();
 			Object[] counters = helloMap.values().toArray();
 			System.out.println(((Counter) counters[0]).getCount());
@@ -91,56 +90,34 @@ public class Metricas extends MetricRegistry {
 			}
 		});
 		t.start();
-		t.interrupt();		
+		t.interrupt();
 	}
-	
-	public void openFile(String str){ //str -> diretorio do projeto
+
+	public void openFolder(String str) { // str -> diretorio do projeto
 		File folder = new File(str);
 		int stringLength = str.length();
 		stringLength++;
 		listFilesForFolder(folder, stringLength);
 	}
-	
+
 	private void listFilesForFolder(File folder, int i) {
-	    for (File fileEntry : folder.listFiles()) {
-	        if (fileEntry.isDirectory()) {
-	            listFilesForFolder(fileEntry, i);
-	        } else {
-	        	if(fileEntry.getAbsolutePath().endsWith(".java")){
-	        		String absoluteFileEntry= fileEntry.getAbsolutePath().substring(i);
-	        		absoluteFileEntry = absoluteFileEntry.replace("\\", "." );
-	        		filesInDirectory.add(absoluteFileEntry);
-	        	}
-	        }
-	    }
+		for (File fileEntry : folder.listFiles()) {
+			if (fileEntry.isDirectory()) {
+				listFilesForFolder(fileEntry, i);
+			} else {
+				if (fileEntry.getAbsolutePath().endsWith(".java")) {
+					String absoluteFileEntry = fileEntry.getAbsolutePath().substring(i);
+					absoluteFileEntry = absoluteFileEntry.replace("\\", ".");
+					filesInDirectory.add(absoluteFileEntry);
+				}
+			}
+		}
+	}
+	public WMC_class getWMC_class() {
+		return WMC_class;
 	}
 
 	public ArrayList<String> getFilesInDirectory() {
 		return filesInDirectory;
 	}
-
-//		public String getLOC_class() {
-//			return LOC_class;
-//		}
-//
-//
-//		public String getNOM_class() {
-//			return NOM_class;
-//		}
-//
-//
-//		public String getWMC_class() {
-//			return WMC_class;
-//		}
-//
-//
-//		public String getLOC_method() {
-//			return LOC_method;
-//		}
-//
-//
-//		public String getCYCLO_method() {
-//			return CYCLO_method;
-//		}
-
 }

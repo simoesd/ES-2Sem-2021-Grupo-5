@@ -1,12 +1,12 @@
 package metricas;
 
-public class WMC_class extends Metricas{
-	
+public class WMC_class extends Metricas {
+
 	private Metricas metricas;
-	
+
 	public WMC_class(Metricas metricas) {
-		this.metricas=metricas;
-		startExtracting();
+		this.metricas = metricas;
+		
 	}
 
 	@Override
@@ -14,6 +14,7 @@ public class WMC_class extends Metricas{
 		this.counter("WMC");
 		this.counter("metodo2");
 		System.out.println("3");
+
 	}
 
 }

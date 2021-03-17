@@ -15,8 +15,8 @@ public class CYCLO_method extends Metricas{
 		this.counter("metodo2");
 		System.out.println("5");
 		System.out.println(metricas.getFilesInDirectory());
+		metricas.getWMC_class().startExtracting();
 	}
-
 	
 
 }

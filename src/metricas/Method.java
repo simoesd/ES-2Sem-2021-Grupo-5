@@ -4,12 +4,13 @@ public class Method {
 	
 	private ClassObject classOfMethod;
 	private String packageOfMethod;
-	private Integer MethodID;
+	private String nameOfMethod;
+
 	
-	public Method(ClassObject classofMethod, String packageOfMethod, Integer MethodID) {
+	public Method(ClassObject classofMethod, String packageOfMethod, String nameOfMethod) {
 		this.classOfMethod = classofMethod;
 		this.packageOfMethod= packageOfMethod;
-		this.MethodID = MethodID;	
+		this.nameOfMethod=nameOfMethod;
 	}
 	
 	

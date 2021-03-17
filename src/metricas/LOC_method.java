@@ -14,6 +14,7 @@ public class LOC_method extends Metricas{
 		this.counter("LOC");
 		this.counter("metodo2");
 		System.out.println("4");
+
 	}
 
 }

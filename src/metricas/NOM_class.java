@@ -14,6 +14,7 @@ public class NOM_class extends Metricas{
 		this.counter("NOM");
 		this.counter("metodo2");
 		System.out.println("2");
+
 	}
 
 }
