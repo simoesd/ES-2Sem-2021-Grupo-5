@@ -1,5 +1,6 @@
 package metricas;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.SortedMap;
 
@@ -13,19 +14,33 @@ public class Metricas extends MetricRegistry {
 	private WMC_class WMC_class;
 	private LOC_method LOC_method;
 	private CYCLO_method CYCLO_method;
-	private ArrayList<Metricas> metricas;
-
+	private ArrayList<Metricas> metrics;
+	
+	private String projectDirectory;
+	private String sourceCodeLocation =  "\\src";
+	
+	private ArrayList<String> filesInDirectory;
+	
+	
 	public Metricas() {
-		metricas = new ArrayList<Metricas>();
-
+		metrics = new ArrayList<Metricas>();
+		filesInDirectory = new ArrayList<String>();
 	}
+	
+	public Metricas(String projectDirectory) {
+		metrics = new ArrayList<Metricas>();
+		filesInDirectory = new ArrayList<String>();
+		this.projectDirectory=projectDirectory;
+	}
+	
 
 	public static void main(String[] args) {
 
-		Metricas otario = new Metricas();
-		otario.FazMetricas();
-		otario.daValores();
-
+		Metricas otario = new Metricas("E:\\ISCTE\\OneDrive - ISCTE-IUL\\eclipse-workspace\\87377_87524");
+		otario.openFile(otario.projectDirectory + otario.sourceCodeLocation);
+		otario.startMetricCounters();
+		otario.result();
+		
 //			Counter counterWVMnum= metricas.counter("WVM_num");
 //			counterWVMnum.inc();
 //			counterWVMnum.inc();
@@ -38,22 +53,22 @@ public class Metricas extends MetricRegistry {
 
 	}
 
-	public void FazMetricas() {
-		LOC_class = new LOC_class();
-		NOM_class = new NOM_class();
-		WMC_class = new WMC_class();
-		LOC_method = new LOC_method();
-		CYCLO_method = new CYCLO_method();
-		metricas.add(LOC_class);
-		metricas.add(NOM_class);
-		metricas.add(WMC_class);
-		metricas.add(LOC_method);
-		metricas.add(CYCLO_method);
+	public void startMetricCounters() {
+		LOC_class = new LOC_class(this);
+		NOM_class = new NOM_class(this);
+		WMC_class = new WMC_class(this);
+		LOC_method = new LOC_method(this);
+		CYCLO_method = new CYCLO_method(this);
+		metrics.add(LOC_class);
+		metrics.add(NOM_class);
+		metrics.add(WMC_class);
+		metrics.add(LOC_method);
+		metrics.add(CYCLO_method);
 
 	}
 
-	public void daValores() {
-		for (Metricas m : metricas) {
+	public void result() {
+		for (Metricas m : metrics) {
 			SortedMap<String, Counter> helloMap = m.getCounters();
 			Object[] counters = helloMap.values().toArray();
 			System.out.println(((Counter) counters[0]).getCount());
@@ -61,23 +76,47 @@ public class Metricas extends MetricRegistry {
 			System.out.println(helloMap.keySet());
 			System.out.println(m.getCounters());
 		}
-
 	}
 
 //		public abstract int contagem();
 //		public abstract String nomeString();
-	public void TodasAsTuasContagens() {
+	public void extractMetrics() {
 	}
 
-	public void fazThread() {
+	public void startExtracting() {
 		Thread t = new Thread(new Runnable() {
 
 			public void run() {
-				TodasAsTuasContagens();
+				extractMetrics();
 			}
 		});
 		t.start();
 		t.interrupt();		
+	}
+	
+	public void openFile(String str){ //str -> diretorio do projeto
+		File folder = new File(str);
+		int stringLength = str.length();
+		stringLength++;
+		listFilesForFolder(folder, stringLength);
+	}
+	
+	private void listFilesForFolder(File folder, int i) {
+	    for (File fileEntry : folder.listFiles()) {
+	        if (fileEntry.isDirectory()) {
+	            listFilesForFolder(fileEntry, i);
+	        } else {
+	        	if(fileEntry.getAbsolutePath().endsWith(".java")){
+	        		String absoluteFileEntry= fileEntry.getAbsolutePath().substring(i);
+	        		absoluteFileEntry = absoluteFileEntry.replace("\\", "." );
+	        		filesInDirectory.add(absoluteFileEntry);
+	        	}
+	        }
+	    }
+	}
+
+	public ArrayList<String> getFilesInDirectory() {
+		return filesInDirectory;
 	}
 
 //		public String getLOC_class() {
