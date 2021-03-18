@@ -3,13 +3,13 @@ package metricas;
 import java.io.File;
 import java.util.ArrayList;
 
-public class NOM_class extends Metricas{
+public class NOM_class extends Metrica{
 	
-	private Metricas metricas;
+	private Maestro metricas;
 	private String packageClassName;
 	private final String filter = "class";
 	
-	public NOM_class(Metricas metricas) {
+	public NOM_class(Maestro metricas) {
 		this.metricas=metricas;
 		startExtracting();
 	}

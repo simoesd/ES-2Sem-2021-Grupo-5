@@ -3,13 +3,15 @@ package metricas;
 import java.io.File;
 import java.util.ArrayList;
 
-public class CYCLO_method extends Metricas {
+import com.codahale.metrics.Counter;
 
-	private Metricas metricas;
+public class CYCLO_method extends Metrica {
+
+	private Maestro metricas;
 	private final String filter = "for,if,while,case";
 	private String packageClassName;
 
-	public CYCLO_method(Metricas metricas) {
+	public CYCLO_method(Maestro metricas) {
 		this.metricas = metricas;
 		startExtracting();
 	}
@@ -22,6 +24,9 @@ public class CYCLO_method extends Metricas {
 			String absolutePath = file.getAbsolutePath();
 			packageClassName = metricas.cutAbsolutePath(absolutePath);
 		}
+		Counter c =this.counter("ola");
+		c.inc();
+		
 		metricas.getWMC_class().startExtracting();
 	}
 
@@ -36,7 +41,6 @@ public class CYCLO_method extends Metricas {
 				}
 			}
 		}
-
 	}
 //			if (o.equals("for")||o.equals("if")||o.equals("while")||o.equals("case")){
 //				//fazIsto

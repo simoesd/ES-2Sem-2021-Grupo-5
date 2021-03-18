@@ -1,10 +1,10 @@
 package metricas;
 
-public class WMC_class extends Metricas {
+public class WMC_class extends Metrica {
 
-	private Metricas metricas;
+	private Maestro metricas;
 
-	public WMC_class(Metricas metricas) {
+	public WMC_class(Maestro metricas) {
 		this.metricas = metricas;
 		
 	}
@@ -15,6 +15,12 @@ public class WMC_class extends Metricas {
 		this.counter("metodo2");
 //		System.out.println("3");
 
+	}
+
+	@Override
+	public void applyFilter(String line) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

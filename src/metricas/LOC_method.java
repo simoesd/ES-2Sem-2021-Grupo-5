@@ -3,13 +3,13 @@ package metricas;
 import java.io.File;
 import java.util.ArrayList;
 
-public class LOC_method extends Metricas{
+public class LOC_method extends Metrica{
 	
-	private Metricas metricas;
+	private Maestro metricas;
 	private String packageClassName;
 	private final String filter = "class";
 	
-	public LOC_method(Metricas metricas) {
+	public LOC_method(Maestro metricas) {
 		this.metricas=metricas;
 		startExtracting();
 	}
