@@ -7,7 +7,7 @@ import java.util.SortedMap;
 import com.codahale.metrics.Counter;
 
 public class Maestro {
-	
+
 	private ArrayList<Metrica> metrics;
 
 	private String projectDirectory;
@@ -26,32 +26,40 @@ public class Maestro {
 		this.projectDirectory = projectDirectory;
 	}
 
-
 	public void startMetricCounters() {
-	
+		openFolder(projectDirectory + SOURCE_CODE_LOCATION);
 		metrics.add(new LOC_class(this));
 		metrics.add(new NOM_class(this));
 		metrics.add(new WMC_class(this));
 		metrics.add(new LOC_method(this));
 		metrics.add(new CYCLO_method(this));
-		openFolder(projectDirectory + SOURCE_CODE_LOCATION);
 	}
 
 	public void result() {
-		for (Metrica m : metrics) {
+		metrics.forEach(t -> {
+			try {
+				t.getThread().join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+		for (Metrica m : metrics) {  //TODO Resultados
 			SortedMap<String, Counter> helloMap = m.getCounters();
-			Object[] counters = helloMap.values().toArray();
-			System.out.println(((Counter) counters[0]).getCount());
-			System.out.println(helloMap.values());
-			System.out.println(helloMap.keySet());
-			System.out.println(m.getCounters());
+//			Object[] counters = helloMap.values().toArray();
+//			System.out.println(((Counter) counters[0]).getCount());
+//			System.out.println(helloMap.values());
+//			System.out.println(helloMap.keySet());
+//			System.out.println(m.getCounters());
+			for (String s : helloMap.keySet()) {
+			    System.out.println(s);  
+			    System.out.println(helloMap.get(s).getCount());
+			}
 		}
 	}
 
 //		public abstract int contagem();
 //		public abstract String nomeString();
-	
-	
 
 	public void openFolder(String str) { // str -> diretorio do projeto
 		File folder = new File(str);
@@ -69,8 +77,8 @@ public class Maestro {
 			}
 		}
 	}
-	
-	public String cutAbsolutePath(String absolutePath){ //retorna package.class
+
+	public String cutAbsolutePath(String absolutePath) { // retorna package.class
 		String shortPath = getProjectDirectory() + getSourceCodeLocation();
 		int stringLength = shortPath.length() + 1;
 		shortPath = absolutePath.substring(stringLength);
@@ -78,31 +86,30 @@ public class Maestro {
 		shortPath = shortPath.replace(".java", "");
 		return shortPath;
 	}
-	
-	
 
-	public WMC_class getWMC_class() {
-		return (WMC_class)metrics.get(2);
-	}
 
 	public ArrayList<File> getFilesInDirectory() {
 		return filesInDirectory;
 	}
 
-	public CYCLO_method getCYCLO_method() {
-		return (CYCLO_method)metrics.get(4);
-	}
-
 	public LOC_class getLOC_class() {
-		return (LOC_class)metrics.get(0);
+		return (LOC_class) metrics.get(0);
 	}
 
 	public NOM_class getNOM_class() {
-		return (NOM_class)metrics.get(1);
+		return (NOM_class) metrics.get(1);
+	}
+	
+	public WMC_class getWMC_class() {
+		return (WMC_class) metrics.get(2);
+	}
+	
+	public LOC_method getLOC_method() {
+		return (LOC_method) metrics.get(3);
 	}
 
-	public LOC_method getLOC_method() {
-		return (LOC_method)metrics.get(3);
+	public CYCLO_method getCYCLO_method() {
+		return (CYCLO_method) metrics.get(4);
 	}
 
 	public String getProjectDirectory() {
@@ -113,6 +120,4 @@ public class Maestro {
 		return SOURCE_CODE_LOCATION;
 	}
 
-	
-	
 }

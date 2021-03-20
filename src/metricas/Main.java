@@ -3,11 +3,14 @@ package metricas;
 public class Main {
 	public static void main(String[] args) {
 
-		Maestro metricas = new Maestro("E:\\ISCTE\\OneDrive - ISCTE-IUL\\eclipse-workspace\\87377_87524");
+		Maestro metricas = new Maestro("E:\\ISCTE\\OneDrive - ISCTE-IUL\\eclipse-workspace\\ES-2Sem-2021-Grupo-5");
 //		metricas.openFolder(metricas.getProjectDirectory() + metricas.getSourceCodeLocation());
 //		otario.cutAbsolutePath("E:\\ISCTE\\OneDrive - ISCTE-IUL\\eclipse-workspace\\87377_87524\\src\\Workers\\DealWithTimeWorker.java");
 		metricas.startMetricCounters();
-		System.out.println(metricas.getFilesInDirectory());
+		metricas.result();
+//		CYCLO_method c = new CYCLO_method(metricas);
+		
+//		System.out.println(metricas.getFilesInDirectory());
 		
 //		otario.CYCLO_method.extractMetrics();   //funciona
 //		otario.result();

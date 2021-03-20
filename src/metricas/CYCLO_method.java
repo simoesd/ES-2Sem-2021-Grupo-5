@@ -7,43 +7,42 @@ import com.codahale.metrics.Counter;
 
 public class CYCLO_method extends Metrica {
 
-	private Maestro metricas;
 	private final String filter = "for,if,while,case";
-	private String packageClassName;
+	private Counter methodName = new Counter();
 
 	public CYCLO_method(Maestro metricas) {
-		this.metricas = metricas;
-		startExtracting();
+		super(metricas);
 	}
 
 	@Override
-	public void extractMetrics() {
-		ArrayList<File> filesInDirectory = metricas.getFilesInDirectory();
+	protected void extractMetrics() {
+		ArrayList<File> filesInDirectory = getMetricas().getFilesInDirectory();
 		for (File file : filesInDirectory) {
-			this.openReadFile(file);
 			String absolutePath = file.getAbsolutePath();
-			packageClassName = metricas.cutAbsolutePath(absolutePath);
+			setPackageClassName(getMetricas().cutAbsolutePath(absolutePath));
+			this.openReadFile(file);
 		}
-		Counter c =this.counter("ola");
-		c.inc();
-		
-		metricas.getWMC_class().startExtracting();
+
+		getMetricas().getWMC_class().startExtracting();
 	}
 
 	@Override
-	public void applyFilter(String s) {
+	protected void applyFilter(String s) {  //TODO Lidar com a situação dos comentários
 		String[] line = s.split(" ");
 		String[] filterToApply = filter.split(",");
+		
+		String temp = methodName(s, line);
+		if (!temp.isBlank()) {
+			methodName = new Counter();
+			methodName = this.counter(getPackageClassName() + "." + temp);
+		}
 		for (String l : line) {
+			l = l.replace("\t", "");
 			for (String f : filterToApply) {
 				if (l.equals(f)) {
-					// faz isto
+					methodName.inc();
 				}
 			}
 		}
 	}
-//			if (o.equals("for")||o.equals("if")||o.equals("while")||o.equals("case")){
-//				//fazIsto
-//			}
-
 }

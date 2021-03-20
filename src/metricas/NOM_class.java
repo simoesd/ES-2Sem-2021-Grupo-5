@@ -5,27 +5,24 @@ import java.util.ArrayList;
 
 public class NOM_class extends Metrica{
 	
-	private Maestro metricas;
-	private String packageClassName;
 	private final String filter = "class";
 	
 	public NOM_class(Maestro metricas) {
-		this.metricas=metricas;
-		startExtracting();
+		super(metricas);
 	}
 
 	@Override
-	public void extractMetrics() {
-		ArrayList<File> filesInDirectory = metricas.getFilesInDirectory();
+	protected void extractMetrics() {
+		ArrayList<File> filesInDirectory = getMetricas().getFilesInDirectory();
 		for (File file : filesInDirectory) {
 			this.openReadFile(file);
 			String absolutePath = file.getAbsolutePath();
-			packageClassName = metricas.cutAbsolutePath(absolutePath);
+			setPackageClassName(getMetricas().cutAbsolutePath(absolutePath));
 		}
 	}
-
+	
 	@Override
-	public void applyFilter(String s) {
+	protected void applyFilter(String s) {
 		String[] line = s.split(" ");
 		String[] filterToApply = filter.split(",");
 		for (String l : line) {
@@ -35,6 +32,5 @@ public class NOM_class extends Metrica{
 				}
 			}
 		}
-
 	}
 }
