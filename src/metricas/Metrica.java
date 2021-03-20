@@ -65,9 +65,15 @@ public abstract class Metrica extends MetricRegistry {
 			int indexTemp = s.indexOf("(");
 			if (s.charAt(indexTemp - 1) == ' ')
 				temp = line[posicaoArray - 1].concat(temp);
-
 		}
 		return temp;
+	}
+	
+	public boolean isClass(String s){
+		if ((s.startsWith("public") || s.startsWith("private")) && s.contains("class")){
+			return true;
+		}
+		return false;
 	}
 
 	private int positionArray(String[] line, String s) {
