@@ -24,7 +24,7 @@ public class LOC_method extends Metrica {
 			this.openReadFile(file);
 		}
 	}
-
+	
 	@Override
 	protected void applyFilter(String s) {
 		String[] line = s.split(" ");
@@ -34,7 +34,6 @@ public class LOC_method extends Metrica {
 		if (!temp.isBlank()) {
 			methodName = new Counter();
 			methodName = this.counter(getPackageClassName() + "." + temp);
-			methodName.inc();
 		} else {
 			if (!s.isBlank() && !s.contains("@Override"))
 				methodName.inc();

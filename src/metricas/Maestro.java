@@ -58,8 +58,8 @@ public class Maestro {
 //			System.out.println(helloMap.values());
 //			System.out.println(helloMap.keySet());
 //			System.out.println(m.getCounters());
+			System.out.println(m.toString());
 			for (String s : counters.keySet()) {
-//				System.out.println(m.toString());
 			    System.out.println(s);  
 			    System.out.println(counters.get(s).getCount());
 			}
