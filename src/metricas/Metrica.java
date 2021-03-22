@@ -18,6 +18,7 @@ public abstract class Metrica extends MetricRegistry {
 		this.myThread = startExtracting();
 		myThread.start();
 	}
+	
 
 	protected abstract void extractMetrics();
 

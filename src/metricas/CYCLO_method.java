@@ -16,6 +16,7 @@ public class CYCLO_method extends Metrica {
 
 	@Override
 	protected void extractMetrics() {
+		
 		ArrayList<File> filesInDirectory = getMetricas().getFilesInDirectory();
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
@@ -23,7 +24,6 @@ public class CYCLO_method extends Metrica {
 			this.openReadFile(file);
 		}
 
-		getMetricas().getWMC_class().startExtracting();
 	}
 
 	@Override

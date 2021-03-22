@@ -3,9 +3,12 @@ package metricas;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.codahale.metrics.Counter;
+
 public class LOC_class extends Metrica{
 	
-	private final String filter = "class";
+	private boolean enteredClass = false;
+	private Counter className;
 
 	public LOC_class(Maestro metricas) {
 		super(metricas);
@@ -14,23 +17,25 @@ public class LOC_class extends Metrica{
 	@Override
 	protected void extractMetrics() {
 		ArrayList<File> filesInDirectory = getMetricas().getFilesInDirectory();
-		for (File file : filesInDirectory) {
-			this.openReadFile(file);
+		for (File file : filesInDirectory) {		
 			String absolutePath = file.getAbsolutePath();
 			setPackageClassName(getMetricas().cutAbsolutePath(absolutePath));
+			className=this.counter(getPackageClassName());
+			this.openReadFile(file);
 		}
 	}
 	
 	@Override
 	protected void applyFilter(String s) {
-		String[] line = s.split(" ");
-		String[] filterToApply = filter.split(",");
-		for (String l : line) {
-			for (String f : filterToApply) {
-				if (l.equals(f)) {
-					// faz isto
+		if (isClass(s)) {
+			enteredClass=true;
+		}else{
+			if (enteredClass==true) {
+				if (!s.isBlank()) {
+					className.inc();
 				}
 			}
 		}
+		
 	}
 }
