@@ -3,13 +3,18 @@ package GUI;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -113,9 +118,16 @@ public class MainWindow {
             public void actionPerformed(ActionEvent arg0) {
                 //TODO análise (equipa winx)
                 
+                ImageIcon tempIcon = new ImageIcon("src/icons/excel.png");
+                Image tempImg = tempIcon.getImage();
+                BufferedImage bi = new BufferedImage(40, 40, BufferedImage.TYPE_INT_ARGB);
+                Graphics g = bi.createGraphics();
+                g.drawImage(tempImg, 0, 0, 40, 40, null, null);
+                ImageIcon popupIcon = new ImageIcon(bi);
+                
                 Object[] popupOptions = {"Sim", "Não"};
                 int popupResult = JOptionPane.showOptionDialog(frame, "Análise completa com sucesso! Deseja visualizar os resultados?", "Análise completa!",
-                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, popupOptions, popupOptions[0]);
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, popupIcon, popupOptions, popupOptions[0]);
                 
                 if (popupResult == 0)
                     showImportedData("tempTitle");
@@ -183,25 +195,28 @@ public class MainWindow {
         String[] columnNames =  {"id", "nom_class", "loc_class", "wmc_class", "loc_method", "cyclo_method", "pkg", "cls", "method", "is_god", "is_long"};
         JTable tempTable = new JTable(lines, columnNames);
         tempTable.setAutoResizeMode(0);
-        
+
         JScrollPane tableScrollPane = new JScrollPane(tempTable);
         tableScrollPane.setBorder(new EmptyBorder(0,0,0,0));
         
         JLabel fileTitle = new JLabel(fileToImport, SwingConstants.CENTER);
         
         int[] projectData = getProjectData(lineArray);
-        JLabel numPackagesLabel = new JLabel("Number of packages: " + projectData[0]);
-        JLabel numClassesLabel = new JLabel("Number of classes: " + projectData[1]);
-        JLabel numMethodsLabel = new JLabel("Number of methods: " + projectData[2]);
-        JLabel numLinesLabel = new JLabel("Number of lines: " + projectData[3]);
+        JLabel numPackagesLabel = new JLabel("Number of packages: " + projectData[0], SwingConstants.CENTER);
+        JLabel numClassesLabel = new JLabel("Number of classes: " + projectData[1], SwingConstants.CENTER);
+        JLabel numMethodsLabel = new JLabel("Number of methods: " + projectData[2], SwingConstants.CENTER);
+        JLabel numLinesLabel = new JLabel("Number of lines: " + projectData[3], SwingConstants.CENTER);
         
-        JPanel northPanel = new JPanel();
+        JPanel northPanel = new JPanel(new BorderLayout());
+        northPanel.setBorder(new EmptyBorder(10,10,20,10));
+        JPanel metricPanel = new JPanel(new GridLayout(2, 2));
         
-        northPanel.add(fileTitle);
-        northPanel.add(numPackagesLabel);
-        northPanel.add(numClassesLabel);
-        northPanel.add(numMethodsLabel);
-        northPanel.add(numLinesLabel);
+        metricPanel.add(numPackagesLabel);
+        metricPanel.add(numClassesLabel);
+        metricPanel.add(numMethodsLabel);
+        metricPanel.add(numLinesLabel);
+        northPanel.add(fileTitle, BorderLayout.NORTH);
+        northPanel.add(metricPanel, BorderLayout.CENTER);
         mainPanel.add(northPanel, BorderLayout.NORTH);
         mainPanel.add(tableScrollPane, BorderLayout.CENTER);
         mainPanel.updateUI();
