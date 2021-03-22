@@ -2,35 +2,37 @@ package metricas;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.SortedMap;
 
-public class NOM_class extends Metrica{
-	
-	private final String filter = "class";
-	
+import com.codahale.metrics.Counter;
+
+public class NOM_class extends Metrica {
+
+	private Counter nomclass = new Counter();
+	private SortedMap<String, Counter> cycloSortedMap;
+
 	public NOM_class(Maestro metricas) {
 		super(metricas);
 	}
 
 	@Override
 	protected void extractMetrics() {
+		cycloSortedMap = getMetricas().getCYCLO_method().getCounters();
 		ArrayList<File> filesInDirectory = getMetricas().getFilesInDirectory();
-		for (File file : filesInDirectory) {
-			this.openReadFile(file);
+		for (File file : filesInDirectory) {		
 			String absolutePath = file.getAbsolutePath();
 			setPackageClassName(getMetricas().cutAbsolutePath(absolutePath));
-		}
-	}
-	
-	@Override
-	protected void applyFilter(String s) {
-		String[] line = s.split(" ");
-		String[] filterToApply = filter.split(",");
-		for (String l : line) {
-			for (String f : filterToApply) {
-				if (l.equals(f)) {
-					// faz isto
+			nomclass=this.counter(getPackageClassName());
+			for (String s : cycloSortedMap.keySet()) {
+				if (s.contains(getPackageClassName())) {
+					nomclass.inc();
 				}
 			}
 		}
+	}
+
+	@Override
+	protected void applyFilter(String s) {
+		// TODO Auto-generated method stub
 	}
 }

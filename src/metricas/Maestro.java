@@ -29,7 +29,6 @@ public class Maestro {
 	public void startMetricCounters() {
 		openFolder(projectDirectory + SOURCE_CODE_LOCATION);
 		metrics.add(new LOC_class(this));
-		metrics.add(new NOM_class(this));
 		metrics.add(new LOC_method(this));
 		metrics.add(new CYCLO_method(this));
 	}
@@ -44,8 +43,10 @@ public class Maestro {
 			}
 		});
 		metrics.add(new WMC_class(this));
+		metrics.add(new NOM_class(this));
 		try {
-			metrics.get(4).getThread().join();
+			getWMC_class().getThread().join();
+			getNOM_class().getThread().join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -58,7 +59,7 @@ public class Maestro {
 //			System.out.println(helloMap.keySet());
 //			System.out.println(m.getCounters());
 			for (String s : counters.keySet()) {
-				System.out.println(m.toString());
+//				System.out.println(m.toString());
 			    System.out.println(s);  
 			    System.out.println(counters.get(s).getCount());
 			}
@@ -103,20 +104,19 @@ public class Maestro {
 		return (LOC_class) metrics.get(0);
 	}
 
-	public NOM_class getNOM_class() {
-		return (NOM_class) metrics.get(1);
-	}
-
 	public LOC_method getLOC_method() {
-		return (LOC_method) metrics.get(2);
+		return (LOC_method) metrics.get(1);
 	}
 
 	public CYCLO_method getCYCLO_method() {
-		return (CYCLO_method) metrics.get(3);
+		return (CYCLO_method) metrics.get(2);
 	}
 	
 	public WMC_class getWMC_class() {
-		return (WMC_class) metrics.get(4);
+		return (WMC_class) metrics.get(3);
+	}
+	public NOM_class getNOM_class() {
+		return (NOM_class) metrics.get(4);
 	}
 
 	public String getProjectDirectory() {
