@@ -52,7 +52,7 @@ public abstract class Metrica extends MetricRegistry {
 		s = s.replace("\t", "");
 		
 		if ((s.startsWith("public") || s.startsWith("protected") || s.startsWith("private")) && s.contains("(")
-				&& s.contains(")")) {
+				&& s.contains(")") && !s.endsWith(";")) {
 			
 			int posicaoArray = positionArray(line, "(");
 			int posicaoArray2 = positionArray(line, ")");

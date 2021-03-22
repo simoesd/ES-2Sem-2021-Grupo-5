@@ -1,10 +1,9 @@
 package metricas;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.SortedMap;
-
-import com.codahale.metrics.Counter;
 
 public class Maestro {
 
@@ -14,6 +13,8 @@ public class Maestro {
 	private static String SOURCE_CODE_LOCATION = "\\src";
 
 	private ArrayList<File> filesInDirectory;
+
+	private int incrementer = 1;
 
 	public Maestro() {
 		metrics = new ArrayList<Metrica>();
@@ -31,6 +32,7 @@ public class Maestro {
 		metrics.add(new LOC_class(this));
 		metrics.add(new LOC_method(this));
 		metrics.add(new CYCLO_method(this));
+		result();
 	}
 
 	public void result() {
@@ -51,23 +53,70 @@ public class Maestro {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		for (Metrica m : metrics) {  //TODO Resultados
-			SortedMap<String, Counter> counters = m.getCounters();
-//			Object[] counters = helloMap.values().toArray();
-//			System.out.println(((Counter) counters[0]).getCount());
-//			System.out.println(helloMap.values());
-//			System.out.println(helloMap.keySet());
-//			System.out.println(m.getCounters());
-			System.out.println(m.toString());
-			for (String s : counters.keySet()) {
-			    System.out.println(s);  
-			    System.out.println(counters.get(s).getCount());
+		FileWriter csvWriter;
+		try {
+			String projetctDirectory = getProjectDirectory();
+			projetctDirectory=projetctDirectory.replace("\\", "/");
+			String b[]=projetctDirectory.split("/");
+			csvWriter = new FileWriter(getProjectDirectory() + "\\" + b[b.length -1] + "_metricas" + ".csv");
+			createHeaderExcel(csvWriter);
+			exportResults(csvWriter);
+			csvWriter.flush();
+			csvWriter.close();
+			incrementer = 1;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void exportResults(FileWriter csvWriter) {
+		for (String u : getLOC_class().getCounters().keySet()) {
+			String temp = u;
+			temp = u.replace(".", " ");
+			String[] splitted = temp.split(" ");
+			String namePck = splitted[0];
+			String nameClass = splitted[1];
+			String LOC_class = String.valueOf(getLOC_class().getCounters().get(u).getCount());
+			String WMC_class = String.valueOf(getWMC_class().getCounters().get(u).getCount());
+			String NOM_class = String.valueOf(getNOM_class().getCounters().get(u).getCount());
+			for (String s : getCYCLO_method().getCounters().keySet()) {
+				if (s.contains(u)) {
+					String temp2 = s;
+					temp2 = s.replace(".", "/");
+					String[] splitted2 = temp2.split("/");
+					String nameMtd = splitted2[2];
+					String CYCLO_method = String.valueOf(getCYCLO_method().getCounters().get(s).getCount());
+					String LOC_method = String.valueOf(getLOC_method().getCounters().get(s).getCount());
+					String line = namePck + ";" + nameClass + ";" + nameMtd + ";" + NOM_class + ";" + LOC_class + ";"
+							+ WMC_class + ";" + " " + ";" + LOC_method + ";" + CYCLO_method + ";" + " ";
+					try {
+						writeExcel(csvWriter, line);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	}
 
-//		public abstract int contagem();
-//		public abstract String nomeString();
+	private void createHeaderExcel(FileWriter csvWriter) throws IOException {
+
+		csvWriter.append(
+				"MethodID;Package;Class;Method; NOM_class;LOC_class;WMC_class;is_God_Class;LOC_method;CYCLO_method;is_Long_Method");
+		csvWriter.append("\n");
+	}
+
+	private void writeExcel(FileWriter csvWriter, String line) throws IOException {
+
+		csvWriter.append(String.valueOf(incrementer));
+		csvWriter.append(";");
+		csvWriter.append(line);
+		csvWriter.append("\n");
+		incrementer++;
+
+	}
 
 	public void openFolder(String str) { // str -> diretorio do projeto
 		File folder = new File(str);
@@ -95,7 +144,6 @@ public class Maestro {
 		return shortPath;
 	}
 
-
 	public ArrayList<File> getFilesInDirectory() {
 		return filesInDirectory;
 	}
@@ -111,10 +159,11 @@ public class Maestro {
 	public CYCLO_method getCYCLO_method() {
 		return (CYCLO_method) metrics.get(2);
 	}
-	
+
 	public WMC_class getWMC_class() {
 		return (WMC_class) metrics.get(3);
 	}
+
 	public NOM_class getNOM_class() {
 		return (NOM_class) metrics.get(4);
 	}
