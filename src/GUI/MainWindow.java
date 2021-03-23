@@ -30,7 +30,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import main_package.ExcelReader;
 import main_package.Line;
+import metricas.Maestro;
 
 public class MainWindow {
 
@@ -105,7 +107,9 @@ public class MainWindow {
                 if (analyzeBrowserOutput == JFileChooser.APPROVE_OPTION) 
                 {
                     analysisPathTextField.setText(analyzeFileChooser.getSelectedFile().getAbsolutePath());
-                    showFilesToAnalyze();
+                    Maestro tempMaestro = new Maestro();
+                    tempMaestro.openFolder(analysisPathTextField.getText());
+                    showFilesToAnalyze(tempMaestro.getFilesInDirectory());
                 }
             }
         });
@@ -117,6 +121,10 @@ public class MainWindow {
         startAnalysisButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //TODO análise (equipa winx)
+                String directoryPath = analysisPathTextField.getText();
+                Maestro maestro = new Maestro(directoryPath);
+                
+                String resultsFilePath = maestro.startMetricCounters();
                 
                 ImageIcon tempIcon = new ImageIcon("src/icons/excel.png");
                 Image tempImg = tempIcon.getImage();
@@ -130,7 +138,7 @@ public class MainWindow {
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, popupIcon, popupOptions, popupOptions[0]);
                 
                 if (popupResult == 0)
-                    showImportedData("tempTitle");
+                    showImportedData(resultsFilePath);
                 else
                 {
                     mainPanel.removeAll();
@@ -184,16 +192,22 @@ public class MainWindow {
         
     }
     
-    void showImportedData(String fileToImport) {
+    private void showImportedData(String fileToImport) {
         mainPanel.removeAll();
         
-        int i = 0, j = 0, h = 0, k = 0, l = 0, m = 0;
         //TODO ivocar a importação (equipa PRR)
-        Line[] lineArray = {new Line(i++, "bruh", "bruh", "bruh", j++, h++, k++, true, l++, m++, true), new Line(i++, "bruh", "bruh", "bruh", j++, h++, k++, true, l++, m++, true), new Line(i++, "bruh", "bruh", "bruh", j++, h++, k++, true, l++, m++, true), new Line(i++, "bruh", "bruh", "bruh", j++, h++, k++, true, l++, m++, true)};
-        String[][] lines = {new Line(i++, "bruh", "bruh", "bruh", j++, h++, k++, true, l++, m++, true).toArray(), new Line(i++, "bruh", "bruh", "bruh", j++, h++, k++, true, l++, m++, true).toArray(), new Line(i++, "bruh", "bruh", "bruh", j++, h++, k++, true, l++, m++, true).toArray(), new Line(i++, "bruh", "bruh", "bruh", j++, h++, k++, true, l++, m++, true).toArray()};
-
-        String[] columnNames =  {"id", "nom_class", "loc_class", "wmc_class", "loc_method", "cyclo_method", "pkg", "cls", "method", "is_god", "is_long"};
-        JTable tempTable = new JTable(lines, columnNames);
+        ArrayList<Line> lines = ExcelReader.readExcelFile(fileToImport);
+        
+        String[] columnNames =  {"id", "pkg", "cls", "method", "nom_class", "loc_class", "wmc_class", "is_god", "loc_method", "cyclo_method", "is_long"};
+        String[][] linesAsString = new String[lines.size()][];
+        
+        for (int i = 0; i < lines.size(); i++)
+        {
+            linesAsString[i] = lines.get(i).toArray();
+            System.out.println(linesAsString[i][0]);
+        }
+        
+        JTable tempTable = new JTable(linesAsString, columnNames);
         tempTable.setAutoResizeMode(0);
 
         JScrollPane tableScrollPane = new JScrollPane(tempTable);
@@ -201,7 +215,7 @@ public class MainWindow {
         
         JLabel fileTitle = new JLabel(fileToImport, SwingConstants.CENTER);
         
-        int[] projectData = getProjectData(lineArray);
+        int[] projectData = getProjectData(lines);
         JLabel numPackagesLabel = new JLabel("Number of packages: " + projectData[0], SwingConstants.CENTER);
         JLabel numClassesLabel = new JLabel("Number of classes: " + projectData[1], SwingConstants.CENTER);
         JLabel numMethodsLabel = new JLabel("Number of methods: " + projectData[2], SwingConstants.CENTER);
@@ -222,18 +236,16 @@ public class MainWindow {
         mainPanel.updateUI();
     }
     
-    void showFilesToAnalyze() {
+    private void showFilesToAnalyze(ArrayList<File> fileArray) {
         mainPanel.removeAll();
         
-        File[] fileArray = {};
         ArrayList<String> filenameList = new ArrayList<>();
         for(File f: fileArray) 
         {
             filenameList.add(f.getName());
         }
-        String[] tempList = {"teste123.java", "bruh.java", "yep.java", "yessir.java"}; //TODO
         
-        JList fileList = new JList(tempList);
+        JList fileList = new JList(filenameList.toArray());
         JScrollPane listScrollPane = new JScrollPane(fileList);
         
         mainPanel.add(listScrollPane, BorderLayout.CENTER);
@@ -245,7 +257,7 @@ public class MainWindow {
         return fullPath.substring(fullPath.lastIndexOf("\\") + 1);
     }
     
-    public static int[] getProjectData(Line[] lines) {
+    public static int[] getProjectData(ArrayList<Line> lines) {
         ArrayList<String> classNames = new ArrayList<>();
         int totalMethods = 0;
         int totalLinesOfCode = 0;

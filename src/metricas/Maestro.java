@@ -1,9 +1,16 @@
 package metricas;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Maestro {
 
@@ -14,7 +21,7 @@ public class Maestro {
 
 	private ArrayList<File> filesInDirectory;
 
-	private int incrementer = 1;
+	private int incrementer = 0;
 
 	public Maestro() {
 		metrics = new ArrayList<Metrica>();
@@ -27,15 +34,15 @@ public class Maestro {
 		this.projectDirectory = projectDirectory;
 	}
 
-	public void startMetricCounters() {
-		openFolder(projectDirectory + SOURCE_CODE_LOCATION);
+	public String startMetricCounters() {
+		openFolder(projectDirectory);
 		metrics.add(new LOC_class(this));
 		metrics.add(new LOC_method(this));
 		metrics.add(new CYCLO_method(this));
-		result();
+		return result();
 	}
 
-	public void result() {
+	private String result() {
 		metrics.forEach(t -> {
 			try {
 				t.getThread().join();
@@ -58,19 +65,35 @@ public class Maestro {
 			String projetctDirectory = getProjectDirectory();
 			projetctDirectory=projetctDirectory.replace("\\", "/");
 			String b[]=projetctDirectory.split("/");
-			csvWriter = new FileWriter(getProjectDirectory() + "\\" + b[b.length -1] + "_metricas" + ".csv");
-			createHeaderExcel(csvWriter);
-			exportResults(csvWriter);
-			csvWriter.flush();
-			csvWriter.close();
+			
+			
+//			csvWriter = new FileWriter(getProjectDirectory() + "\\" + b[b.length -1] + "_metricas" + ".xlsx");
+//			createHeaderExcel(csvWriter);
+//			exportResults(csvWriter);
+//			csvWriter.flush();
+//			csvWriter.close();
+			
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet();
+			createHeaderExcel(sheet);
+			exportResults(sheet);
+			
+			FileOutputStream fos = new FileOutputStream(getProjectDirectory() + "\\" + b[b.length -1] + "_metricas" + ".xlsx");
+			workbook.write(fos);
+			
+			fos.close();
+			workbook.close();
+			
 			incrementer = 1;
+			return getProjectDirectory() + "\\" + b[b.length -1] + "_metricas" + ".xlsx";
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return ""; //TODO proper exception return
 		}
 	}
 
-	private void exportResults(FileWriter csvWriter) {
+	private void exportResults(XSSFSheet sheet) {
 		for (String u : getLOC_class().getCounters().keySet()) {
 			String temp = u;
 			temp = u.replace(".", " ");
@@ -88,10 +111,9 @@ public class Maestro {
 					String nameMtd = splitted2[2];
 					String CYCLO_method = String.valueOf(getCYCLO_method().getCounters().get(s).getCount());
 					String LOC_method = String.valueOf(getLOC_method().getCounters().get(s).getCount());
-					String line = namePck + ";" + nameClass + ";" + nameMtd + ";" + NOM_class + ";" + LOC_class + ";"
-							+ WMC_class + ";" + " " + ";" + LOC_method + ";" + CYCLO_method + ";" + " ";
+					String[] line = {namePck , nameClass , nameMtd , NOM_class , LOC_class , WMC_class , "true" , LOC_method  , CYCLO_method , "true" };
 					try {
-						writeExcel(csvWriter, line);
+						writeExcel(sheet, line);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -101,20 +123,44 @@ public class Maestro {
 		}
 	}
 
-	private void createHeaderExcel(FileWriter csvWriter) throws IOException {
+	private void createHeaderExcel(XSSFSheet sheet) throws IOException {
 
-		csvWriter.append(
-				"MethodID;Package;Class;Method; NOM_class;LOC_class;WMC_class;is_God_Class;LOC_method;CYCLO_method;is_Long_Method");
-		csvWriter.append("\n");
+	    Row firstRow = sheet.createRow(incrementer);
+	    String[] header = {"MethodID","Package","Class","Method"," NOM_class","LOC_class","WMC_class","is_God_Class","LOC_method","CYCLO_method","is_Long_Method"};
+
+        for (int i = 0; i < header.length; i++) {
+            Cell cell = firstRow.createCell(i);
+            cell.setCellValue(header[i]);
+        }
+        incrementer++;
 	}
 
-	private void writeExcel(FileWriter csvWriter, String line) throws IOException {
+	private void writeExcel(XSSFSheet sheet, String[] line) throws IOException {
 
-		csvWriter.append(String.valueOf(incrementer));
-		csvWriter.append(";");
-		csvWriter.append(line);
-		csvWriter.append("\n");
-		incrementer++;
+	    Row firstRow = sheet.createRow(incrementer);
+	    firstRow.createCell(0).setCellValue(incrementer);
+	    
+        for (int i = 1; i < line.length + 1; i++) {
+            Cell cell = firstRow.createCell(i);
+            try {
+                int cellValue = Integer.parseInt(line[i-1]);
+                cell.setCellValue(cellValue);
+            } catch (NumberFormatException e) {
+                if (Boolean.parseBoolean(line[i-1])) {
+                    switch (line[i-1].toLowerCase()) {
+                        case "true":
+                            cell.setCellValue(true);
+                            break;
+                        case "false":
+                            cell.setCellValue(false);
+                            break;
+                    }
+                } else {
+                    cell.setCellValue(line[i-1]);
+                }
+            }
+        }
+        incrementer++;
 
 	}
 

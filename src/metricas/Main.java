@@ -7,8 +7,8 @@ public class Main {
 //		metricas.openFolder(metricas.getProjectDirectory() + metricas.getSourceCodeLocation());
 //		otario.cutAbsolutePath("E:\\ISCTE\\OneDrive - ISCTE-IUL\\eclipse-workspace\\87377_87524\\src\\Workers\\DealWithTimeWorker.java");
 
-		metricas.startMetricCounters();
-		metricas.result();
+//		metricas.startMetricCounters();
+//		metricas.result();
 		
 //		CYCLO_method c = new CYCLO_method(metricas);
 		

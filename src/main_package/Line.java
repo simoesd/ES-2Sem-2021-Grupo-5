@@ -153,5 +153,10 @@ public class Line {
 	public void setIs_long(Boolean is_long) {
 		this.is_long = is_long;
 	}
+	
+	public String[] toArray() {
+	    String[] temp = {String.valueOf(id), pkg, cls, method, String.valueOf(nom_class), String.valueOf(loc_class), String.valueOf(wmc_class), is_god.toString(), String.valueOf(loc_method), String.valueOf(cyclo_method), is_long.toString()};
+        return temp;
+	}
 
 }
