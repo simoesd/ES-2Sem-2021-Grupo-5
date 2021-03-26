@@ -41,35 +41,38 @@ public class LOC_method extends Metrica {
 	 * } }
 	 */
 
+	/*
+	 * protected void applyFilter(String s) { // não lida totalmente com blocos de
+	 * comentário nem metodos internos a outros // métodos. também há interferencias
+	 * na definicão de vetores entre {} String[] line = s.split(" "); String temp =
+	 * methodName(s, line); s = s.trim(); if (!s.startsWith("//") &&
+	 * !s.startsWith("*") && !s.startsWith("/*")) { if (!temp.isBlank()) {
+	 * countOpenBrace++; methodName = new Counter(); methodName =
+	 * this.counter(getPackageClassName() + "." + temp);
+	 * 
+	 * } else if (countCloseBrace != countOpenBrace) { // estamos dentro do método
+	 * if (s.endsWith(";") || s.endsWith(":")) { //: no caso do switch case
+	 * methodName.inc(); //System.out.println(s); } else { nextLineIsBrace = true; }
+	 * if (nextLineIsBrace) { countOpenBrace++; nextLineIsBrace = false; } if
+	 * (s.contains("{")) { //podia ser com "endswith" mas depois há problema com os
+	 * comentarios a seguir as { countOpenBrace++; methodName.inc();
+	 * //System.out.println(s); } if (s.contains("}")) { countCloseBrace++; } } } }
+	 */
+	
+	
+	
 	protected void applyFilter(String s) { // não lida totalmente com blocos de comentário nem metodos internos a outros
-											// métodos. também há interferencias na definicão de vetores entre {}
+		// métodos. também há interferencias na definicão de vetores entre {}
 		String[] line = s.split(" ");
 		String temp = methodName(s, line);
 		s = s.trim();
-		if (!s.startsWith("//") && !s.startsWith("*") && !s.startsWith("/*")) { 
+		if (!s.startsWith("//") && !s.startsWith("*") && !s.startsWith("/*") && !s.startsWith("@")) {
 			if (!temp.isBlank()) {
-				countOpenBrace++;
 				methodName = new Counter();
 				methodName = this.counter(getPackageClassName() + "." + temp);
-
-			} else if (countCloseBrace != countOpenBrace) { // estamos dentro do método
-				if (s.endsWith(";") || s.endsWith(":")) { //: no caso do switch case
+			} else { // estamos dentro do método
+				if (!s.equals("{") && !s.equals("}") && !s.isBlank()) {
 					methodName.inc();
-					//System.out.println(s);
-				} else {
-					nextLineIsBrace = true;
-				}
-				if (nextLineIsBrace) {
-					countOpenBrace++;
-					nextLineIsBrace = false;
-				}
-				if (s.contains("{")) { //podia ser com "endswith" mas depois há problema com os comentarios a seguir as {
-					countOpenBrace++;
-					methodName.inc();
-					//System.out.println(s);
-				}
-				if (s.contains("}")) {
-					countCloseBrace++;
 				}
 			}
 		}
