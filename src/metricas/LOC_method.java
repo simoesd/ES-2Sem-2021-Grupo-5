@@ -46,7 +46,7 @@ public class LOC_method extends Metrica {
 		String[] line = s.split(" ");
 		String temp = methodName(s, line);
 		s = s.trim();
-		if (!s.startsWith("//") && !s.startsWith("*")) { 
+		if (!s.startsWith("//") && !s.startsWith("*") && !s.startsWith("/*")) { 
 			if (!temp.isBlank()) {
 				countOpenBrace++;
 				methodName = new Counter();
@@ -55,7 +55,7 @@ public class LOC_method extends Metrica {
 			} else if (countCloseBrace != countOpenBrace) { // estamos dentro do método
 				if (s.endsWith(";") || s.endsWith(":")) { //: no caso do switch case
 					methodName.inc();
-					System.out.println(s);
+					//System.out.println(s);
 				} else {
 					nextLineIsBrace = true;
 				}
@@ -66,7 +66,7 @@ public class LOC_method extends Metrica {
 				if (s.contains("{")) { //podia ser com "endswith" mas depois há problema com os comentarios a seguir as {
 					countOpenBrace++;
 					methodName.inc();
-					System.out.println(s);
+					//System.out.println(s);
 				}
 				if (s.contains("}")) {
 					countCloseBrace++;
