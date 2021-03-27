@@ -38,7 +38,6 @@ public class LOC_class extends Metrica {
 				if (!s.startsWith("//") && !s.startsWith("*") && !s.startsWith("@") && !s.startsWith("/*")) { //não lida totalmente com os blocos de comentario
 					if (!s.equals("{") && !s.equals("}") && !s.isBlank()) {
 						className.inc();
-						System.out.println( className.getCount() + "->" +s);
 					}
 				}
 		}
