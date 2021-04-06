@@ -2,11 +2,9 @@ package metricas;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -60,19 +58,11 @@ public class Maestro {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		FileWriter csvWriter;
 		try {
 			String projetctDirectory = getProjectDirectory();
 			projetctDirectory=projetctDirectory.replace("\\", "/");
 			String b[]=projetctDirectory.split("/");
-			
-			
-//			csvWriter = new FileWriter(getProjectDirectory() + "\\" + b[b.length -1] + "_metricas" + ".xlsx");
-//			createHeaderExcel(csvWriter);
-//			exportResults(csvWriter);
-//			csvWriter.flush();
-//			csvWriter.close();
-			
+					
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet();
 			createHeaderExcel(sheet);

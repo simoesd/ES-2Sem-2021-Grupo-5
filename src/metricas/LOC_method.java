@@ -20,24 +20,24 @@ public class LOC_method extends Metrica {
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
 			setPackageClassName(getMetricas().cutAbsolutePath(absolutePath));
-			methodName = new Counter();
 			this.openReadFile(file);
 		}
-	}
+	}	
 	
-	@Override
-	protected void applyFilter(String s) {
+	protected void applyFilter(String s) { // não lida totalmente com blocos de comentário nem metodos internos a outros
+		// métodos. também há interferencias na definicão de vetores entre {}
 		String[] line = s.split(" ");
-		// String[] filterToApply = filter.split(",");
 		String temp = methodName(s, line);
-
-		if (!temp.isBlank()) {
-			methodName = new Counter();
-			methodName = this.counter(getPackageClassName() + "." + temp);
-		} else {
-			if (!s.isBlank() && !s.contains("@Override"))
-				methodName.inc();
-
+		s = s.trim();
+		if (!s.startsWith("//") && !s.startsWith("*") && !s.startsWith("/*") && !s.startsWith("@")) {
+			if (!temp.isBlank()) {
+				methodName = new Counter();
+				methodName = this.counter(getPackageClassName() + "." + temp);
+			} else { // estamos dentro do método
+				if (!s.equals("{") && !s.equals("}") && !s.isBlank()) {
+					methodName.inc();
+				}
+			}
 		}
 	}
 }
