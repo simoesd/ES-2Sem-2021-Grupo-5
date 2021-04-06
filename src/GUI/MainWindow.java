@@ -183,7 +183,12 @@ public class MainWindow {
         JButton importProjectButton = new JButton("Import Project Data");
         importProjectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                showImportedData(getFileName(importPathTextField.getText()));
+                if(!importPathTextField.getText().isEmpty()) {
+                	System.out.println(importPathTextField.getText());
+                	showImportedData(importPathTextField.getText()); //showImportedData(getFileName(importPathTextField.getText()));
+                } else {
+                	JOptionPane.showMessageDialog(importProjectButton, "Preencha o path do ficheiro");
+                }
             }
         });
         importPanel.add(importProjectButton);
