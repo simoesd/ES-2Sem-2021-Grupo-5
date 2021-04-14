@@ -209,7 +209,6 @@ public class MainWindow {
         for (int i = 0; i < lines.size(); i++)
         {
             linesAsString[i] = lines.get(i).toArray();
-            System.out.println(linesAsString[i][0]);
         }
         
         JTable tempTable = new JTable(linesAsString, columnNames);

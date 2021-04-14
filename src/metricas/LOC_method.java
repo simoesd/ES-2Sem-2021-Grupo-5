@@ -21,14 +21,16 @@ public class LOC_method extends Metrica {
 			String absolutePath = file.getAbsolutePath();
 			setPackageClassName(getMetricas().cutAbsolutePath(absolutePath));
 			this.openReadFile(file);
+			methodName = new Counter();
 		}
 	}	
 	
 	protected void applyFilter(String s) { // não lida totalmente com blocos de comentário nem metodos internos a outros
 		// métodos. também há interferencias na definicão de vetores entre {}
+		s = s.trim();
 		String[] line = s.split(" ");
 		String temp = methodName(s, line);
-		s = s.trim();
+		
 		if (!s.startsWith("//") && !s.startsWith("*") && !s.startsWith("/*") && !s.startsWith("@")) {
 			if (!temp.isBlank()) {
 				methodName = new Counter();
