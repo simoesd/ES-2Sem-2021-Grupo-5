@@ -3,8 +3,6 @@ package metricas;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -48,9 +46,6 @@ public abstract class Metrica extends MetricRegistry {
 		}
 	}
 
-	void gandaDrena() {
-
-	}
 
 	public String methodName(String s, String[] line) {
 		String temp = "";
