@@ -30,9 +30,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import main_package.ExcelReader;
-import main_package.Line;
 import metricas.Maestro;
+import reader.ExcelReader;
+import reader.Line;
 
 public class MainWindow {
 

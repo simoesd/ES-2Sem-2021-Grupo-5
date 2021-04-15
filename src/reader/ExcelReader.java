@@ -1,4 +1,4 @@
-package main_package;
+package reader;
 
 import java.io.File;
 import java.io.FileInputStream;
