@@ -8,62 +8,64 @@ import javax.swing.JTextField;
 public class Rule {
 
 	private JPanel panel_1;
-	private JComboBox comboBox_1;
-	private JComboBox comboBox;
-	private JTextField textField;
-	private JComboBox comboBox_3;
-	private JComboBox comboBox_2;
-	private JComboBox comboBox_4;
-	private JTextField textField_1;
-	private JCheckBox chckbxNewCheckBox;
+	private JComboBox metric1; 
+	private JComboBox mathSymbol1;  
+	private JTextField value1; 
+	private JComboBox logicOp; 
+	private JComboBox metric2; 
+	private JComboBox mathSymbol2; 
+	private JTextField value2; 
+	private JCheckBox checkbox; 
 	
-	public Rule(JPanel panel_1, JComboBox comboBox_1, JComboBox comboBox, JTextField textField, JComboBox comboBox_3,
-			JComboBox comboBox_2, JComboBox comboBox_4, JTextField textField_1, JCheckBox chckbxNewCheckBox) {
+	public Rule(JPanel panel_1, JComboBox metric1, JComboBox mathSymbol1, JTextField value1, JComboBox logicOp,
+			JComboBox metric2, JComboBox mathSymbol2, JTextField value2, JCheckBox checkbox) {
 		super();
 		this.panel_1 = panel_1;
-		this.comboBox_1 = comboBox_1;
-		this.comboBox = comboBox;
-		this.textField = textField;
-		this.comboBox_3 = comboBox_3;
-		this.comboBox_2 = comboBox_2;
-		this.comboBox_4 = comboBox_4;
-		this.textField_1 = textField_1;
-		this.chckbxNewCheckBox = chckbxNewCheckBox;
+		this.metric1 = metric1;
+		this.mathSymbol1 = mathSymbol1;
+		this.value1 = value1;
+		this.logicOp = logicOp;
+		this.metric2 = metric2;
+		this.mathSymbol2 = mathSymbol2;
+		this.value2 = value2;
+		this.checkbox = checkbox;
 	}
 
 	public JPanel getPanel_1() {
 		return panel_1;
 	}
 
-	public JComboBox getComboBox_1() {
-		return comboBox_1;
+	public JComboBox getMetric1() {
+		return metric1;
 	}
 
-	public JComboBox getComboBox() {
-		return comboBox;
+	public JComboBox getMathSymbol1() {
+		return mathSymbol1;
 	}
 
-	public JTextField getTextField() {
-		return textField;
+	public JTextField getValue1() {
+		return value1;
 	}
 
-	public JComboBox getComboBox_3() {
-		return comboBox_3;
+	public JComboBox getLogicOp() {
+		return logicOp;
 	}
 
-	public JComboBox getComboBox_2() {
-		return comboBox_2;
+	public JComboBox getMetric2() {
+		return metric2;
 	}
 
-	public JComboBox getComboBox_4() {
-		return comboBox_4;
+	public JComboBox getMathSymbol2() {
+		return mathSymbol2;
 	}
 
-	public JTextField getTextField_1() {
-		return textField_1;
+	public JTextField getValue2() {
+		return value2;
 	}
 
-	public JCheckBox getChckbxNewCheckBox() {
-		return chckbxNewCheckBox;
+	public JCheckBox getCheckbox() {
+		return checkbox;
 	}
+
+
 }

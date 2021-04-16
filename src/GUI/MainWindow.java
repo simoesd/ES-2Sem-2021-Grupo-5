@@ -46,6 +46,7 @@ public class MainWindow {
 	private JPanel mainPanel;
 	private JPanel panel;
 	private JPanel panel_2;
+	private JPanel panel_3;
 	private ArrayList<Rule> rules = new ArrayList<>();
 	private int incrementer = 1;
 
@@ -103,10 +104,15 @@ public class MainWindow {
 		FlowLayout flowLayout = (FlowLayout) panel_2.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		mainPanel.add(panel_2, BorderLayout.SOUTH);
-
-		JButton btnNewButton = new JButton("Add Rule");
-		panel_2.add(btnNewButton);
-		btnNewButton.addActionListener(new ActionListener() {
+		
+		panel_3 = new JPanel();
+		JLabel title = new JLabel("RULES");
+		panel_3.add(title);
+		mainPanel.add(panel_3, BorderLayout.NORTH);
+		
+		JButton addRuleButton = new JButton("Add Rule");
+		panel_2.add(addRuleButton);
+		addRuleButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -115,40 +121,40 @@ public class MainWindow {
 					panel.add(panel_1);
 					panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
-					JComboBox comboBox_1 = new JComboBox();
-					comboBox_1.setModel(new DefaultComboBoxModel(
+					JComboBox metric1 = new JComboBox();
+					metric1.setModel(new DefaultComboBoxModel(
 							new String[] { "CYCLO_METHOD", "LOC_METHOD", "LOC_CLASS", "WMC_CLASS", "NOM_CLASS" }));
-					panel_1.add(comboBox_1);
+					panel_1.add(metric1);
 
-					JComboBox comboBox = new JComboBox();
-					comboBox.setModel(new DefaultComboBoxModel(new String[] { ">", "<", "\u2265", "\u2264" }));
-					panel_1.add(comboBox);
+					JComboBox mathSymbol1 = new JComboBox();
+					mathSymbol1.setModel(new DefaultComboBoxModel(new String[] { ">", "<", "\u2265", "\u2264" }));
+					panel_1.add(mathSymbol1);
 
-					JTextField textField = new JTextField();
-					textField.setColumns(10);
-					panel_1.add(textField);
+					JTextField value1 = new JTextField();
+					value1.setColumns(10);
+					panel_1.add(value1);
 
-					JComboBox comboBox_3 = new JComboBox();
-					comboBox_3.setModel(new DefaultComboBoxModel(new String[] { "AND", "OR" }));
-					panel_1.add(comboBox_3);
+					JComboBox logicOp = new JComboBox();
+					logicOp.setModel(new DefaultComboBoxModel(new String[] { "AND", "OR" }));
+					panel_1.add(logicOp);
 
-					JComboBox comboBox_2 = new JComboBox();
-					comboBox_2.setModel(new DefaultComboBoxModel(
+					JComboBox metric2 = new JComboBox();
+					metric2.setModel(new DefaultComboBoxModel(
 							new String[] { "CYCLO_METHOD", "LOC_METHOD", "LOC_CLASS", "WMC_CLASS", "NOM_CLASS" }));
-					panel_1.add(comboBox_2);
+					panel_1.add(metric2);
 
-					JComboBox comboBox_4 = new JComboBox();
-					comboBox_4.setModel(new DefaultComboBoxModel(new String[] { ">", "<", "\u2265", "\u2264" }));
-					panel_1.add(comboBox_4);
+					JComboBox mathSymbol2 = new JComboBox();
+					mathSymbol2.setModel(new DefaultComboBoxModel(new String[] { ">", "<", "\u2265", "\u2264" }));
+					panel_1.add(mathSymbol2);
 
-					JTextField textField_1 = new JTextField();
-					textField_1.setColumns(10);
-					panel_1.add(textField_1);
+					JTextField value2 = new JTextField();
+					value2.setColumns(10);
+					panel_1.add(value2);
 
-					JCheckBox chckbxNewCheckBox = new JCheckBox("");
-					panel_1.add(chckbxNewCheckBox);
-					Rule rule = new Rule(panel_1, comboBox_1, comboBox, analysisPathTextField, comboBox_3, comboBox_2,
-							comboBox_4, textField_1, chckbxNewCheckBox);
+					JCheckBox checkbox = new JCheckBox("");
+					panel_1.add(checkbox);
+					Rule rule = new Rule(panel_1, metric1, mathSymbol1, analysisPathTextField, logicOp, metric2,
+							mathSymbol2, value2, checkbox);
 					rules.add(rule);
 					mainPanel.updateUI();
 					incrementer++;
@@ -158,9 +164,9 @@ public class MainWindow {
 			}
 		});
 
-		JButton btnNewButton_1 = new JButton("Remove Rule");
-		panel_2.add(btnNewButton_1);
-		btnNewButton_1.addActionListener(new ActionListener() {
+		JButton removeRuleButton = new JButton("Remove Rule");
+		panel_2.add(removeRuleButton);
+		removeRuleButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -168,7 +174,7 @@ public class MainWindow {
 				ArrayList<Rule> tempRules = new ArrayList<>();
 				rules.forEach(r -> tempRules.add(r));
 				for (int i = 0; i < tempRules.size(); i++) {
-					if (tempRules.get(i).getChckbxNewCheckBox().isSelected()) {
+					if (tempRules.get(i).getCheckbox().isSelected()) {
 						rules.remove(tempRules.get(i));
 						incrementer--;
 					}
@@ -179,10 +185,7 @@ public class MainWindow {
 					panel.add(rules.get(i).getPanel_1());
 				}
 				panel.updateUI();
-
 			}
-			
-
 		});
 
 		// Analysis Panel
@@ -325,13 +328,28 @@ public class MainWindow {
 		JPanel northPanel = new JPanel(new BorderLayout());
 		northPanel.setBorder(new EmptyBorder(10, 10, 20, 10));
 		JPanel metricPanel = new JPanel(new GridLayout(2, 2));
+		
+		JButton backButton = new JButton("Go back");
+		backButton.addActionListener(new ActionListener() {
 
-		metricPanel.add(numPackagesLabel);
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mainPanel.removeAll();
+				mainPanel.add(panel, BorderLayout.EAST);
+				mainPanel.add(panel_2, BorderLayout.SOUTH);
+				mainPanel.add(panel_3, BorderLayout.NORTH);
+				mainPanel.updateUI();
+					
+			}
+		});
+			
+     	metricPanel.add(numPackagesLabel);
 		metricPanel.add(numClassesLabel);
 		metricPanel.add(numMethodsLabel);
 		metricPanel.add(numLinesLabel);
 		northPanel.add(fileTitle, BorderLayout.NORTH);
 		northPanel.add(metricPanel, BorderLayout.CENTER);
+		northPanel.add(backButton, BorderLayout.WEST);
 		mainPanel.add(northPanel, BorderLayout.NORTH);
 		mainPanel.add(tableScrollPane, BorderLayout.CENTER);
 		mainPanel.updateUI();
@@ -351,6 +369,7 @@ public class MainWindow {
 		mainPanel.add(listScrollPane, BorderLayout.CENTER);
 		mainPanel.add(panel, BorderLayout.EAST);
 		mainPanel.add(panel_2,BorderLayout.SOUTH);
+		mainPanel.add(panel_3, BorderLayout.NORTH);
 		mainPanel.updateUI();
 	}
 
