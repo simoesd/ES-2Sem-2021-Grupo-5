@@ -8,7 +8,7 @@ import com.codahale.metrics.Counter;
 public class LOC_method extends Metrica {
 
 	// private final String filter = "class";
-	private Counter methodName = new Counter();
+//	private Counter methodName = new Counter();
 
 	public LOC_method(Maestro metricas) {
 		super(metricas);
@@ -20,8 +20,7 @@ public class LOC_method extends Metrica {
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
 			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
-			this.openReadFile(file);
-			methodName = new Counter();
+			openReadFile(file);
 		}
 	}	
 	

@@ -28,7 +28,7 @@ public class CYCLO_method extends Metrica {
 	}
 
 	@Override
-	protected void applyFilter(String s, Counter counter) {  //TODO Lidar com a situação dos comentários
+	protected void applyFilter(String s, Counter counter) {  
 		Scanner scanner = new Scanner(s);
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();
@@ -42,6 +42,7 @@ public class CYCLO_method extends Metrica {
 					}
 				}
 			}
+			//TODO Adicionar filter para o comentário
 		}
 		scanner.close();
 	}

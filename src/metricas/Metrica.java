@@ -7,7 +7,7 @@ import java.util.Scanner;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 
-public abstract class Metrica extends MetricRegistry {
+public abstract class Metrica extends MetricRegistry{
 
 	private Maestro maestro;
 	private String packageClassName;
@@ -41,7 +41,8 @@ public abstract class Metrica extends MetricRegistry {
 			String methodCode = new String("");
 			Counter counter = new Counter();
 			while (sc.hasNextLine()) {
-				String line = sc.nextLine();				
+				String line = sc.nextLine();
+				//TODO Adicionar ciclo for para cada char
 				if(line.contains("){") || line.contains(" {") || line.contains("\t{")) {
 					if(line.contains("}")) {
                         if(!methodName(line, line.split(" ")).isEmpty()) {
