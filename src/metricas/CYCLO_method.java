@@ -8,7 +8,7 @@ import com.codahale.metrics.Counter;
 public class CYCLO_method extends Metrica {
 
 	private final String filter = "for,if,while,case";
-	private Counter methodName = new Counter();
+	private Counter methodCounter = new Counter();
 
 	public CYCLO_method(Maestro metricas) {
 		super(metricas);
@@ -30,16 +30,16 @@ public class CYCLO_method extends Metrica {
 	protected void applyFilter(String s) {  //TODO Lidar com a situação dos comentários
 		String[] line = s.split(" ");
 		String[] filterToApply = filter.split(",");
-		
 		String temp = methodName(s, line);
 		if (!temp.isBlank()) {
-			methodName = counter(getPackageClassName() + "." + temp);
+			methodCounter = new Counter();
+			methodCounter = counter(getPackageClassName() + "." + temp);
 		}
 		for (String l : line) {
 			l = l.replace("\t", "");
 			for (String f : filterToApply) {
-				if (l.equals(f)) {
-					methodName.inc();
+				if (l.equals(f) || l.contains(f + "(")) {
+					methodCounter.inc();
 				}
 			}
 		}
