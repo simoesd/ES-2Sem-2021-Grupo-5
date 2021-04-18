@@ -34,7 +34,6 @@ public class CYCLO_method extends Metrica {
 			String line = scanner.nextLine();
 			String[] splitLine = line.split(" ");
 			String[] filterToApply = filter.split(",");
-			String temp = methodName(line, splitLine);
 			for (String l : splitLine) {
 				l = l.replaceAll("\t", "");
 				for (String f : filterToApply) {
@@ -44,6 +43,7 @@ public class CYCLO_method extends Metrica {
 				}
 			}
 		}
+		scanner.close();
 	}
 	
 	

@@ -43,15 +43,20 @@ public abstract class Metrica extends MetricRegistry {
 			while (sc.hasNextLine()) {
 				String line = sc.nextLine();				
 				if(line.contains("){") || line.contains(" {") || line.contains("\t{")) {
-					if(line.contains("{}")) {
-						counter = counter(getPackageClassName() + "." + methodName(line, line.split(" ")));
-					}else {
+					if(line.contains("}")) {
+                        if(!methodName(line, line.split(" ")).isEmpty()) {
+                            counter = counter(getPackageClassName() + "." + methodName(line, line.split(" ")));
+                        } else {
+                            methodCode = methodCode + "\n" + line;
+                        }
+                    }else {
 						switch(incr) { 
 						case -1: // Começou a class
 							incr++;
 							break;
 						case 0: //Começou o método
 							incr++;
+							counter = new Counter();
 							counter = counter(getPackageClassName() + "." + methodName(line, line.split(" ")));
 							break;
 						default: //Adicionar linha ao methodCode
@@ -67,7 +72,6 @@ public abstract class Metrica extends MetricRegistry {
 						break;
 					case 1: //Acabou o método
 						incr--;
-						methodCode = methodCode + "\n" + line;
 						applyFilter(methodCode, counter);
 						break;
 					default: //Adicionar linha ao methodCode
@@ -75,6 +79,8 @@ public abstract class Metrica extends MetricRegistry {
 						methodCode = methodCode + " " + line;
 						break;					
 					}
+				}else {
+					methodCode = methodCode + " " + line;
 				}
 			}
 			sc.close();
