@@ -1,14 +1,15 @@
 package metricas;
 
+
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import com.codahale.metrics.Counter;
 
 public class CYCLO_method extends Metrica {
 
 	private final String filter = "for,if,while,case";
-	private Counter methodCounter = new Counter();
 
 	public CYCLO_method(Maestro metricas) {
 		super(metricas);
@@ -27,21 +28,23 @@ public class CYCLO_method extends Metrica {
 	}
 
 	@Override
-	protected void applyFilter(String s) {  //TODO Lidar com a situação dos comentários
-		String[] line = s.split(" ");
-		String[] filterToApply = filter.split(",");
-		String temp = methodName(s, line);
-		if (!temp.isBlank()) {
-			methodCounter = new Counter();
-			methodCounter = counter(getPackageClassName() + "." + temp);
-		}
-		for (String l : line) {
-			l = l.replace("\t", "");
-			for (String f : filterToApply) {
-				if (l.equals(f) || l.contains(f + "(")) {
-					methodCounter.inc();
+	protected void applyFilter(String s, Counter counter) {  //TODO Lidar com a situação dos comentários
+		Scanner scanner = new Scanner(s);
+		while (scanner.hasNextLine()) {
+			String line = scanner.nextLine();
+			String[] splitLine = line.split(" ");
+			String[] filterToApply = filter.split(",");
+			String temp = methodName(line, splitLine);
+			for (String l : splitLine) {
+				l = l.replaceAll("\t", "");
+				for (String f : filterToApply) {
+					if (l.equals(f) || l.startsWith(f + "(")) {
+						counter.inc();
+					}
 				}
 			}
 		}
 	}
+	
+	
 }

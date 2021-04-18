@@ -1,7 +1,9 @@
 package metricas;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import com.codahale.metrics.Counter;
 
@@ -28,7 +30,7 @@ public class LOC_class extends Metrica {
 	}
 
 	@Override
-	protected void applyFilter(String s) { //este programa ainda conta como 2 linhas 1 linha que foi separada em duas 
+	protected void applyFilter(String s, Counter counter) { //este programa ainda conta como 2 linhas 1 linha que foi separada em duas 
 		s = s.trim();
 		if (enteredClass ==false) {
 			if (isClass(s)) {
@@ -42,4 +44,18 @@ public class LOC_class extends Metrica {
 				}
 		}
 	}
+	
+	@Override
+	protected void openReadFile(File file) {
+        try {
+            Scanner sc = new Scanner(file);
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine();
+                applyFilter(line, null);
+            }
+            sc.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 }

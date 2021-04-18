@@ -32,7 +32,6 @@ public class NOM_class extends Metrica {
 	}
 
 	@Override
-	protected void applyFilter(String s) {
-		// TODO Auto-generated method stub
-	}
+	protected void applyFilter(String s, Counter counter) {}
+	
 }

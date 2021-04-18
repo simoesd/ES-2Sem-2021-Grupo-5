@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 
 public abstract class Metrica extends MetricRegistry {
@@ -31,14 +32,50 @@ public abstract class Metrica extends MetricRegistry {
 		return t;
 	}
 
-	protected abstract void applyFilter(String line);
+	protected abstract void applyFilter(String line, Counter counter);
 
 	protected void openReadFile(File file) {
 		try {
 			Scanner sc = new Scanner(file);
+			int incr = -1;
+			String methodCode = new String("");
+			Counter counter = new Counter();
 			while (sc.hasNextLine()) {
-				String line = sc.nextLine();
-				applyFilter(line);
+				String line = sc.nextLine();				
+				if(line.contains("){") || line.contains(" {") || line.contains("\t{")) {
+					if(line.contains("{}")) {
+						counter = counter(getPackageClassName() + "." + methodName(line, line.split(" ")));
+					}else {
+						switch(incr) { 
+						case -1: // Começou a class
+							incr++;
+							break;
+						case 0: //Começou o método
+							incr++;
+							counter = counter(getPackageClassName() + "." + methodName(line, line.split(" ")));
+							break;
+						default: //Adicionar linha ao methodCode
+							incr++;
+							methodCode = methodCode + "\n" + line;
+							break;					
+						}
+					}
+				}else if(line.contains(";}") || line.contains(" }") || line.contains("\t}")) {
+					switch(incr) {
+					case 0: // Acabou a class
+						incr--;
+						break;
+					case 1: //Acabou o método
+						incr--;
+						methodCode = methodCode + "\n" + line;
+						applyFilter(methodCode, counter);
+						break;
+					default: //Adicionar linha ao methodCode
+						incr--;
+						methodCode = methodCode + " " + line;
+						break;					
+					}
+				}
 			}
 			sc.close();
 		} catch (FileNotFoundException e) {

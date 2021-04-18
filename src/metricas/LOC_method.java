@@ -25,21 +25,17 @@ public class LOC_method extends Metrica {
 		}
 	}	
 	
-	protected void applyFilter(String s) { // não lida totalmente com blocos de comentário nem metodos internos a outros
+	protected void applyFilter(String s, Counter counter) { // não lida totalmente com blocos de comentário nem metodos internos a outros
 		// métodos. também há interferencias na definicão de vetores entre {}
 		s = s.trim();
 		String[] line = s.split(" ");
 		String temp = methodName(s, line);
 		
-		if (!s.startsWith("//") && !s.startsWith("*") && !s.startsWith("/*") && !s.startsWith("@")) {
-			if (!temp.isBlank()) {
-				methodName = new Counter();
-				methodName = this.counter(getPackageClassName() + "." + temp);
+		if (!s.startsWith("//") && !s.startsWith("*") && !s.startsWith("@") && !s.startsWith("/*") && !s.endsWith("*/")) {
 			} else { // estamos dentro do método
 				if (!s.equals("{") && !s.equals("}") && !s.isBlank()) {
-					methodName.inc();
+					counter.inc();
 				}
 			}
-		}
 	}
 }
