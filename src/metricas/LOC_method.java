@@ -16,10 +16,10 @@ public class LOC_method extends Metrica {
 
 	@Override
 	protected void extractMetrics() {
-		ArrayList<File> filesInDirectory = getMetricas().getFilesInDirectory();
+		ArrayList<File> filesInDirectory = getMaestro().getFilesInDirectory();
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
-			setPackageClassName(getMetricas().cutAbsolutePath(absolutePath));
+			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
 			this.openReadFile(file);
 			methodName = new Counter();
 		}

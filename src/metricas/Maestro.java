@@ -160,12 +160,14 @@ public class Maestro {
 	}
 
 	private void listFilesForFolder(File folder) {
-		for (File fileEntry : folder.listFiles()) {
-			if (fileEntry.isDirectory()) {
-				listFilesForFolder(fileEntry);
-			} else {
-				if (fileEntry.getAbsolutePath().endsWith(".java")) {
-					filesInDirectory.add(fileEntry);
+		if(folder.listFiles() != null) {
+			for (File fileEntry : folder.listFiles()) {
+				if (fileEntry.isDirectory()) {
+					listFilesForFolder(fileEntry);
+				} else {
+					if (fileEntry.getAbsolutePath().endsWith(".java")) {
+						filesInDirectory.add(fileEntry);
+					}
 				}
 			}
 		}

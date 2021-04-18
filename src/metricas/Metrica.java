@@ -8,13 +8,13 @@ import com.codahale.metrics.MetricRegistry;
 
 public abstract class Metrica extends MetricRegistry {
 
-	private Maestro metricas;
+	private Maestro maestro;
 	private String packageClassName;
 	private Thread myThread;
 
 	public Metrica(Maestro metricas) {
 		super();
-		this.metricas = metricas;
+		this.maestro = metricas;
 		this.myThread = startExtracting();
 		myThread.start();
 	}
@@ -109,8 +109,8 @@ public abstract class Metrica extends MetricRegistry {
 		return myThread;
 	}
 
-	protected Maestro getMetricas() {
-		return metricas;
+	protected Maestro getMaestro() {
+		return maestro;
 	}
 
 	protected String getPackageClassName() {

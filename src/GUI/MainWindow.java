@@ -100,7 +100,7 @@ public class MainWindow {
         
         JButton analyzeFileBrowserButton = new JButton("Browse...");
         analyzeFileBrowserButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
+            public void actionPerformed(ActionEvent arg0) { // open JFileChooser
                 JFileChooser analyzeFileChooser = new JFileChooser();
                 analyzeFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                 int analyzeBrowserOutput = analyzeFileChooser.showOpenDialog(null);
@@ -119,8 +119,7 @@ public class MainWindow {
         
         JButton startAnalysisButton = new JButton("  Analyze Directory  ");
         startAnalysisButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                //TODO análise (equipa winx)
+            public void actionPerformed(ActionEvent arg0) { 
                 String directoryPath = analysisPathTextField.getText();
                 Maestro maestro = new Maestro(directoryPath);
                 

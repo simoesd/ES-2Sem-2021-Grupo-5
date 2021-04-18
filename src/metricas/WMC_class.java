@@ -18,11 +18,11 @@ public class WMC_class extends Metrica {
 	@Override
 	protected void extractMetrics() {
 		
-		cycloSortedMap = getMetricas().getCYCLO_method().getCounters();
-		ArrayList<File> filesInDirectory = getMetricas().getFilesInDirectory();
+		cycloSortedMap = getMaestro().getCYCLO_method().getCounters();
+		ArrayList<File> filesInDirectory = getMaestro().getFilesInDirectory();
 		for (File file : filesInDirectory) {		
 			String absolutePath = file.getAbsolutePath();
-			setPackageClassName(getMetricas().cutAbsolutePath(absolutePath));
+			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
 			className=this.counter(getPackageClassName());
 			for (String s : cycloSortedMap.keySet()) {
 				if (s.contains(getPackageClassName())) {

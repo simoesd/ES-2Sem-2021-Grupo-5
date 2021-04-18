@@ -17,11 +17,11 @@ public class CYCLO_method extends Metrica {
 	@Override
 	protected void extractMetrics() {
 		
-		ArrayList<File> filesInDirectory = getMetricas().getFilesInDirectory();
+		ArrayList<File> filesInDirectory = getMaestro().getFilesInDirectory();
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
-			setPackageClassName(getMetricas().cutAbsolutePath(absolutePath));
-			this.openReadFile(file);
+			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
+			openReadFile(file);
 		}
 
 	}
@@ -33,8 +33,7 @@ public class CYCLO_method extends Metrica {
 		
 		String temp = methodName(s, line);
 		if (!temp.isBlank()) {
-			methodName = new Counter();
-			methodName = this.counter(getPackageClassName() + "." + temp);
+			methodName = counter(getPackageClassName() + "." + temp);
 		}
 		for (String l : line) {
 			l = l.replace("\t", "");
