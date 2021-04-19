@@ -1,13 +1,22 @@
 package reader;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.apache.poi.ss.usermodel.Cell;
 
+import rules.Rule;
+
 public class Line {
-	private int id, nom_class, loc_class, wmc_class, loc_method, cyclo_method;
-	private String pkg, cls, method;
+	
+	private int nom_class, loc_class, wmc_class, loc_method, cyclo_method;
 	private Boolean is_god, is_long;
+	
+	private int id;
+	private String pkg, cls, method;
+	
+	public HashMap<String, String> metrics = new HashMap<>();
 	
 	public Line() {
 		
@@ -58,6 +67,10 @@ public class Line {
 
 	public String getCls() {
 		return cls;
+	}
+	
+	public HashMap<String, String> getMetrics() {
+	    return metrics;
 	}
 
 	public String[] toArray() {
