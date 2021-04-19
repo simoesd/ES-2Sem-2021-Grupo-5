@@ -97,7 +97,7 @@ public class MainWindow {
 		// Rules Panel
 		
 		panel = new JPanel();
-		mainPanel.add(panel, BorderLayout.EAST);
+		mainPanel.add(panel, BorderLayout.CENTER);
 		panel.setLayout(new GridLayout(5, 1, 0, 0));
 
 		panel_2 = new JPanel();
@@ -108,6 +108,7 @@ public class MainWindow {
 		panel_3 = new JPanel();
 		JLabel title = new JLabel("RULES");
 		panel_3.add(title);
+		title.setVisible(false);
 		mainPanel.add(panel_3, BorderLayout.NORTH);
 		
 		JButton addRuleButton = new JButton("Add Rule");
@@ -117,6 +118,7 @@ public class MainWindow {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (incrementer <= 5) {
+					title.setVisible(true);
 					JPanel panel_1 = new JPanel();
 					panel.add(panel_1);
 					panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -181,6 +183,9 @@ public class MainWindow {
 				}
 
 				panel.removeAll();
+				if (rules.isEmpty()) {
+					title.setVisible(false);
+				}
 				for (int i = 0; i < rules.size(); i++) {
 					panel.add(rules.get(i).getPanel_1());
 				}
@@ -334,11 +339,9 @@ public class MainWindow {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mainPanel.removeAll();
-				mainPanel.add(panel, BorderLayout.EAST);
-				mainPanel.add(panel_2, BorderLayout.SOUTH);
-				mainPanel.add(panel_3, BorderLayout.NORTH);
-				mainPanel.updateUI();
+				Maestro tempMaestro = new Maestro();
+				tempMaestro.openFolder(analysisPathTextField.getText());
+				showFilesToAnalyze(tempMaestro.getFilesInDirectory());
 					
 			}
 		});
@@ -366,8 +369,8 @@ public class MainWindow {
 		JList fileList = new JList(filenameList.toArray());
 		JScrollPane listScrollPane = new JScrollPane(fileList);
 
-		mainPanel.add(listScrollPane, BorderLayout.CENTER);
-		mainPanel.add(panel, BorderLayout.EAST);
+		mainPanel.add(listScrollPane, BorderLayout.WEST);
+		mainPanel.add(panel, BorderLayout.CENTER);
 		mainPanel.add(panel_2,BorderLayout.SOUTH);
 		mainPanel.add(panel_3, BorderLayout.NORTH);
 		mainPanel.updateUI();
