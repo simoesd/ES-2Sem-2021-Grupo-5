@@ -32,19 +32,17 @@ public class CYCLO_method extends Metrica {
 		Scanner scanner = new Scanner(s);
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();
-			System.out.println(line);
 			String[] splitLine = line.split(" ");
 			String[] filterToApply = filter.split(",");
 			for (String l : splitLine) {
 				l = l.replaceAll("\t", "");
 				for (String f : filterToApply) {
 					if (l.equals(f) || l.startsWith(f + "(")) {
-						System.out.println("I found one");
 						counter.inc();
 					}
 				}
 			}
-			//TODO Adicionar filter para o comentário
+			//TODO aplicar pattern matching comentários
 		}
 		scanner.close();
 	}

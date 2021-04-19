@@ -76,7 +76,7 @@ public abstract class Metrica extends MetricRegistry {
 							case 0: //Começou o método
 								incr++;
 								isMethod = true;
-								System.out.println(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
+								counter = new Counter();
 								counter = counter(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
 								break;
 							default: //Adicionar linha ao methodCode
@@ -93,6 +93,7 @@ public abstract class Metrica extends MetricRegistry {
 								incr--;
 								isMethod = true;
 								applyFilter(methodCode, counter);
+								methodCode = new String("");
 								break;
 							default: //Adicionar linha ao methodCode
 								incr--;

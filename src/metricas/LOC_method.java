@@ -39,19 +39,5 @@ public class LOC_method extends Metrica {
 				}
 			}
 	}
-//	
-//	@Override
-//	protected void openAndReadFile(File file) {
-//        try {
-//            Scanner sc = new Scanner(file);
-//            while (sc.hasNextLine()) {
-//                String line = sc.nextLine();
-//                applyFilter(line, methodName);
-//            }
-//            sc.close();
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//    }
 	
 }
