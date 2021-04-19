@@ -7,7 +7,7 @@ import java.util.Scanner;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 
-public abstract class Metrica extends MetricRegistry{
+public abstract class Metrica extends MetricRegistry {
 
 	private Maestro maestro;
 	private String packageClassName;
@@ -34,55 +34,79 @@ public abstract class Metrica extends MetricRegistry{
 
 	protected abstract void applyFilter(String line, Counter counter);
 
-	protected void openReadFile(File file) {
+	protected void openAndReadFile(File file) {
 		try {
 			Scanner sc = new Scanner(file);
 			int incr = -1;
 			String methodCode = new String("");
 			Counter counter = new Counter();
+			Boolean isString = false;
+			Boolean isChar = false;
+			Boolean isLineComment = false;
+			Boolean isMultiLineComment = false;
+			Boolean isMethod = false;
 			while (sc.hasNextLine()) {
+				isMethod = false;
+				isLineComment = false;
 				String line = sc.nextLine();
-				//TODO Adicionar ciclo for para cada char
-				if(line.contains("){") || line.contains(" {") || line.contains("\t{")) {
-					if(line.contains("}")) {
-                        if(!methodName(line, line.split(" ")).isEmpty()) {
-                            counter = counter(getPackageClassName() + "." + methodName(line, line.split(" ")));
-                        } else {
-                            methodCode = methodCode + "\n" + line;
-                        }
-                    }else {
-						switch(incr) { 
-						case -1: // Começou a class
-							incr++;
-							break;
-						case 0: //Começou o método
-							incr++;
-							counter = new Counter();
-							counter = counter(getPackageClassName() + "." + methodName(line, line.split(" ")));
-							break;
-						default: //Adicionar linha ao methodCode
-							incr++;
-							methodCode = methodCode + "\n" + line;
-							break;					
+				char[] charLine = line.toCharArray();
+				for(int i = 0; i != charLine.length; i++) {
+					if(!isChar && !isLineComment && !isMultiLineComment && charLine[i] == '"' && i > 0 && charLine[i-1] != '\\') {
+						isString = !isString;
+					}else if(!isString && !isLineComment && !isMultiLineComment && charLine[i] == '\'' && i > 0 && charLine[i-1] != '\\') {
+						isChar = !isChar;
+					}else if(!isString && !isChar) { // Não está dentro de "" ou ''
+						if(i+1 < charLine.length) { // Não é o ultimo elemento
+							if(charLine[i] == '/' && charLine[i+1] == '/' ) { // É um LineComment "//"
+								isLineComment = true;
+								continue;
+							}else if(charLine[i] == '/' && charLine[i+1] == '*' ) { // É o ínicio de um MultiLineComment "/*"
+								isMultiLineComment = true;
+								continue;
+							}else if(charLine[i] == '*' && charLine[i+1] == '/' ) { // É o final de um MultiLineComment "*/"
+								isMultiLineComment = false;
+								continue;
+							}
 						}
-					}
-				}else if(line.contains(";}") || line.contains(" }") || line.contains("\t}")) {
-					switch(incr) {
-					case 0: // Acabou a class
-						incr--;
-						break;
-					case 1: //Acabou o método
-						incr--;
-						applyFilter(methodCode, counter);
-						break;
-					default: //Adicionar linha ao methodCode
-						incr--;
-						methodCode = methodCode + " " + line;
-						break;					
-					}
-				}else {
-					methodCode = methodCode + " " + line;
+						if(!isLineComment && !isMultiLineComment && charLine[i] == '{') {
+							switch(incr) { 
+							case -1: // Começou a class
+								incr++;
+								break;
+							case 0: //Começou o método
+								incr++;
+								isMethod = true;
+								System.out.println(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
+								counter = counter(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
+								break;
+							default: //Adicionar linha ao methodCode
+								incr++;
+								isMethod = true;
+								break;
+							}
+						}else if(!isLineComment && !isMultiLineComment && charLine[i] == '}') {
+							switch(incr) {
+							case 0: // Acabou a class
+								incr--;
+								break;
+							case 1: //Acabou o método
+								incr--;
+								isMethod = true;
+								applyFilter(methodCode, counter);
+								break;
+							default: //Adicionar linha ao methodCode
+								incr--;
+								isMethod = true;
+								break;					
+							}
+						}else{
+							if(incr > 0) //Linha dentro de um método
+								isMethod = true;
+						}
+					}					
 				}
+				if(isMethod)
+					methodCode = methodCode + "\n" + line;
 			}
 			sc.close();
 		} catch (FileNotFoundException e) {
@@ -91,7 +115,7 @@ public abstract class Metrica extends MetricRegistry{
 	}
 
 
-	public String methodName(String s, String[] line) {
+	public String getMethodName(String s, String[] line) {
 		String methodName = "";
 		s = s.trim();
 		s = s.replaceAll("\t", "");

@@ -98,7 +98,6 @@ public class Maestro {
 					String temp2 = s;
 					temp2 = s.replace(".", "/");
 					String[] splitted2 = temp2.split("/");
-					System.out.println(s);
 					String nameMtd = splitted2[2];
 					String CYCLO_method = String.valueOf(getCYCLO_method().getCounters().get(s).getCount());
 					String LOC_method = String.valueOf(getLOC_method().getCounters().get(s).getCount());

@@ -24,7 +24,7 @@ public class LOC_class extends Metrica {
 			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
 			className = new Counter();
 			className = this.counter(getPackageClassName());
-			this.openReadFile(file);
+			openAndReadFile(file);
 			enteredClass = false;
 		}
 	}
@@ -46,7 +46,7 @@ public class LOC_class extends Metrica {
 	}
 	
 	@Override
-	protected void openReadFile(File file) {
+	protected void openAndReadFile(File file) {
         try {
             Scanner sc = new Scanner(file);
             while (sc.hasNextLine()) {

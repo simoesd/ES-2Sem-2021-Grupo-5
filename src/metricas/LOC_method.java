@@ -1,14 +1,16 @@
 package metricas;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import com.codahale.metrics.Counter;
 
 public class LOC_method extends Metrica {
 
 	// private final String filter = "class";
-//	private Counter methodName = new Counter();
+		private Counter methodName = new Counter();
 
 	public LOC_method(Maestro metricas) {
 		super(metricas);
@@ -20,21 +22,36 @@ public class LOC_method extends Metrica {
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
 			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
-			openReadFile(file);
+			openAndReadFile(file);
 		}
 	}	
 	
 	protected void applyFilter(String s, Counter counter) { // não lida totalmente com blocos de comentário nem metodos internos a outros
-		// métodos. também há interferencias na definicão de vetores entre {}
+		// métodos. também há interferencias na definicão de vetores entre
 		s = s.trim();
 		String[] line = s.split(" ");
-		String temp = methodName(s, line);
+		String temp = getMethodName(s, line);
 		
 		if (!s.startsWith("//") && !s.startsWith("*") && !s.startsWith("@") && !s.startsWith("/*") && !s.endsWith("*/")) {
 			} else { // estamos dentro do método
 				if (!s.equals("{") && !s.equals("}") && !s.isBlank()) {
-					counter.inc();
+					methodName.inc();
 				}
 			}
 	}
+//	
+//	@Override
+//	protected void openAndReadFile(File file) {
+//        try {
+//            Scanner sc = new Scanner(file);
+//            while (sc.hasNextLine()) {
+//                String line = sc.nextLine();
+//                applyFilter(line, methodName);
+//            }
+//            sc.close();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//    }
+	
 }
