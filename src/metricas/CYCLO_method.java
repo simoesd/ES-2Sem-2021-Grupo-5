@@ -4,6 +4,8 @@ package metricas;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.codahale.metrics.Counter;
 
@@ -29,6 +31,11 @@ public class CYCLO_method extends Metrica {
 
 	@Override
 	protected void applyFilter(String s, Counter counter) {  
+		Pattern pattern = Pattern.compile("//.*|/\\*((.|\\n)(?!=*/))+\\*/");
+		Matcher matcher = pattern.matcher(s);
+		while (matcher.find()) {
+		    s = s.replace(matcher.group(), "");
+		}
 		Scanner scanner = new Scanner(s);
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();
@@ -41,8 +48,7 @@ public class CYCLO_method extends Metrica {
 						counter.inc();
 					}
 				}
-			}
-			//TODO aplicar pattern matching comentários
+			}		   
 		}
 		scanner.close();
 	}

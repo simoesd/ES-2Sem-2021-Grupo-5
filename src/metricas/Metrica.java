@@ -38,13 +38,9 @@ public abstract class Metrica extends MetricRegistry {
 		try {
 			Scanner sc = new Scanner(file);
 			int incr = -1;
-			String methodCode = new String("");
+			String methodCode = "";
 			Counter counter = new Counter();
-			Boolean isString = false;
-			Boolean isChar = false;
-			Boolean isLineComment = false;
-			Boolean isMultiLineComment = false;
-			Boolean isMethod = false;
+			Boolean isString= false, isChar = false, isMultiLineComment = false, isLineComment, isMethod;
 			while (sc.hasNextLine()) {
 				isMethod = false;
 				isLineComment = false;
@@ -76,7 +72,7 @@ public abstract class Metrica extends MetricRegistry {
 							case 0: //Começou o método
 								incr++;
 								isMethod = true;
-								counter = new Counter();
+								counter = new Counter();//for while case
 								counter = counter(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
 								break;
 							default: //Adicionar linha ao methodCode
