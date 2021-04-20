@@ -20,22 +20,22 @@ public class ExcelReader {
     	try { 
     		File excel = new File(fileToImport); 
 	    	FileInputStream fis = new FileInputStream(excel); 
-	    	XSSFWorkbook book = new XSSFWorkbook(fis); 
-	    	XSSFSheet sheet = book.getSheetAt(0); 
-	    	Iterator<Row> itr = sheet.iterator();
+	    	XSSFWorkbook excelWorkbook = new XSSFWorkbook(fis); 
+	    	XSSFSheet excelSheet = excelWorkbook.getSheetAt(0); 
+	    	Iterator<Row> rowIterator = excelSheet.iterator();
 	    	
-	    	List<Cell> columnNames = getColumnNames(itr);
+	    	List<Cell> columnNames = getColumnNames(rowIterator);
 	    	
 	    	ArrayList<Line> lineList = new ArrayList();
-	    	while (itr.hasNext()) { 
-	    		Row row = itr.next();
+	    	while (rowIterator.hasNext()) { 
+	    		Row row = rowIterator.next();
 	    		Iterator<Cell> cellIterator = row.cellIterator();
 	    		Line line = new Line();
 	    		if (cellIterator.hasNext())line.setValues(columnNames.listIterator(), cellIterator);   	
 	    		else break;
 	    		lineList.add(line);
 	    	}
-	    	book.close();
+	    	excelWorkbook.close();
 	    	return lineList;
     	} catch (FileNotFoundException fe) { 
     		fe.printStackTrace(); 

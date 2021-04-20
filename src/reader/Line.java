@@ -9,52 +9,48 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.Cell;
 
 public class Line {
-	private int id;
-	private String pkg, cls, method;
+	private int methodID;
+	private String pkg, cls, method; //package, class and method names
 
     public HashMap<String, String> metrics = new HashMap<>();
-	
-	public Line() {
-		
-	}
 
-	public void setValues(Iterator<Cell> columnNames, Iterator<Cell> cellIterator) {
-		Cell cell = cellIterator.next();
-		Cell columnCell = columnNames.next();
-		switch (cell.getCellType()) {
+	public void setValues(Iterator<Cell> columnNameIterator, Iterator<Cell> metricValueIterator) {
+		Cell valueCell = metricValueIterator.next();
+		Cell columnNameCell = columnNameIterator.next();
+		switch (valueCell.getCellType()) {
 			case Cell.CELL_TYPE_BLANK:
 				break;
 			default:
-    			id = (int)cell.getNumericCellValue();
-    			cell = cellIterator.next();
-    			columnNames.next();
-    			pkg = cell.getStringCellValue() ;
-    			cell = cellIterator.next();
-    			columnNames.next();
-    			cls = cell.getStringCellValue();
-    			cell = cellIterator.next();
-    			columnNames.next();
-    			method = cell.getStringCellValue();
+    			methodID = (int)valueCell.getNumericCellValue();
+    			valueCell = metricValueIterator.next();
+    			columnNameIterator.next();
+    			pkg = valueCell.getStringCellValue() ;
+    			valueCell = metricValueIterator.next();
+    			columnNameIterator.next();
+    			cls = valueCell.getStringCellValue();
+    			valueCell = metricValueIterator.next();
+    			columnNameIterator.next();
+    			method = valueCell.getStringCellValue();
     			
-    			String cellValue;
+    			String metricValue;
     			
 			do {
-			    cell = cellIterator.next();
-			    columnCell = columnNames.next();
-			    switch (cell.getCellType())
+			    valueCell = metricValueIterator.next();
+			    columnNameCell = columnNameIterator.next();
+			    switch (valueCell.getCellType())
                 {
                     case Cell.CELL_TYPE_BOOLEAN:
-                        cellValue = String.valueOf(cell.getBooleanCellValue());
+                        metricValue = String.valueOf(valueCell.getBooleanCellValue());
                         break;
                     case Cell.CELL_TYPE_NUMERIC:
-                        cellValue = String.valueOf((int)cell.getNumericCellValue());
+                        metricValue = String.valueOf((int)valueCell.getNumericCellValue());
                         break;
                     default:
-                        cellValue = cell.getStringCellValue();
+                        metricValue = valueCell.getStringCellValue();
                         break;
                 }
-                metrics.put(columnCell.getStringCellValue(), cellValue);
-			} while (cellIterator.hasNext());
+                metrics.put(columnNameCell.getStringCellValue(), metricValue);
+			} while (metricValueIterator.hasNext());
 		}
 	}		
 
@@ -73,7 +69,7 @@ public class Line {
 
 	public String[] toArray() {
 	    List<String> columnValues = new ArrayList<>();
-	    String[] identifierColumns = {Integer.toString(id), pkg, cls, method};
+	    String[] identifierColumns = {Integer.toString(methodID), pkg, cls, method};
 	    columnValues.addAll(Arrays.asList(identifierColumns));
 	    columnValues.addAll(metrics.values());
 	    
