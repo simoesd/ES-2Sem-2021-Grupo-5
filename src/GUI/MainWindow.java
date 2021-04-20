@@ -1,14 +1,18 @@
 package GUI;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -78,7 +82,8 @@ public class MainWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame("Code Smeller");
-		frame.setBounds(100, 100, 942, 624);
+		frame.setBounds(100, 100, 1242, 624);
+		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 
@@ -93,81 +98,34 @@ public class MainWindow {
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout(0, 0));
 		frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
-		
+
 		// Rules Panel
-		
+
 		panel = new JPanel();
 		mainPanel.add(panel, BorderLayout.CENTER);
-		panel.setLayout(new GridLayout(5, 1, 0, 0));
+		panel.setLayout(new GridLayout(6, 1, 0, 0));
 
 		panel_2 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_2.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		mainPanel.add(panel_2, BorderLayout.SOUTH);
-		
+
 		panel_3 = new JPanel();
-		JLabel title = new JLabel("RULES");
+		JLabel title = new JLabel("CODE SMELLER");
+		title.setFont(new Font("Tahoma", Font.PLAIN, 40));
 		panel_3.add(title);
-		title.setVisible(false);
-		mainPanel.add(panel_3, BorderLayout.NORTH);
+		title.setVisible(true);
 		
-		JButton addRuleButton = new JButton("Add Rule");
-		panel_2.add(addRuleButton);
-		addRuleButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (incrementer <= 5) {
-					title.setVisible(true);
-					JPanel panel_1 = new JPanel();
-					panel.add(panel_1);
-					panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-
-					JComboBox metric1 = new JComboBox();
-					metric1.setModel(new DefaultComboBoxModel(
-							new String[] { "CYCLO_METHOD", "LOC_METHOD", "LOC_CLASS", "WMC_CLASS", "NOM_CLASS" }));
-					panel_1.add(metric1);
-
-					JComboBox mathSymbol1 = new JComboBox();
-					mathSymbol1.setModel(new DefaultComboBoxModel(new String[] { ">", "<", "\u2265", "\u2264" }));
-					panel_1.add(mathSymbol1);
-
-					JTextField value1 = new JTextField();
-					value1.setColumns(10);
-					panel_1.add(value1);
-
-					JComboBox logicOp = new JComboBox();
-					logicOp.setModel(new DefaultComboBoxModel(new String[] { "AND", "OR" }));
-					panel_1.add(logicOp);
-
-					JComboBox metric2 = new JComboBox();
-					metric2.setModel(new DefaultComboBoxModel(
-							new String[] { "CYCLO_METHOD", "LOC_METHOD", "LOC_CLASS", "WMC_CLASS", "NOM_CLASS" }));
-					panel_1.add(metric2);
-
-					JComboBox mathSymbol2 = new JComboBox();
-					mathSymbol2.setModel(new DefaultComboBoxModel(new String[] { ">", "<", "\u2265", "\u2264" }));
-					panel_1.add(mathSymbol2);
-
-					JTextField value2 = new JTextField();
-					value2.setColumns(10);
-					panel_1.add(value2);
-
-					JCheckBox checkbox = new JCheckBox("");
-					panel_1.add(checkbox);
-					Rule rule = new Rule(panel_1, metric1, mathSymbol1, analysisPathTextField, logicOp, metric2,
-							mathSymbol2, value2, checkbox);
-					rules.add(rule);
-					mainPanel.updateUI();
-					incrementer++;
-				}else {
-					JOptionPane.showMessageDialog(panel, "Atingiu o limite de 5 regras");
-				}
-			}
-		});
+		JLabel ruleTitle = new JLabel("RULES");
+		ruleTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		ruleTitle.setVisible(false);
+		ruleTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		panel.add(ruleTitle);
+		
+		mainPanel.add(panel_3, BorderLayout.NORTH);
 
 		JButton removeRuleButton = new JButton("Remove Rule");
-		panel_2.add(removeRuleButton);
+		removeRuleButton.setEnabled(false);
 		removeRuleButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -183,8 +141,10 @@ public class MainWindow {
 				}
 
 				panel.removeAll();
+				panel.add(ruleTitle);
+				removeRuleButton.setEnabled(false);
 				if (rules.isEmpty()) {
-					title.setVisible(false);
+					ruleTitle.setVisible(false);
 				}
 				for (int i = 0; i < rules.size(); i++) {
 					panel.add(rules.get(i).getPanel_1());
@@ -192,6 +152,144 @@ public class MainWindow {
 				panel.updateUI();
 			}
 		});
+		
+		
+
+		JButton addRuleButton = new JButton("Add Rule");
+		panel_2.add(addRuleButton);
+		panel_2.add(removeRuleButton);
+		
+		addRuleButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (incrementer <= 5) {
+					ruleTitle.setVisible(true);
+					JPanel panel_1 = new JPanel();
+					panel.add(panel_1);
+					
+					
+					
+					panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+					JCheckBox checkbox = new JCheckBox("");
+					panel_1.add(checkbox);
+					checkbox.addActionListener(new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							int numOfSelChecBox = 0;
+							if (checkbox.isSelected()) {
+								removeRuleButton.setEnabled(true);
+							} else {
+								checkbox.setSelected(false);
+								for (Rule r : rules) {
+									if (r.getCheckbox().isSelected() == true) {
+										numOfSelChecBox++;
+									}
+								}
+								if (numOfSelChecBox == 0) {
+									removeRuleButton.setEnabled(false);
+								}
+
+							}
+
+						}
+					});
+					JTextField ruleName = new JTextField();
+					ruleName.setHorizontalAlignment(SwingConstants.CENTER);
+					ruleName.setColumns(10);
+					enableDefaultValue(ruleName, "Título da Regra");
+					
+					panel_1.add(ruleName);
+
+					JComboBox metric1 = new JComboBox();
+					metric1.setModel(new DefaultComboBoxModel(
+							new String[] { "CYCLO_METHOD", "LOC_METHOD", "LOC_CLASS", "WMC_CLASS", "NOM_CLASS" }));
+					panel_1.add(metric1);
+
+					JComboBox mathSymbol1 = new JComboBox();
+					mathSymbol1.setModel(new DefaultComboBoxModel(new String[] { ">", "<", "\u2265", "\u2264" }));
+					panel_1.add(mathSymbol1);
+
+					JTextField value1 = new JTextField();
+					value1.setHorizontalAlignment(SwingConstants.CENTER);
+					value1.setColumns(10);
+					enableDefaultValue(value1, "0");
+					panel_1.add(value1);
+
+					JButton addConditionButton = new JButton("Add Condition");
+					panel_1.add(addConditionButton);
+					addConditionButton.addActionListener(new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent e) {
+						
+							JComboBox logicOp = new JComboBox();
+							logicOp.setModel(new DefaultComboBoxModel(new String[] { "AND", "OR" }));
+							panel_1.add(logicOp);
+
+							JComboBox metric2 = new JComboBox();
+							metric2.setModel(new DefaultComboBoxModel(new String[] { "CYCLO_METHOD", "LOC_METHOD",
+									"LOC_CLASS", "WMC_CLASS", "NOM_CLASS" }));
+							panel_1.add(metric2);
+
+							JComboBox mathSymbol2 = new JComboBox();
+							mathSymbol2
+									.setModel(new DefaultComboBoxModel(new String[] { ">", "<", "\u2265", "\u2264" }));
+							panel_1.add(mathSymbol2);
+
+							JTextField value2 = new JTextField();
+							value2.setColumns(10);
+							value2.setHorizontalAlignment(SwingConstants.CENTER);
+							enableDefaultValue(value2, "0");
+							panel_1.add(value2);
+
+							for (Rule r : rules) {
+								if (r.getPanel_1() == panel_1) {
+									r.addConditionRule(logicOp, metric2, mathSymbol2, value2);
+								}
+							}
+							addConditionButton.setVisible(false);
+							addConditionButton.setEnabled(false);
+							JButton removeRuleCondition = new JButton("Remove Condition");
+							panel_1.add(removeRuleCondition);
+
+							removeRuleCondition.addActionListener(new ActionListener() {
+								
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									for (Rule r : rules) {
+										if (r.getPanel_1() == panel_1) {
+											r.getLogicOp().setVisible(false);
+											r.getMetric2().setVisible(false);
+											r.getMathSymbol2().setVisible(false);
+											r.getValue2().setVisible(false);
+											r.removeConditionRule();
+											removeRuleCondition.setVisible(false);
+											removeRuleCondition.setEnabled(false);
+											addConditionButton.setVisible(true);
+											addConditionButton.setEnabled(true);
+											
+										}
+									}
+								}
+							});
+							mainPanel.updateUI();
+						}
+					});
+
+					
+					Rule rule = new Rule(panel_1, metric1, mathSymbol1, analysisPathTextField, checkbox);
+					rules.add(rule);
+					mainPanel.updateUI();
+					incrementer++;
+				} else {
+					JOptionPane.showMessageDialog(panel, "Atingiu o limite de 5 regras");
+				}
+			}
+		});
+		
+		
 
 		// Analysis Panel
 
@@ -248,7 +346,7 @@ public class MainWindow {
 				if (popupResult == 0)
 					showImportedData(resultsFilePath);
 				else {
-					
+
 					mainPanel.updateUI();
 				}
 
@@ -333,7 +431,7 @@ public class MainWindow {
 		JPanel northPanel = new JPanel(new BorderLayout());
 		northPanel.setBorder(new EmptyBorder(10, 10, 20, 10));
 		JPanel metricPanel = new JPanel(new GridLayout(2, 2));
-		
+
 		JButton backButton = new JButton("Go back");
 		backButton.addActionListener(new ActionListener() {
 
@@ -342,11 +440,11 @@ public class MainWindow {
 				Maestro tempMaestro = new Maestro();
 				tempMaestro.openFolder(analysisPathTextField.getText());
 				showFilesToAnalyze(tempMaestro.getFilesInDirectory());
-					
+
 			}
 		});
-			
-     	metricPanel.add(numPackagesLabel);
+
+		metricPanel.add(numPackagesLabel);
 		metricPanel.add(numClassesLabel);
 		metricPanel.add(numMethodsLabel);
 		metricPanel.add(numLinesLabel);
@@ -371,7 +469,7 @@ public class MainWindow {
 
 		mainPanel.add(listScrollPane, BorderLayout.WEST);
 		mainPanel.add(panel, BorderLayout.CENTER);
-		mainPanel.add(panel_2,BorderLayout.SOUTH);
+		mainPanel.add(panel_2, BorderLayout.SOUTH);
 		mainPanel.add(panel_3, BorderLayout.NORTH);
 		mainPanel.updateUI();
 	}
@@ -405,5 +503,31 @@ public class MainWindow {
 		int[] result = { packageNames.size(), classNames.size(), totalMethods, totalLinesOfCode };
 		return result;
 	}
+	
+	public static void enableDefaultValue(final JTextField tf, final String defaultValue) {
+	    // Set current value
+	    tf.setText(defaultValue);
+	    tf.setForeground(Color.gray);
 
+	    // Add listener
+	    tf.addFocusListener(new FocusAdapter() {
+	        @Override
+	        public void focusGained(FocusEvent e) {
+	            if (tf.getText().equals(defaultValue)) {
+	                tf.setForeground(Color.black);
+	                tf.setText("");
+	            }
+	            super.focusGained(e);
+	        }
+
+	        @Override
+	        public void focusLost(FocusEvent e) {
+	            if (tf.getText().equals("")) {
+	                tf.setForeground(Color.gray);
+	                tf.setText(defaultValue);
+	            }
+	            super.focusLost(e);
+	        }
+	    });
+	}
 }
