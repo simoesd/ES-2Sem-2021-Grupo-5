@@ -400,22 +400,23 @@ public class MainWindow {
 
 	}
 
-	private void showImportedData(String fileToImport) {
-		mainPanel.removeAll();
-
-		// TODO ivocar a importação (equipa PRR)
-		ArrayList<Line> lines = ExcelReader.readExcelFile(fileToImport);
-
-		String[] columnNames = { "id", "pkg", "cls", "method", "nom_class", "loc_class", "wmc_class", "is_god",
-				"loc_method", "cyclo_method", "is_long" };
-		String[][] linesAsString = new String[lines.size()][];
-
-		for (int i = 0; i < lines.size(); i++) {
-			linesAsString[i] = lines.get(i).toArray();
-		}
-
-		JTable tempTable = new JTable(linesAsString, columnNames);
-		tempTable.setAutoResizeMode(0);
+    private void showImportedData(String fileToImport) {
+        mainPanel.removeAll();
+        
+        //TODO ivocar a importação (equipa PRR)
+        ArrayList<Line> lines = ExcelReader.readExcelFile(fileToImport);
+        
+        String[] columnNames =  lines.get(0).getColumnNames();
+//        String[][] linesAsString = new String[columnNames.length][];
+        ArrayList<String[]> linesAsString = new ArrayList<>();
+        
+        for (int i = 0; i < lines.size(); i++)
+        {
+            linesAsString.add(lines.get(i).toArray());
+        }
+        
+        JTable tempTable = new JTable(linesAsString.toArray(new String[0][0]), columnNames);
+        tempTable.setAutoResizeMode(0);
 
 		JScrollPane tableScrollPane = new JScrollPane(tempTable);
 		tableScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -480,29 +481,32 @@ public class MainWindow {
 		return fullPath.substring(fullPath.lastIndexOf("\\") + 1);
 	}
 
-	public static int[] getProjectData(ArrayList<Line> lines) {
-		ArrayList<String> classNames = new ArrayList<>();
-		int totalMethods = 0;
-		int totalLinesOfCode = 0;
-
-		for (Line line : lines) {
-			if (!classNames.contains(line.getCls())) {
-				classNames.add(line.getCls());
-				totalMethods += line.getNom_class();
-				totalLinesOfCode += line.getLoc_class();
-			}
-		}
-
-		ArrayList<String> packageNames = new ArrayList<>();
-
-		for (Line line : lines) {
-			if (!packageNames.contains(line.getPkg()))
-				packageNames.add(line.getPkg());
-		}
-
-		int[] result = { packageNames.size(), classNames.size(), totalMethods, totalLinesOfCode };
-		return result;
-	}
+    public static int[] getProjectData(ArrayList<Line> lines) {
+        ArrayList<String> classNames = new ArrayList<>();
+        int totalMethods = 0;
+        int totalLinesOfCode = 0;
+        
+        for (Line line: lines) 
+        {
+            if (!classNames.contains(line.getCls()))
+            {
+                classNames.add(line.getCls());
+                totalMethods += 5; //TODO fix with new line structure
+                totalLinesOfCode += 5; //TODO fix with new line structure
+            }
+        }
+        
+        ArrayList<String> packageNames = new ArrayList<>();
+        
+        for (Line line: lines) 
+        {
+            if (!packageNames.contains(line.getPkg()))
+                packageNames.add(line.getPkg());
+        }
+        
+        int[] result = {packageNames.size(), classNames.size(), totalMethods, totalLinesOfCode};
+        return result;
+    }
 	
 	public static void enableDefaultValue(final JTextField tf, final String defaultValue) {
 	    // Set current value
