@@ -120,7 +120,7 @@ public class MainWindow {
         JButton startAnalysisButton = new JButton("  Analyze Directory  ");
         startAnalysisButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                //TODO análise (equipa winx)
+                
                 String directoryPath = analysisPathTextField.getText();
                 Maestro maestro = new Maestro(directoryPath);
                 
@@ -200,11 +200,9 @@ public class MainWindow {
     private void showImportedData(String fileToImport) {
         mainPanel.removeAll();
         
-        //TODO ivocar a importação (equipa PRR)
         ArrayList<Line> lines = ExcelReader.readExcelFile(fileToImport);
         
         String[] columnNames =  lines.get(0).getColumnNames();
-//        String[][] linesAsString = new String[columnNames.length][];
         ArrayList<String[]> linesAsString = new ArrayList<>();
         
         for (int i = 0; i < lines.size(); i++)
