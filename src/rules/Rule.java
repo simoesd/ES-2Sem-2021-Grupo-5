@@ -10,22 +10,26 @@ import reader.Line;
 public class Rule {
     public String ruleName;
     
-    public String metric1;
-    public String thresholdOp1;
-    public int thresholdValue1;
-    public String logicOp;
-    public String metric2;
-    public String thresholdOp2;
-    public int thresholdValue2;
-
-    public Rule(String ruleName, String metric1, String thresholdOp1, int thresholdValue1) {
-        this.ruleName = ruleName;
-        this.metric1 = metric1;
-        this.thresholdOp1 = thresholdOp1;
-        this.thresholdValue1 = thresholdValue1;
-    }
+    public String firstMetric;              //
+    public String firstThresholdOperator;   // These make up the first "condition" of the rule
+    public int firstThresholdValue;         //
     
-    public static void main(String[] args) {
+    public String logicOperator;
+    
+    public String secondMetric;              //
+    public String secondThresholdOperator;   // These make up the second "condition" of the rule
+    public int secondThresholdValue;             //
+    
+    public static final String LESS_THAN = "lt";
+    public static final String LESS_THAN_EQUAL = "lte";
+    public static final String GREATER_THAN = "gt";
+    public static final String GREATER_THAN_EQUAL = "gte";
+    
+    public static final String AND = "AND";
+    public static final String OR = "OR";
+
+    
+    public static void main(String[] args) { //TODO main temporário
         Line line = new Line();
         line.metrics.put("NOM_class", "29");
         line.metrics.put("LOC_class", "1371");
@@ -42,7 +46,7 @@ public class Rule {
         rules.add(god_class);
         
         for (Rule rule: rules) {
-            boolean ruleValue = rule.evaluateLine(line);
+            boolean ruleValue = rule.evaluateRule(line);
             line.metrics.put(rule.ruleName, Boolean.toString(ruleValue));
         }
         Set<String> keys = line.metrics.keySet();
@@ -51,71 +55,71 @@ public class Rule {
             System.out.println(entry.getKey() + ": "+ entry.getValue());
         }
     }
+    
+    
 
-    public Rule(String ruleName, String metric1, String thresholdOp1, int thresholdValue1, String logicOp, String metric2, String thresholdOp2, int thresholdValue2) {   
+    public Rule(String ruleName, String firstMetric, String firstThresholdOperator, int firstThresholdValue) {
         this.ruleName = ruleName;
-        this.metric1 = metric1;
-        this.thresholdOp1 = thresholdOp1;
-        this.thresholdValue1 = thresholdValue1;
-        this.logicOp = logicOp;
-        this.metric2 = metric2;
-        this.thresholdOp2 =  thresholdOp2;
-        this.thresholdValue2 = thresholdValue2;
+        this.firstMetric = firstMetric;
+        this.firstThresholdOperator = firstThresholdOperator;
+        this.firstThresholdValue = firstThresholdValue;
+    }
+
+    public Rule(String ruleName, String firstMetric, String firstThresholdOperator, int firstThresholdValue, String logicOperator, String secondMetric, String secondThresholdOperator, int secondThresholdValue) {   
+        this.ruleName = ruleName;
+        this.firstMetric = firstMetric;
+        this.firstThresholdOperator = firstThresholdOperator;
+        this.firstThresholdValue = firstThresholdValue;
+        this.logicOperator = logicOperator;
+        this.secondMetric = secondMetric;
+        this.secondThresholdOperator =  secondThresholdOperator;
+        this.secondThresholdValue = secondThresholdValue;
     }
     
-    public boolean evaluateLine(Line line) {
-        HashMap<String, String> metrics = line.getMetrics();
-        int metric1Value = Integer.parseInt(metrics.get(metric1));
-        boolean part1Value = false;
-        switch (thresholdOp1) {
-            case "lt":
-                part1Value = metric1Value < thresholdValue1;
+    
+    
+    public boolean evaluateRule(Line lineToEvaluate) {
+        HashMap<String, String> metrics = lineToEvaluate.getMetrics();
+        int firstMetricValue = Integer.parseInt(metrics.get(firstMetric));
+        boolean firstConditionValue = evaluateCondition(firstMetricValue, firstThresholdValue);
+        
+        if (logicOperator.isEmpty())
+            return firstConditionValue;
+        
+        int secondMetricValue = Integer.parseInt(metrics.get(secondMetric));
+        boolean secondConditionValue = evaluateCondition(secondMetricValue, secondThresholdValue);
+        
+        boolean fullExpressionValue = false;
+        switch (logicOperator) {
+            case AND:
+                fullExpressionValue = firstConditionValue && secondConditionValue;
                 break;
-            case "lte":
-                part1Value = metric1Value <= thresholdValue1;
+            case OR:
+                fullExpressionValue = firstConditionValue || secondConditionValue;
                 break;
-            case "gt":
-                part1Value = metric1Value > thresholdValue1;
+        }
+        return fullExpressionValue;
+    }
+    
+    public boolean evaluateCondition(int metricValue, int thresholdValue) {
+        boolean conditionValue = false;
+        switch (secondThresholdOperator) {
+            case LESS_THAN:
+                conditionValue = metricValue < thresholdValue;
                 break;
-            case "gte":
-                part1Value = metric1Value >= thresholdValue1;
+            case LESS_THAN_EQUAL:
+                conditionValue = metricValue <= thresholdValue;
+                break;
+            case GREATER_THAN:
+                conditionValue = metricValue > thresholdValue;
+                break;
+            case GREATER_THAN_EQUAL:
+                conditionValue = metricValue >= thresholdValue;
                 break;
             default:
                 break;
         }
-        
-        if (logicOp.isEmpty())
-            return part1Value;
-        
-        int metric2Value = Integer.parseInt(metrics.get(metric2));
-        boolean part2Value = false;
-        switch (thresholdOp2) {
-            case "lt":
-                part2Value = metric2Value < thresholdValue2;
-                break;
-            case "lte":
-                part2Value = metric2Value <= thresholdValue2;
-                break;
-            case "gt":
-                part2Value = metric2Value > thresholdValue2;
-                break;
-            case "gte":
-                part2Value = metric2Value >= thresholdValue2;
-                break;
-            default:
-                break;
-        }
-        
-        boolean fullExprValue = false;
-        switch (logicOp) {
-            case "AND":
-                fullExprValue = part1Value && part2Value;
-                break;
-            case "OR":
-                fullExprValue = part1Value || part2Value;
-                break;
-        }
-        return fullExprValue;
+        return conditionValue;
     }
     
 
@@ -123,32 +127,34 @@ public class Rule {
         this.ruleName = ruleName;
     }
 
-    public void setMetric1(String metric1) {
-        this.metric1 = metric1;
+    public void setFirstMetric(String firstMetric) {
+        this.firstMetric = firstMetric;
     }
 
-    public void setThresholdOp1(String thresholdOp1) {
-        this.thresholdOp1 = thresholdOp1;
+    public void setFirstThresholdOperator(String firstThresholdOperator) {
+        this.firstThresholdOperator = firstThresholdOperator;
     }
 
-    public void setThresholdValue1(int thresholdValue1) {
-        this.thresholdValue1 = thresholdValue1;
+    public void setFirstThresholdValue(int firstThresholdValue) {
+        this.firstThresholdValue = firstThresholdValue;
     }
 
-    public void setLogicOp(String logicOp) {
-        this.logicOp = logicOp;
+    public void setLogicOperator(String logicOperator) {
+        this.logicOperator = logicOperator;
     }
 
-    public void setMetric2(String metric2) {
-        this.metric2 = metric2;
+    public void setSecondMetric(String secondMetric) {
+        this.secondMetric = secondMetric;
     }
-
-    public void setThresholdOp2(String thresholdOp2) {
-        this.thresholdOp2 = thresholdOp2;
+    
+    public void setSecondThresholdOperator(String secondThresholdOperator) {
+        this.secondThresholdOperator = secondThresholdOperator;
     }
-
-    public void setThresholdValue2(int thresholdValue2) {
-        this.thresholdValue2 = thresholdValue2;
+    
+    public void setSecondThresholdValue(int secondThresholdValue) {
+        this.secondThresholdValue = secondThresholdValue;
     }
+    
+    
     
 }
