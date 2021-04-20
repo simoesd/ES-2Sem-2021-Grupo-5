@@ -203,15 +203,16 @@ public class MainWindow {
         //TODO ivocar a importação (equipa PRR)
         ArrayList<Line> lines = ExcelReader.readExcelFile(fileToImport);
         
-        String[] columnNames =  {"id", "pkg", "cls", "method", "nom_class", "loc_class", "wmc_class", "is_god", "loc_method", "cyclo_method", "is_long"};
-        String[][] linesAsString = new String[lines.size()][];
+        String[] columnNames =  lines.get(0).getColumnNames();
+//        String[][] linesAsString = new String[columnNames.length][];
+        ArrayList<String[]> linesAsString = new ArrayList<>();
         
         for (int i = 0; i < lines.size(); i++)
         {
-            linesAsString[i] = lines.get(i).toArray();
+            linesAsString.add(lines.get(i).toArray());
         }
         
-        JTable tempTable = new JTable(linesAsString, columnNames);
+        JTable tempTable = new JTable(linesAsString.toArray(new String[0][0]), columnNames);
         tempTable.setAutoResizeMode(0);
 
         JScrollPane tableScrollPane = new JScrollPane(tempTable);
@@ -271,8 +272,8 @@ public class MainWindow {
             if (!classNames.contains(line.getCls()))
             {
                 classNames.add(line.getCls());
-                totalMethods += line.getNom_class();
-                totalLinesOfCode += line.getLoc_class();
+                totalMethods += 5; //TODO fix with new line structure
+                totalLinesOfCode += 5; //TODO fix with new line structure
             }
         }
         
