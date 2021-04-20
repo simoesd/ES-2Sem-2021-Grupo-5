@@ -34,6 +34,6 @@ public class WMC_class extends Metrica {
 	}
 
 	@Override
-	protected void applyFilter(String line, Counter counter) {}
+	protected void applyMetricFilter(String line, Counter counter) {}
 
 }

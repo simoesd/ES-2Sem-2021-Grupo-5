@@ -24,13 +24,13 @@ public class LOC_class extends Metrica {
 			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
 			className = new Counter();
 			className = this.counter(getPackageClassName());
-			openAndReadFile(file);
+			filterCode(file);
 			enteredClass = false;
 		}
 	}
 
 	@Override
-	protected void applyFilter(String s, Counter counter) { //este programa ainda conta como 2 linhas 1 linha que foi separada em duas 
+	protected void applyMetricFilter(String s, Counter counter) { //este programa ainda conta como 2 linhas 1 linha que foi separada em duas 
 		s = s.trim();
 		if (enteredClass ==false) {
 			if (isClass(s)) {
@@ -46,12 +46,12 @@ public class LOC_class extends Metrica {
 	}
 	
 	@Override
-	protected void openAndReadFile(File file) {
+	protected void filterCode(File file) {
         try {
             Scanner sc = new Scanner(file);
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
-                applyFilter(line, null);
+                applyMetricFilter(line, null);
             }
             sc.close();
         } catch (FileNotFoundException e) {

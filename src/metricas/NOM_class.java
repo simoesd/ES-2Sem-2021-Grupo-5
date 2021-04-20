@@ -32,6 +32,6 @@ public class NOM_class extends Metrica {
 	}
 
 	@Override
-	protected void applyFilter(String s, Counter counter) {}
+	protected void applyMetricFilter(String s, Counter counter) {}
 	
 }

@@ -24,18 +24,14 @@ public class CYCLO_method extends Metrica {
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
 			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
-			openAndReadFile(file);
+			filterCode(file);
 		}
 
 	}
 
 	@Override
-	protected void applyFilter(String s, Counter counter) {  
-		Pattern pattern = Pattern.compile("//.*|/\\*((.|\\n)(?!=*/))+\\*/");
-		Matcher matcher = pattern.matcher(s);
-		while (matcher.find()) {
-		    s = s.replace(matcher.group(), "");
-		}
+	protected void applyMetricFilter(String s, Counter counter) {  
+		System.out.println(s);
 		Scanner scanner = new Scanner(s);
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();

@@ -22,11 +22,11 @@ public class LOC_method extends Metrica {
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
 			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
-			openAndReadFile(file);
+			filterCode(file);
 		}
 	}	
 	
-	protected void applyFilter(String s, Counter counter) { // não lida totalmente com blocos de comentário nem metodos internos a outros
+	protected void applyMetricFilter(String s, Counter counter) { // não lida totalmente com blocos de comentário nem metodos internos a outros
 		// métodos. também há interferencias na definicão de vetores entre
 		s = s.trim();
 		String[] line = s.split(" ");

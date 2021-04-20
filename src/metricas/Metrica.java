@@ -3,6 +3,8 @@ package metricas;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
@@ -32,78 +34,79 @@ public abstract class Metrica extends MetricRegistry {
 		return t;
 	}
 
-	protected abstract void applyFilter(String line, Counter counter);
+	protected abstract void applyMetricFilter(String line, Counter counter);
 
-	protected void openAndReadFile(File file) {
+	protected void filterCode(File file) {
 		try {
 			Scanner sc = new Scanner(file);
 			int incr = -1;
 			String methodCode = "";
+			Pattern[] patterns = {Pattern.compile("\'(.*?)\'"), //Pattern para reconhecer e retirar elementos entre (" ")
+								  Pattern.compile("\"(.*?)\""), //Pattern para reconhecer e retirar elementos entre (' ')
+								  Pattern.compile("//.*|/\\*((.|\\n)(?!=*/))+\\*/") }; 	//Pattern para reconhecer e retirar elementos entre (// \n || /* */)
 			Counter counter = new Counter();
-			Boolean isString= false, isChar = false, isMultiLineComment = false, isLineComment, isMethod;
+			Boolean isMethod, isMultiLineComment = false;
 			while (sc.hasNextLine()) {
-				isMethod = false;
-				isLineComment = false;
+				isMethod = false; 
 				String line = sc.nextLine();
+				for(Pattern p: patterns) {
+					Matcher matcher = p.matcher(line);
+					while (matcher.find()) {
+					    line = line.replace(matcher.group(), "");
+					}
+				}
+				if(line.contains("/*") ) { // É o ínicio de um MultiLineComment "/*"
+	                  isMultiLineComment = true;
+	                  line = line.split("/*")[0];
+				}else if(line.contains("*/") ) { // É o final de um MultiLineComment "*/"
+	                  isMultiLineComment = false;
+	                  if(line.length() < 2)
+	                	  line = line.split("*/", 1)[1];
+	                  else
+	                	  line = "";
+				}
 				char[] charLine = line.toCharArray();
 				for(int i = 0; i != charLine.length; i++) {
-					if(!isChar && !isLineComment && !isMultiLineComment && charLine[i] == '"' && i > 0 && charLine[i-1] != '\\') {
-						isString = !isString;
-					}else if(!isString && !isLineComment && !isMultiLineComment && charLine[i] == '\'' && i > 0 && charLine[i-1] != '\\') {
-						isChar = !isChar;
-					}else if(!isString && !isChar) { // Não está dentro de "" ou ''
-						if(i+1 < charLine.length) { // Não é o ultimo elemento
-							if(charLine[i] == '/' && charLine[i+1] == '/' ) { // É um LineComment "//"
-								isLineComment = true;
-								continue;
-							}else if(charLine[i] == '/' && charLine[i+1] == '*' ) { // É o ínicio de um MultiLineComment "/*"
-								isMultiLineComment = true;
-								continue;
-							}else if(charLine[i] == '*' && charLine[i+1] == '/' ) { // É o final de um MultiLineComment "*/"
-								isMultiLineComment = false;
-								continue;
-							}
+					if(!isMultiLineComment && charLine[i] == '{') {
+						switch(incr) { 
+						case -1: // Começou a class
+							incr++;
+							break;
+						case 0: //Começou o método
+							incr++;
+							isMethod = true;
+							counter = new Counter();
+							counter = counter(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
+							break;
+						default: //Adicionar linha ao methodCode
+							incr++;
+							isMethod = true;
+							break;
 						}
-						if(!isLineComment && !isMultiLineComment && charLine[i] == '{') {
-							switch(incr) { 
-							case -1: // Começou a class
-								incr++;
-								break;
-							case 0: //Começou o método
-								incr++;
-								isMethod = true;
-								counter = new Counter();//for while case
-								counter = counter(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
-								break;
-							default: //Adicionar linha ao methodCode
-								incr++;
-								isMethod = true;
-								break;
-							}
-						}else if(!isLineComment && !isMultiLineComment && charLine[i] == '}') {
-							switch(incr) {
-							case 0: // Acabou a class
-								incr--;
-								break;
-							case 1: //Acabou o método
-								incr--;
-								isMethod = true;
-								applyFilter(methodCode, counter);
-								methodCode = new String("");
-								break;
-							default: //Adicionar linha ao methodCode
-								incr--;
-								isMethod = true;
-								break;					
-							}
-						}else{
-							if(incr > 0) //Linha dentro de um método
-								isMethod = true;
+					}else if(!isMultiLineComment && charLine[i] == '}') {
+						switch(incr) {
+						case 0: // Acabou a class
+							incr--;
+							break;
+						case 1: //Acabou o método
+							incr--;
+							isMethod = true;
+							applyMetricFilter(methodCode, counter);
+							methodCode = new String("");
+							break;
+						default: //Adicionar linha ao methodCode
+							incr--;
+							isMethod = true;
+							break;					
 						}
-					}					
+					}else{
+						if(incr > 0) //Linha dentro de um método
+							isMethod = true;
+					}
 				}
-				if(isMethod)
+				if(!isMultiLineComment && isMethod) {
 					methodCode = methodCode + "\n" + line;
+				}
 			}
 			sc.close();
 		} catch (FileNotFoundException e) {
