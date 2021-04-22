@@ -51,7 +51,8 @@ public class MainWindow {
 	private JPanel panel;
 	private JPanel panel_2;
 	private JPanel panel_3;
-	private ArrayList<Rule> rules = new ArrayList<>();
+	private ArrayList<RuleGUI> rulesGUI = new ArrayList<>();
+//	private ArrayList<Rule> rules = new ArrayList<>();
 	private int incrementer = 1;
 
 	/**
@@ -115,13 +116,13 @@ public class MainWindow {
 		title.setFont(new Font("Tahoma", Font.PLAIN, 40));
 		panel_3.add(title);
 		title.setVisible(true);
-		
+
 		JLabel ruleTitle = new JLabel("RULES");
 		ruleTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		ruleTitle.setVisible(false);
 		ruleTitle.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(ruleTitle);
-		
+
 		mainPanel.add(panel_3, BorderLayout.NORTH);
 
 		JButton removeRuleButton = new JButton("Remove Rule");
@@ -131,11 +132,11 @@ public class MainWindow {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				ArrayList<Rule> tempRules = new ArrayList<>();
-				rules.forEach(r -> tempRules.add(r));
+				ArrayList<RuleGUI> tempRules = new ArrayList<>();
+				rulesGUI.forEach(r -> tempRules.add(r));
 				for (int i = 0; i < tempRules.size(); i++) {
 					if (tempRules.get(i).getCheckbox().isSelected()) {
-						rules.remove(tempRules.get(i));
+						rulesGUI.remove(tempRules.get(i));
 						incrementer--;
 					}
 				}
@@ -143,22 +144,20 @@ public class MainWindow {
 				panel.removeAll();
 				panel.add(ruleTitle);
 				removeRuleButton.setEnabled(false);
-				if (rules.isEmpty()) {
+				if (rulesGUI.isEmpty()) {
 					ruleTitle.setVisible(false);
 				}
-				for (int i = 0; i < rules.size(); i++) {
-					panel.add(rules.get(i).getPanel_1());
+				for (int i = 0; i < rulesGUI.size(); i++) {
+					panel.add(rulesGUI.get(i).getPanel_1());
 				}
 				panel.updateUI();
 			}
 		});
-		
-		
 
 		JButton addRuleButton = new JButton("Add Rule");
 		panel_2.add(addRuleButton);
 		panel_2.add(removeRuleButton);
-		
+
 		addRuleButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -167,9 +166,7 @@ public class MainWindow {
 					ruleTitle.setVisible(true);
 					JPanel panel_1 = new JPanel();
 					panel.add(panel_1);
-					
-					
-					
+
 					panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 					JCheckBox checkbox = new JCheckBox("");
 					panel_1.add(checkbox);
@@ -182,7 +179,7 @@ public class MainWindow {
 								removeRuleButton.setEnabled(true);
 							} else {
 								checkbox.setSelected(false);
-								for (Rule r : rules) {
+								for (RuleGUI r : rulesGUI) {
 									if (r.getCheckbox().isSelected() == true) {
 										numOfSelChecBox++;
 									}
@@ -199,7 +196,7 @@ public class MainWindow {
 					ruleName.setHorizontalAlignment(SwingConstants.CENTER);
 					ruleName.setColumns(10);
 					enableDefaultValue(ruleName, "Título da Regra");
-					
+
 					panel_1.add(ruleName);
 
 					JComboBox metric1 = new JComboBox();
@@ -223,7 +220,7 @@ public class MainWindow {
 
 						@Override
 						public void actionPerformed(ActionEvent e) {
-						
+
 							JComboBox logicOp = new JComboBox();
 							logicOp.setModel(new DefaultComboBoxModel(new String[] { "AND", "OR" }));
 							panel_1.add(logicOp);
@@ -244,7 +241,7 @@ public class MainWindow {
 							enableDefaultValue(value2, "0");
 							panel_1.add(value2);
 
-							for (Rule r : rules) {
+							for (RuleGUI r : rulesGUI) {
 								if (r.getPanel_1() == panel_1) {
 									r.addConditionRule(logicOp, metric2, mathSymbol2, value2);
 								}
@@ -255,10 +252,10 @@ public class MainWindow {
 							panel_1.add(removeRuleCondition);
 
 							removeRuleCondition.addActionListener(new ActionListener() {
-								
+
 								@Override
 								public void actionPerformed(ActionEvent e) {
-									for (Rule r : rules) {
+									for (RuleGUI r : rulesGUI) {
 										if (r.getPanel_1() == panel_1) {
 											r.getLogicOp().setVisible(false);
 											r.getMetric2().setVisible(false);
@@ -269,7 +266,7 @@ public class MainWindow {
 											removeRuleCondition.setEnabled(false);
 											addConditionButton.setVisible(true);
 											addConditionButton.setEnabled(true);
-											
+
 										}
 									}
 								}
@@ -278,9 +275,8 @@ public class MainWindow {
 						}
 					});
 
-					
-					Rule rule = new Rule(panel_1, metric1, mathSymbol1, analysisPathTextField, checkbox);
-					rules.add(rule);
+					RuleGUI rule = new RuleGUI(panel_1, ruleName, metric1, mathSymbol1, value1, checkbox);
+					rulesGUI.add(rule);
 					mainPanel.updateUI();
 					incrementer++;
 				} else {
@@ -288,8 +284,6 @@ public class MainWindow {
 				}
 			}
 		});
-		
-		
 
 		// Analysis Panel
 
@@ -328,6 +322,29 @@ public class MainWindow {
 				String directoryPath = analysisPathTextField.getText();
 				Maestro maestro = new Maestro(directoryPath);
 
+				if (checkRuleValid()) {
+					for (RuleGUI rg : rulesGUI) {
+						String title = rg.getTitle().getText();
+						String metric1 = rg.getMetric1().getSelectedItem().toString();
+						String mathSymbol1 = getMathSymbolString(rg.getMathSymbol1().getSelectedIndex());
+						int value1 = Integer.parseInt(rg.getValue1().getText());
+
+						if (rg.getLogicOp() != null) {
+							String logicOp = rg.getLogicOp().getSelectedItem().toString();
+							String metric2 = rg.getMetric2().getSelectedItem().toString();
+							String mathSymbol2 = getMathSymbolString(rg.getMathSymbol2().getSelectedIndex());
+							int value2 = Integer.parseInt(rg.getValue2().getText());
+
+//						Rule r = new Rule(title, metric1, mathSymbol1, value1, logicOp, metric2, mathSymbol2, value2);
+//						rules.add(r);
+						}
+//					Rule r = new Rule(title, metric1, mathSymbol1, value1);
+//					rules.add(r);
+
+					}
+				}
+
+//				String resultsFilePath = maestro.startMetricCounters(rules);
 				String resultsFilePath = maestro.startMetricCounters();
 
 				ImageIcon tempIcon = new ImageIcon("src/icons/excel.png");
@@ -400,23 +417,68 @@ public class MainWindow {
 
 	}
 
-    private void showImportedData(String fileToImport) {
-        mainPanel.removeAll();
-        
-        //TODO ivocar a importação (equipa PRR)
-        ArrayList<Line> lines = ExcelReader.readExcelFile(fileToImport);
-        
-        String[] columnNames =  lines.get(0).getColumnNames();
+	private boolean checkRuleValid() {
+		boolean isValid = true;
+		for (RuleGUI rg : rulesGUI) {
+			try {
+				Integer.parseInt(rg.getValue1().getText());
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(panel, "Certifique-se que inseriu corretamente os valores");
+				isValid = false;
+				break;
+			}
+
+			if (rg.getLogicOp() != null) {
+				try {
+					Integer.parseInt(rg.getValue2().getText());
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(panel, "Certifique-se que inseriu corretamente os valores");
+					isValid = false;
+					break;
+				}
+			}
+		}
+		return isValid;
+	}
+
+	private String getMathSymbolString(int index) {
+		String mathSymbol = "";
+		switch (index) {
+		case 0:
+//			mathSymbol=Rule.GREATER_THAN;
+			return mathSymbol;
+		case 1:
+//			mathSymbol=Rule.LESS_THAN;
+			return mathSymbol;
+
+		case 2:
+//			mathSymbol=Rule.GREATER_THAN_EQUAL;
+			return mathSymbol;
+		case 3:
+//			mathSymbol=Rule.LESS_THAN_EQUAL;
+			return mathSymbol;
+
+		default:
+			return mathSymbol;
+		}
+	}
+
+	private void showImportedData(String fileToImport) {
+		mainPanel.removeAll();
+
+		// TODO ivocar a importação (equipa PRR)
+		ArrayList<Line> lines = ExcelReader.readExcelFile(fileToImport);
+
+		String[] columnNames = lines.get(0).getColumnNames();
 //        String[][] linesAsString = new String[columnNames.length][];
-        ArrayList<String[]> linesAsString = new ArrayList<>();
-        
-        for (int i = 0; i < lines.size(); i++)
-        {
-            linesAsString.add(lines.get(i).toArray());
-        }
-        
-        JTable tempTable = new JTable(linesAsString.toArray(new String[0][0]), columnNames);
-        tempTable.setAutoResizeMode(0);
+		ArrayList<String[]> linesAsString = new ArrayList<>();
+
+		for (int i = 0; i < lines.size(); i++) {
+			linesAsString.add(lines.get(i).toArray());
+		}
+
+		JTable tempTable = new JTable(linesAsString.toArray(new String[0][0]), columnNames);
+		tempTable.setAutoResizeMode(0);
 
 		JScrollPane tableScrollPane = new JScrollPane(tempTable);
 		tableScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -481,57 +543,54 @@ public class MainWindow {
 		return fullPath.substring(fullPath.lastIndexOf("\\") + 1);
 	}
 
-    public static int[] getProjectData(ArrayList<Line> lines) {
-        ArrayList<String> classNames = new ArrayList<>();
-        int totalMethods = 0;
-        int totalLinesOfCode = 0;
-        
-        for (Line line: lines) 
-        {
-            if (!classNames.contains(line.getCls()))
-            {
-                classNames.add(line.getCls());
-                totalMethods += 5; //TODO fix with new line structure
-                totalLinesOfCode += 5; //TODO fix with new line structure
-            }
-        }
-        
-        ArrayList<String> packageNames = new ArrayList<>();
-        
-        for (Line line: lines) 
-        {
-            if (!packageNames.contains(line.getPkg()))
-                packageNames.add(line.getPkg());
-        }
-        
-        int[] result = {packageNames.size(), classNames.size(), totalMethods, totalLinesOfCode};
-        return result;
-    }
-	
+	public static int[] getProjectData(ArrayList<Line> lines) {
+		ArrayList<String> classNames = new ArrayList<>();
+		int totalMethods = 0;
+		int totalLinesOfCode = 0;
+
+		for (Line line : lines) {
+			if (!classNames.contains(line.getCls())) {
+				classNames.add(line.getCls());
+				totalMethods += 5; // TODO fix with new line structure
+				totalLinesOfCode += 5; // TODO fix with new line structure
+			}
+		}
+
+		ArrayList<String> packageNames = new ArrayList<>();
+
+		for (Line line : lines) {
+			if (!packageNames.contains(line.getPkg()))
+				packageNames.add(line.getPkg());
+		}
+
+		int[] result = { packageNames.size(), classNames.size(), totalMethods, totalLinesOfCode };
+		return result;
+	}
+
 	public static void enableDefaultValue(final JTextField tf, final String defaultValue) {
-	    // Set current value
-	    tf.setText(defaultValue);
-	    tf.setForeground(Color.gray);
+		// Set current value
+		tf.setText(defaultValue);
+		tf.setForeground(Color.gray);
 
-	    // Add listener
-	    tf.addFocusListener(new FocusAdapter() {
-	        @Override
-	        public void focusGained(FocusEvent e) {
-	            if (tf.getText().equals(defaultValue)) {
-	                tf.setForeground(Color.black);
-	                tf.setText("");
-	            }
-	            super.focusGained(e);
-	        }
+		// Add listener
+		tf.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				if (tf.getText().equals(defaultValue)) {
+					tf.setForeground(Color.black);
+					tf.setText("");
+				}
+				super.focusGained(e);
+			}
 
-	        @Override
-	        public void focusLost(FocusEvent e) {
-	            if (tf.getText().equals("")) {
-	                tf.setForeground(Color.gray);
-	                tf.setText(defaultValue);
-	            }
-	            super.focusLost(e);
-	        }
-	    });
+			@Override
+			public void focusLost(FocusEvent e) {
+				if (tf.getText().equals("")) {
+					tf.setForeground(Color.gray);
+					tf.setText(defaultValue);
+				}
+				super.focusLost(e);
+			}
+		});
 	}
 }

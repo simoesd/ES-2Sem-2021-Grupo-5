@@ -5,9 +5,10 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class Rule {
+public class RuleGUI {
 
 	private JPanel panel_1;
+	private JTextField title;
 	private JComboBox metric1;
 	private JComboBox mathSymbol1;
 	private JTextField value1;
@@ -17,10 +18,11 @@ public class Rule {
 	private JTextField value2;
 	private JCheckBox checkbox;
 
-	public Rule(JPanel panel_1, JComboBox metric1, JComboBox mathSymbol1, JTextField value1, JComboBox logicOp,
-			JComboBox metric2, JComboBox mathSymbol2, JTextField value2, JCheckBox checkbox) {
+	public RuleGUI(JPanel panel_1, JTextField title, JComboBox metric1, JComboBox mathSymbol1, JTextField value1,
+			JComboBox logicOp, JComboBox metric2, JComboBox mathSymbol2, JTextField value2, JCheckBox checkbox) {
 		super();
 		this.panel_1 = panel_1;
+		this.title = title;
 		this.metric1 = metric1;
 		this.mathSymbol1 = mathSymbol1;
 		this.value1 = value1;
@@ -81,13 +83,18 @@ public class Rule {
 		this.value2 = null;
 	}
 
-	public Rule(JPanel panel_1, JComboBox metric1, JComboBox mathSymbol1, JTextField value1, JCheckBox checkbox) {
+	public RuleGUI(JPanel panel_1, JTextField title, JComboBox metric1, JComboBox mathSymbol1, JTextField value1, JCheckBox checkbox) {
 		super();
 		this.panel_1 = panel_1;
+		this.title = title;
 		this.metric1 = metric1;
 		this.mathSymbol1 = mathSymbol1;
 		this.value1 = value1;
 		this.checkbox = checkbox;
+	}
+
+	public JTextField getTitle() {
+		return title;
 	}
 
 }
