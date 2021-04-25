@@ -2,7 +2,9 @@ package metricas;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.LinkedList;
 import java.util.Scanner;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,11 +15,13 @@ public abstract class Metrica extends MetricRegistry {
 
 	private Maestro maestro;
 	private String packageClassName;
+	public String metricName;
 	private Thread myThread;
 	protected Counter counter;
-	protected boolean addLine, isClassOrEnum = false, isMultiLineComment= false;
+	protected boolean addLine, isNonMethodBlock = false, isMultiLineComment= false;
 	protected int incr;
 	protected String methodCode, line;
+	private Stack<String> betweenMethodsBuffer = new Stack<>();
 
 	public Metrica(Maestro metricas) {
 		super();
@@ -49,11 +53,13 @@ public abstract class Metrica extends MetricRegistry {
 				addLine = false;
 				line = sc.nextLine();
 				
-				filterOutJunk();
+				filterOutJunk();	
 				
-				if(!isMultiLineComment && incr == 0 && (line.contains(" class ") || line.contains(" enum "))) { //Deteção de classes aninhadas e enums
-					isClassOrEnum = true;
-				}
+				System.out.println(line);
+//				if(!isMultiLineComment && incr >= 0 && ((" " + line.replaceAll("\t", "")).contains(" class ") || (" " + line.replaceAll("\t", "")).contains(" enum ") || (" " + line.replaceAll("\t", "")).contains(" interface "))) { //Deteção de classes aninhadas e enums
+//					System.out.println("eu aconteço");
+//					isNonMethodBlock = true;
+//				}
 				char[] charLine = line.toCharArray();
 				for(int i = 0; i != charLine.length; i++) {
 					if(!isMultiLineComment && charLine[i] == '{') {
@@ -61,8 +67,11 @@ public abstract class Metrica extends MetricRegistry {
 					}else if(!isMultiLineComment && charLine[i] == '}') {
 						handleCloseBracket();
 					}else{
-						if(incr > 0 && !isClassOrEnum) //Linha dentro de um método
+						if(incr > 0 && !isNonMethodBlock) //Linha dentro de um método
 							addLine = true;
+						if(incr == 0) {
+							betweenMethodsBuffer.push(line);
+						}
 					}
 				}
 				if(!isMultiLineComment && addLine) {
@@ -107,14 +116,19 @@ public abstract class Metrica extends MetricRegistry {
 			break;
 		case 0: //Começou o método
 			incr++;
-			if(!isClassOrEnum) {							
+			String methodName;
+			if((methodName = getMethodName(betweenMethodsBuffer)) != "") {
+				isNonMethodBlock = false;
 				addLine = true;
-				counter = counter(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
+				counter = counter(getPackageClassName() + "/" + methodName);
+				betweenMethodsBuffer = new Stack<>();
+			} else {
+				isNonMethodBlock = true;
 			}
 			break;
 		default: //Adicionar linha ao methodCode
 			incr++;
-			if(!isClassOrEnum)
+			if(!isNonMethodBlock)
 				addLine = true;
 			break;
 		}
@@ -127,8 +141,8 @@ public abstract class Metrica extends MetricRegistry {
 			break;
 		case 1: //Acabou o método
 			incr--;
-			if(isClassOrEnum) {
-				isClassOrEnum = false;
+			if(isNonMethodBlock) {
+				isNonMethodBlock = false;
 			}else {
 				addLine = false;
 				methodCode = methodCode + "\n" + line;
@@ -138,49 +152,39 @@ public abstract class Metrica extends MetricRegistry {
 			break;
 		default: //Adicionar linha ao methodCode
 			incr--;
-			if(!isClassOrEnum)
+			if(!isNonMethodBlock)
 				addLine = true;
 			break;					
 		}
 	}
 
-	public String getMethodName(String s, String[] line) {
-		String methodName = "";
-		s = s.trim();
-		s = s.replaceAll("\t", "");
-		
-		int posicaoArray = positionArray(line, "(");
-		int posicaoArray2 = positionArray(line, ")");
+	public String getMethodName(Stack<String> stack) {
+        String methodName = stack.pop();
+        while(!methodName.contains("(")) {
+        	if(!stack.isEmpty())
+        		methodName = stack.pop() + " " + methodName;
+        	else
+        		return "";
+        }
+        methodName = methodName.trim();
+        methodName = methodName.replaceAll("\t", "");
+        String[] temp = methodName.split("\\(");
+        String[] temp2 = temp[0].split(" ");
+        String[] temp3 = temp[1].split("\\)");
+        methodName = temp2[temp2.length-1] + "(" + temp3[0] + ")" ;
+        return methodName;
+    }
 
-		methodName = line[posicaoArray];
-		for (int u = posicaoArray + 1; u <= posicaoArray2; u++) {
-			methodName = methodName + " " + line[u];
-		}
-
-		int indexTemp = s.indexOf("(");
-		if (s.charAt(indexTemp - 1) == ' ')
-			methodName = line[posicaoArray - 1].concat(methodName);
-
-		return methodName;
-	}
-
-	public boolean isClass(String s) {
-		if ((s.startsWith("public") || s.startsWith("private")) && s.contains("class")) {
-			return true;
-		}
-		return false;
-	}
-
-	private int positionArray(String[] line, String s) {
-		int posicaoArray = -1;
-		for (int i = 0; i < line.length; i++) {
-			if (line[i].contains(s)) {
-				posicaoArray = i;
-				break;
-			}
-		}
-		return posicaoArray;
-	}
+//	private int positionArray(String[] lineArray, String s) {
+//		int posicaoArray = -1;
+//		for (int i = 0; i < lineArray.length; i++) {
+//			if (lineArray[i].contains(s)) {
+//				posicaoArray = i;
+//				break;
+//			}
+//		}
+//		return posicaoArray;
+//	}
 
 	protected Thread getThread() {
 		return myThread;
@@ -196,6 +200,10 @@ public abstract class Metrica extends MetricRegistry {
 
 	protected void setPackageClassName(String packageClassName) {
 		this.packageClassName = packageClassName;
+	}
+	
+	public String getMetricName() {
+		return metricName;
 	}
 
 }

@@ -86,7 +86,8 @@ public class Maestro {
 	private void exportResults(XSSFSheet sheet) {
 		for (String u : getLOC_class().getCounters().keySet()) {			
 			String temp = u;
-			temp = u.replace(".", " ");
+			temp = u.replace("/", " ");
+			System.out.println("u: " + u);
 			String[] splitted = temp.split(" ");
 			String namePck = splitted[0];
 			String nameClass = splitted[1];
@@ -96,7 +97,6 @@ public class Maestro {
 			for (String s : getCYCLO_method().getCounters().keySet()) {
 				if (s.contains(u)) {
 					String temp2 = s;
-					temp2 = s.replace(".", "/");
 					String[] splitted2 = temp2.split("/");
 					String nameMtd = splitted2[2];
 					String CYCLO_method = String.valueOf(getCYCLO_method().getCounters().get(s).getCount());
@@ -174,15 +174,17 @@ public class Maestro {
 	}
 
 	public String cutAbsolutePath(String absolutePath) { // retorna package.class
-		String shortPath = getProjectDirectory() + getSourceCodeLocation();
-		int stringLength = shortPath.length() + 1;
-		shortPath = absolutePath.substring(stringLength);
-		shortPath = shortPath.replace("\\", ".");
-		shortPath = shortPath.replace(".java", "");
-		if(shortPath.split("\\.").length < 2)
-			shortPath = "defaultPackage." +  shortPath;
-		return shortPath;
-	}
+        String shortPath = getProjectDirectory() + getSourceCodeLocation();
+        int stringLength = shortPath.length() + 1;
+        shortPath = absolutePath.substring(stringLength);
+        shortPath = shortPath.replace("\\", ".");
+        shortPath = shortPath.replace(".java", "");
+        System.out.println(shortPath);
+        if(shortPath.split("\\.").length < 2)
+            shortPath = "defaultPackage." +  shortPath;
+        shortPath = shortPath.substring(0, shortPath.lastIndexOf(".")) + "/" + shortPath.substring(shortPath.lastIndexOf(".") + 1);
+        return shortPath;
+    }
 
 	public ArrayList<File> getFilesInDirectory() {
 		return filesInDirectory;
