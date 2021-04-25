@@ -41,13 +41,13 @@ public abstract class Metrica extends MetricRegistry {
 			Scanner sc = new Scanner(file);
 			int incr = -1;
 			String methodCode = "";
-			Pattern[] patterns = {Pattern.compile("\'(.*?)\'"), //Pattern para reconhecer e retirar elementos entre (" ")
-								  Pattern.compile("\"(.*?)\""), //Pattern para reconhecer e retirar elementos entre (' ')
-								  Pattern.compile("//.*|/\\*((.|\\n)(?!=*/))+\\*/") }; 	//Pattern para reconhecer e retirar elementos entre (// \n || /* */)
+			Pattern[] patterns = {Pattern.compile("\'(.*?)\'"), //Pattern para reconhecer e retirar elementos entre ' '
+								  Pattern.compile("\"(.*?)\""), //Pattern para reconhecer e retirar elementos entre " "
+								  Pattern.compile("//.*|/\\*((.|\\n)(?!=*/))+\\*/") }; 	//Pattern para reconhecer e retirar elementos entre // \n || /* */
 			Counter counter = new Counter();
-			Boolean addLine, isMethod, isMultiLineComment= false;
+			Boolean addLine, isClassOrEnum = false, isMultiLineComment= false;
 			while (sc.hasNextLine()) {
-				addLine = false; 
+				addLine = false;
 				String line = sc.nextLine();
 				for(Pattern p: patterns) {
 					Matcher matcher = p.matcher(line);
@@ -65,42 +65,52 @@ public abstract class Metrica extends MetricRegistry {
 	                  else 
 	                	  line = "";
 				}
-				if((line.contains(" class ") || line.contains(" enum "))) {
-					isMethod = false;
+				if(!isMultiLineComment && incr == 0 && (line.contains(" class ") || line.contains(" enum "))) { //Deteção de classes aninhadas e enums
+					isClassOrEnum = true;
+					System.out.println(line);
 				}
 				char[] charLine = line.toCharArray();
 				for(int i = 0; i != charLine.length; i++) {
-					if(!isMultiLineComment && charLine[i] == '{' ) {
+					if(!isMultiLineComment && charLine[i] == '{') {
 						switch(incr) { 
 						case -1: // Começou a class
 							incr++;
 							break;
 						case 0: //Começou o método
 							incr++;
-							addLine = true;
-							counter = new Counter();
-							System.out.println(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
-							counter = counter(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
+							if(!isClassOrEnum) {							
+								addLine = true;
+								counter = new Counter();
+								System.out.println(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
+								counter = counter(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
+							}
 							break;
 						default: //Adicionar linha ao methodCode
 							incr++;
-							addLine = true;
+							if(!isClassOrEnum)
+								addLine = true;
 							break;
 						}
 					}else if(!isMultiLineComment && charLine[i] == '}') {
 						switch(incr) {
 						case 0: // Acabou a class
 							incr--;
+							System.out.println(line);
 							break;
 						case 1: //Acabou o método
 							incr--;
-							addLine = true;
-							applyMetricFilter(methodCode, counter);
-							methodCode = new String("");
+							if(isClassOrEnum) {
+								isClassOrEnum = false;
+							}else {
+								addLine = true;
+								applyMetricFilter(methodCode, counter);
+								methodCode = new String("");
+							}
 							break;
 						default: //Adicionar linha ao methodCode
 							incr--;
-							addLine = true;
+							if(!isClassOrEnum)
+								addLine = true;
 							break;					
 						}
 					}else{
