@@ -11,8 +11,6 @@ import com.codahale.metrics.Counter;
 
 public class LOC_class extends Metrica {
 
-	private Counter counter;
-
 	public LOC_class(Maestro metricas) {
 		super(metricas);
 	}
@@ -23,12 +21,11 @@ public class LOC_class extends Metrica {
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
 			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
-			counter = new Counter();
 			counter = this.counter(getPackageClassName());
 			filterCode(file);
 		}
 	}
-
+	
 	@Override
 	protected void applyMetricFilter(String s, Counter counter) { 
 		s = s.replaceAll("\t", "");
@@ -40,24 +37,9 @@ public class LOC_class extends Metrica {
 	protected void filterCode(File file) {
         try {
             Scanner sc = new Scanner(file);
-            Pattern pattern = Pattern.compile("//.*|/\\*((.|\\n)(?!=*/))+\\*/"); //Pattern para reconhecer e retirar elementos entre // \n || /* */
-            boolean isMultiLineComment= false;            
             while (sc.hasNextLine()) {
-                String line = sc.nextLine();
-				Matcher matcher = pattern.matcher(line);
-				while (matcher.find()) {
-					    line = line.replace(matcher.group(), "");
-				}
-                if(line.contains("/*") ) { // É o ínicio de um MultiLineComment "/*"
-                    isMultiLineComment = true;
-                    line = line.split("/*")[0];
-    			}else if(line.contains("*/") ) { // É o final de um MultiLineComment "*/"
-                    isMultiLineComment = false;
-                    if(line.length() < 2)
-                  	  line = line.split("*/", 1)[1];
-                    else 
-                  	  line = "";
-    			}
+                line = sc.nextLine();
+				filterOutJunk();
                 if(!isMultiLineComment)
                 	applyMetricFilter(line, counter);
             }

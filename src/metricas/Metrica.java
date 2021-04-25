@@ -14,6 +14,10 @@ public abstract class Metrica extends MetricRegistry {
 	private Maestro maestro;
 	private String packageClassName;
 	private Thread myThread;
+	protected Counter counter;
+	protected boolean addLine, isClassOrEnum = false, isMultiLineComment= false;
+	protected int incr;
+	protected String methodCode, line;
 
 	public Metrica(Maestro metricas) {
 		super();
@@ -36,87 +40,36 @@ public abstract class Metrica extends MetricRegistry {
 
 	protected abstract void applyMetricFilter(String line, Counter counter);
 
-	protected synchronized void filterCode(File file) {
+	protected void filterCode(File file) {
 		try {
 			Scanner sc = new Scanner(file);
-			int incr = -1;
-			String methodCode = "";
-			Pattern[] patterns = {Pattern.compile("\'(.*?)\'"), //Pattern para reconhecer e retirar elementos entre ' '
-								  Pattern.compile("\"(.*?)\""), //Pattern para reconhecer e retirar elementos entre " "
-								  Pattern.compile("//.*|/\\*((.|\\n)(?!=*/))+\\*/") }; 	//Pattern para reconhecer e retirar elementos entre // \n || /* */
-			Counter counter = new Counter();
-			boolean addLine, isClassOrEnum = false, isMultiLineComment= false;
+			incr = -1;
+			methodCode = "";
 			while (sc.hasNextLine()) {
 				addLine = false;
-				String line = sc.nextLine();
-				for(Pattern p: patterns) {
-					Matcher matcher = p.matcher(line);
-					while (matcher.find()) {
-					    line = line.replace(matcher.group(), "");
-					}
-				}
-				if(line.contains("/*") ) { // É o ínicio de um MultiLineComment "/*"
-	                  isMultiLineComment = true;
-	                  line = line.split("/*")[0];
-				}else if(line.contains("*/") ) { // É o final de um MultiLineComment "*/"
-	                  isMultiLineComment = false;
-	                  if(line.length() < 2)
-	                	  line = line.split("*/", 1)[1];
-	                  else 
-	                	  line = "";
-				}
+				line = sc.nextLine();
+				
+				filterOutJunk();
+				
 				if(!isMultiLineComment && incr == 0 && (line.contains(" class ") || line.contains(" enum "))) { //Deteção de classes aninhadas e enums
 					isClassOrEnum = true;
 				}
 				char[] charLine = line.toCharArray();
 				for(int i = 0; i != charLine.length; i++) {
 					if(!isMultiLineComment && charLine[i] == '{') {
-						switch(incr) { 
-						case -1: // Começou a class
-							incr++;
-							break;
-						case 0: //Começou o método
-							incr++;
-							if(!isClassOrEnum) {							
-								addLine = true;
-								counter = new Counter();
-								counter = counter(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
-							}
-							break;
-						default: //Adicionar linha ao methodCode
-							incr++;
-							if(!isClassOrEnum)
-								addLine = true;
-							break;
-						}
+						handleOpenBracket();
 					}else if(!isMultiLineComment && charLine[i] == '}') {
-						switch(incr) {
-						case 0: // Acabou a class
-							incr--;
-							break;
-						case 1: //Acabou o método
-							incr--;
-							if(isClassOrEnum) {
-								isClassOrEnum = false;
-							}else {
-								addLine = true;
-								applyMetricFilter(methodCode, counter);
-								methodCode = new String("");
-							}
-							break;
-						default: //Adicionar linha ao methodCode
-							incr--;
-							if(!isClassOrEnum)
-								addLine = true;
-							break;					
-						}
+						handleCloseBracket();
 					}else{
 						if(incr > 0) //Linha dentro de um método
 							addLine = true;
 					}
 				}
 				if(!isMultiLineComment && addLine) {
-					methodCode = methodCode + "\n" + line;
+					if(methodCode.isEmpty())
+						methodCode = methodCode + line;
+					else
+						methodCode = methodCode + "\n" + line;
 				}
 			}
 			sc.close();
@@ -124,7 +77,72 @@ public abstract class Metrica extends MetricRegistry {
 			e.printStackTrace();
 		}
 	}
-
+	
+	public void filterOutJunk() {
+		Pattern[] patterns = {Pattern.compile("\'(.*?)\'"), //Pattern para reconhecer e retirar elementos entre ' '
+				  Pattern.compile("\"(.*?)\""), //Pattern para reconhecer e retirar elementos entre " "
+				  Pattern.compile("//.*|/\\*((.|\\n)(?!=*/))+\\*/") }; 	//Pattern para reconhecer e retirar elementos entre // \n || /* */
+		for(Pattern p: patterns) {
+			Matcher matcher = p.matcher(line);
+			while (matcher.find()) {
+			    line = line.replace(matcher.group(), "");
+			}
+		}
+		if(line.contains("/*") ) { // É o ínicio de um MultiLineComment "/*"
+              line = line.split("/*")[0];
+              isMultiLineComment = true;
+		}else if(line.contains("*/") ) { // É o final de um MultiLineComment "*/"
+              if(line.length() < 2)
+            	  line = line.split("*/", 1)[1];
+              else 
+            	  line = "";
+              isMultiLineComment = false;
+		}
+	}
+	
+	public void handleOpenBracket() {
+		switch(incr) { 
+		case -1: // Começou a class
+			incr++;
+			break;
+		case 0: //Começou o método
+			incr++;
+			if(!isClassOrEnum) {							
+				addLine = true;
+				counter = counter(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
+			}
+			break;
+		default: //Adicionar linha ao methodCode
+			incr++;
+			if(!isClassOrEnum)
+				addLine = true;
+			break;
+		}
+	}
+	
+	public void handleCloseBracket() {
+		switch(incr) {
+		case 0: // Acabou a class
+			incr--;
+			break;
+		case 1: //Acabou o método
+			incr--;
+			if(isClassOrEnum) {
+				isClassOrEnum = false;
+			}else {
+				addLine = false;
+				methodCode = methodCode + "\n" + line;
+				applyMetricFilter(methodCode, counter);
+				methodCode = new String("");
+			}
+			break;
+		default: //Adicionar linha ao methodCode
+			incr--;
+			if(!isClassOrEnum)
+				addLine = true;
+			break;					
+		}
+	}
 
 	public String getMethodName(String s, String[] line) {
 		String methodName = "";

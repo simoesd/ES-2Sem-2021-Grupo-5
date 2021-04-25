@@ -8,7 +8,6 @@ import com.codahale.metrics.Counter;
 
 public class WMC_class extends Metrica {
 	
-	private Counter className;
 	private SortedMap<String, Counter> cycloSortedMap;
 
 	public WMC_class(Maestro metricas) {
@@ -23,10 +22,10 @@ public class WMC_class extends Metrica {
 		for (File file : filesInDirectory) {		
 			String absolutePath = file.getAbsolutePath();
 			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
-			className=counter(getPackageClassName());
+			counter=counter(getPackageClassName());
 			for (String s : cycloSortedMap.keySet()) {
 				if (s.contains(getPackageClassName())) {
-					className.inc(cycloSortedMap.get(s).getCount());
+					counter.inc(cycloSortedMap.get(s).getCount());
 				}
 			}
 		}

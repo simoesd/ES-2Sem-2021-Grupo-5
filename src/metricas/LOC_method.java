@@ -23,6 +23,7 @@ public class LOC_method extends Metrica {
 	}	
 	
 	protected void applyMetricFilter(String s, Counter counter) {
+		System.out.println("methodCode: " + s);
 		Scanner scanner = new Scanner(s);
 		while (scanner.hasNextLine()) {
 			scanner.nextLine();

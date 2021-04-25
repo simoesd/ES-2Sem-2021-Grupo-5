@@ -8,7 +8,6 @@ import com.codahale.metrics.Counter;
 
 public class NOM_class extends Metrica {
 
-	private Counter nomclass = new Counter();
 	private SortedMap<String, Counter> cycloSortedMap;
 
 	public NOM_class(Maestro metricas) {
@@ -22,10 +21,10 @@ public class NOM_class extends Metrica {
 		for (File file : filesInDirectory) {		
 			String absolutePath = file.getAbsolutePath();
 			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
-			nomclass=this.counter(getPackageClassName());
+			counter=this.counter(getPackageClassName());
 			for (String s : cycloSortedMap.keySet()) {
 				if (s.contains(getPackageClassName())) {
-					nomclass.inc();
+					counter.inc();
 				}
 			}
 		}
