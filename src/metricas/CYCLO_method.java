@@ -31,7 +31,6 @@ public class CYCLO_method extends Metrica {
 
 	@Override
 	protected void applyMetricFilter(String s, Counter counter) {  
-		System.out.println(s);
 		Scanner scanner = new Scanner(s);
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();

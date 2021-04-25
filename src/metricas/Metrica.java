@@ -62,12 +62,12 @@ public abstract class Metrica extends MetricRegistry {
 	                  isMultiLineComment = false;
 	                  if(line.length() < 2)
 	                	  line = line.split("*/", 1)[1];
-	                  else
+	                  else 
 	                	  line = "";
 				}
 				char[] charLine = line.toCharArray();
 				for(int i = 0; i != charLine.length; i++) {
-					if(!isMultiLineComment && charLine[i] == '{') {
+					if(!isMultiLineComment && charLine[i] == '{' /*&& (!line.contains(" class ") || !line.contains(" enum "))*/) {
 						switch(incr) { 
 						case -1: // Começou a class
 							incr++;
@@ -76,6 +76,7 @@ public abstract class Metrica extends MetricRegistry {
 							incr++;
 							isMethod = true;
 							counter = new Counter();
+							System.out.println(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
 							counter = counter(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
 							break;
 						default: //Adicionar linha ao methodCode
