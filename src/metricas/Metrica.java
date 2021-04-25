@@ -61,7 +61,7 @@ public abstract class Metrica extends MetricRegistry {
 					}else if(!isMultiLineComment && charLine[i] == '}') {
 						handleCloseBracket();
 					}else{
-						if(incr > 0) //Linha dentro de um método
+						if(incr > 0 && !isClassOrEnum) //Linha dentro de um método
 							addLine = true;
 					}
 				}
@@ -148,25 +148,20 @@ public abstract class Metrica extends MetricRegistry {
 		String methodName = "";
 		s = s.trim();
 		s = s.replaceAll("\t", "");
-		if ((s.startsWith("public") || s.startsWith("protected") || s.startsWith("private")) && s.contains("(")
-				&& s.contains(")") && !s.endsWith(";")) {
+		
+		int posicaoArray = positionArray(line, "(");
+		int posicaoArray2 = positionArray(line, ")");
 
-			int posicaoArray = positionArray(line, "(");
-			int posicaoArray2 = positionArray(line, ")");
-
-			methodName = line[posicaoArray];
-			for (int u = posicaoArray + 1; u <= posicaoArray2; u++) {
-				methodName = methodName + " " + line[u];
-			}
-
-			int indexTemp = s.indexOf("(");
-			if (s.charAt(indexTemp - 1) == ' ')
-				methodName = line[posicaoArray - 1].concat(methodName);
-
-			return methodName;
-		} else {
-			return methodName;
+		methodName = line[posicaoArray];
+		for (int u = posicaoArray + 1; u <= posicaoArray2; u++) {
+			methodName = methodName + " " + line[u];
 		}
+
+		int indexTemp = s.indexOf("(");
+		if (s.charAt(indexTemp - 1) == ' ')
+			methodName = line[posicaoArray - 1].concat(methodName);
+
+		return methodName;
 	}
 
 	public boolean isClass(String s) {

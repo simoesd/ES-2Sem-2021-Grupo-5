@@ -183,7 +183,6 @@ public class MainWindow {
         importProjectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(!importPathTextField.getText().isEmpty()) {
-                	System.out.println(importPathTextField.getText());
                 	showImportedData(importPathTextField.getText()); //showImportedData(getFileName(importPathTextField.getText()));
                 } else {
                 	JOptionPane.showMessageDialog(importProjectButton, "Preencha o path do ficheiro");

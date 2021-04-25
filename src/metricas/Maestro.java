@@ -179,7 +179,7 @@ public class Maestro {
 		shortPath = absolutePath.substring(stringLength);
 		shortPath = shortPath.replace("\\", ".");
 		shortPath = shortPath.replace(".java", "");
-		if(shortPath.split(".").length == 1)
+		if(shortPath.split("\\.").length < 2)
 			shortPath = "defaultPackage." +  shortPath;
 		return shortPath;
 	}
