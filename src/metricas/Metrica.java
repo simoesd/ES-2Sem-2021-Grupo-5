@@ -45,9 +45,9 @@ public abstract class Metrica extends MetricRegistry {
 								  Pattern.compile("\"(.*?)\""), //Pattern para reconhecer e retirar elementos entre (' ')
 								  Pattern.compile("//.*|/\\*((.|\\n)(?!=*/))+\\*/") }; 	//Pattern para reconhecer e retirar elementos entre (// \n || /* */)
 			Counter counter = new Counter();
-			Boolean isMethod, isMultiLineComment = false;
+			Boolean addLine, isMethod, isMultiLineComment= false;
 			while (sc.hasNextLine()) {
-				isMethod = false; 
+				addLine = false; 
 				String line = sc.nextLine();
 				for(Pattern p: patterns) {
 					Matcher matcher = p.matcher(line);
@@ -65,23 +65,26 @@ public abstract class Metrica extends MetricRegistry {
 	                  else 
 	                	  line = "";
 				}
+				if((line.contains(" class ") || line.contains(" enum "))) {
+					isMethod = false;
+				}
 				char[] charLine = line.toCharArray();
 				for(int i = 0; i != charLine.length; i++) {
-					if(!isMultiLineComment && charLine[i] == '{' /*&& (!line.contains(" class ") || !line.contains(" enum "))*/) {
+					if(!isMultiLineComment && charLine[i] == '{' ) {
 						switch(incr) { 
 						case -1: // Começou a class
 							incr++;
 							break;
 						case 0: //Começou o método
 							incr++;
-							isMethod = true;
+							addLine = true;
 							counter = new Counter();
 							System.out.println(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
 							counter = counter(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
 							break;
 						default: //Adicionar linha ao methodCode
 							incr++;
-							isMethod = true;
+							addLine = true;
 							break;
 						}
 					}else if(!isMultiLineComment && charLine[i] == '}') {
@@ -91,21 +94,21 @@ public abstract class Metrica extends MetricRegistry {
 							break;
 						case 1: //Acabou o método
 							incr--;
-							isMethod = true;
+							addLine = true;
 							applyMetricFilter(methodCode, counter);
 							methodCode = new String("");
 							break;
 						default: //Adicionar linha ao methodCode
 							incr--;
-							isMethod = true;
+							addLine = true;
 							break;					
 						}
 					}else{
 						if(incr > 0) //Linha dentro de um método
-							isMethod = true;
+							addLine = true;
 					}
 				}
-				if(!isMultiLineComment && isMethod) {
+				if(!isMultiLineComment && addLine) {
 					methodCode = methodCode + "\n" + line;
 				}
 			}
