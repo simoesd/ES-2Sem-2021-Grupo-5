@@ -12,7 +12,29 @@ public class Line {
 	private int methodID;
 	private String pkg, cls, method; //package, class and method names
 
-    public HashMap<String, String> metrics = new HashMap<>();
+    private HashMap<String, String> metrics = new HashMap<>();
+    
+    public Line()
+    {
+        
+    }
+    
+    public Line(int methodID, String pkg, String cls, String method)
+    {
+        this.methodID = methodID;
+        this.pkg = pkg;
+        this.cls = cls;
+        this.method = method;
+    }
+    
+    public Line(int methodID, String pkg, String cls, String method, HashMap<String, String> metrics)
+    {
+        this.methodID = methodID;
+        this.pkg = pkg;
+        this.cls = cls;
+        this.method = method;
+        this.metrics = metrics;
+    }
 
 	public void setValues(Iterator<Cell> columnNameIterator, Iterator<Cell> metricValueIterator) {
 		Cell valueCell = metricValueIterator.next();
@@ -84,6 +106,16 @@ public class Line {
 	    columnNames.addAll(getMetrics().keySet());
         
 	    return columnNames.toArray(new String[0]);
+	}
+	
+	public void addMetric(String metricName, String metric)
+	{
+	    metrics.put(metricName, metric);
+	}
+	
+	public void addMetrics(HashMap<String, String> metrics)
+	{
+	    metrics.putAll(metrics);
 	}
 
 }

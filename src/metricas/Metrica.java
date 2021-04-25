@@ -11,6 +11,7 @@ public abstract class Metrica extends MetricRegistry {
 	private Maestro metricas;
 	private String packageClassName;
 	private Thread myThread;
+	public String metricName;
 
 	public Metrica(Maestro metricas) {
 		super();
@@ -119,6 +120,11 @@ public abstract class Metrica extends MetricRegistry {
 
 	protected void setPackageClassName(String packageClassName) {
 		this.packageClassName = packageClassName;
+	}
+	
+	public String getMetricName()
+	{
+	    return metricName;
 	}
 
 }

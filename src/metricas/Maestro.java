@@ -10,9 +10,13 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import reader.Line;
+import rules.Rule;
+
 public class Maestro {
 
 	private ArrayList<Metrica> metrics;
+	private ArrayList<Rule> rules;
 
 	private String projectDirectory;
 	private static String SOURCE_CODE_LOCATION = "\\src";
@@ -97,11 +101,13 @@ public class Maestro {
 				if (s.contains(u)) {
 					String temp2 = s;
 					temp2 = s.replace(".", "/");
-					String[] splitted2 = temp2.split("/");
-					String nameMtd = splitted2[2];
+					String[] split2 = temp2.split("/");
+					String nameMtd = split2[2];
 					String CYCLO_method = String.valueOf(getCYCLO_method().getCounters().get(s).getCount());
 					String LOC_method = String.valueOf(getLOC_method().getCounters().get(s).getCount());
-					String[] line = {namePck , nameClass , nameMtd , NOM_class , LOC_class , WMC_class , "true" , LOC_method  , CYCLO_method , "true" };
+					String[] line = {NOM_class, LOC_class, WMC_class, LOC_method, CYCLO_method};
+					
+					Line lineTemp = new Line(incrementer, namePck, nameClass, nameMtd); 
 					try {
 						writeExcel(sheet, line);
 					} catch (IOException e) {

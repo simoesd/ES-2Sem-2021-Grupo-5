@@ -13,6 +13,7 @@ public class NOM_class extends Metrica {
 
 	public NOM_class(Maestro metricas) {
 		super(metricas);
+		metricName = "NOM_class";
 	}
 
 	@Override

@@ -1,160 +1,125 @@
 package rules;
 
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import reader.Line;
 
-public class Rule {
+public class Rule implements Serializable{
     public String ruleName;
     
-    public String firstMetric;              //
-    public String firstThresholdOperator;   // These make up the first "condition" of the rule
-    public int firstThresholdValue;         //
+    public List<Condition> conditions = new ArrayList<>();
+    public List<Integer> logicOperators = new ArrayList<>();
     
-    public String logicOperator;
-    
-    public String secondMetric;              //
-    public String secondThresholdOperator;   // These make up the second "condition" of the rule
-    public int secondThresholdValue;             //
-    
-    public static final String LESS_THAN = "lt";
-    public static final String LESS_THAN_EQUAL = "lte";
-    public static final String GREATER_THAN = "gt";
-    public static final String GREATER_THAN_EQUAL = "gte";
-    
-    public static final String AND = "AND";
-    public static final String OR = "OR";
+    public static final int AND = 0;
+    public static final int OR = 1;
 
     
     public static void main(String[] args) { //TODO main temporário
-        Line line = new Line();
-        line.metrics.put("NOM_class", "29");
-        line.metrics.put("LOC_class", "1371");
-        line.metrics.put("WMC_class", "328");
-        line.metrics.put("LOC_method", "3");
-        line.metrics.put("CYCLO_method", "1");
+        Line line = new Line(0, "123", "123", "123");
+        line.addMetric("NOM_class", "29");
+        line.addMetric("LOC_class", "1371");
+        line.addMetric("WMC_class", "328");
+        line.addMetric("LOC_method", "3");
+        line.addMetric("CYCLO_method", "1");
         
-        ArrayList<Rule> rules = new ArrayList<>();
+//        ArrayList<Rule> rules = new ArrayList<>();
+//        
+//        Condition condition1 = new Condition("LOC_method", Condition.GREATER_THAN, 50);
+//        Condition condition2 = new Condition("CYCLO_method", Condition.GREATER_THAN, 10);
+//        Condition condition3 = new Condition("WMC_class", Condition.GREATER_THAN, 50);
+//        Condition condition4 = new Condition("NOM_class", Condition.GREATER_THAN, 10);
+//        Rule long_method = new Rule("long_method", condition1);
+//        long_method.addCondition(condition2, AND);
+//        Rule god_class = new Rule("god_class", condition3);
+//        god_class.addCondition(condition4, OR);
+//        
+//        rules.add(long_method);
+//        rules.add(god_class);
         
-        Rule long_method = new Rule("long_method", "LOC_method", "gt", 50, "AND", "CYCLO_method", "gt", 10);
-        Rule god_class = new Rule("god_class", "WMC_class", "gt", 50, "OR", "NOM_class", "gt", 10);
+        Map.Entry<String, List<Rule>> entry = RuleFileManager.readRules().entrySet().iterator().next();
         
-        rules.add(long_method);
-        rules.add(god_class);
+        List<Rule> rules = entry.getValue();
         
         for (Rule rule: rules) {
             boolean ruleValue = rule.evaluateRule(line);
-            line.metrics.put(rule.ruleName, Boolean.toString(ruleValue));
+            line.addMetric(rule.ruleName, Boolean.toString(ruleValue));
         }
-        Set<String> keys = line.metrics.keySet();
-        for (Map.Entry<String, String> entry: line.metrics.entrySet())
+        Set<String> keys = line.getMetrics().keySet();
+        for (Map.Entry<String, String> entry2: line.getMetrics().entrySet())
         {
-            System.out.println(entry.getKey() + ": "+ entry.getValue());
+            System.out.println(entry2.getKey() + ": "+ entry2.getValue());
         }
+        
+        System.out.println(entry.getKey());
+        RuleFileManager.clearHistory();
+//        RuleFileManager.writeEntry(rules);
     }
     
-    
-
-    public Rule(String ruleName, String firstMetric, String firstThresholdOperator, int firstThresholdValue) {
+    public Rule(String ruleName, Condition condition)
+    {
         this.ruleName = ruleName;
-        this.firstMetric = firstMetric;
-        this.firstThresholdOperator = firstThresholdOperator;
-        this.firstThresholdValue = firstThresholdValue;
+        this.conditions.add(condition);
     }
-
-    public Rule(String ruleName, String firstMetric, String firstThresholdOperator, int firstThresholdValue, String logicOperator, String secondMetric, String secondThresholdOperator, int secondThresholdValue) {   
+    
+    public Rule(String ruleName, String metric, int thresholdOperator, int thresholdValue)
+    {
         this.ruleName = ruleName;
-        this.firstMetric = firstMetric;
-        this.firstThresholdOperator = firstThresholdOperator;
-        this.firstThresholdValue = firstThresholdValue;
-        this.logicOperator = logicOperator;
-        this.secondMetric = secondMetric;
-        this.secondThresholdOperator =  secondThresholdOperator;
-        this.secondThresholdValue = secondThresholdValue;
+        this.conditions.add(new Condition(metric, thresholdOperator, thresholdValue));
     }
     
+    public Rule(String ruleName, List<Condition> conditions, List<Integer> logicOperators)
+    {
+        if (logicOperators.size() != conditions.size() - 1)
+            throw new IllegalArgumentException();
+        this.ruleName = ruleName;
+        this.conditions = conditions;
+        this.logicOperators = logicOperators;
+    }
     
+    public void addCondition(Condition condition, Integer logicOperator)
+    {
+        this.conditions.add(condition);
+        this.logicOperators.add(logicOperator);
+    }
+    
+    public void addConditions(List<Condition> conditions, List<Integer> logicOperators) throws IllegalArgumentException
+    {
+        if (logicOperators.size() != conditions.size() - 1)
+            throw new IllegalArgumentException();
+        this.conditions.addAll(conditions);
+        this.logicOperators.addAll(logicOperators);
+    }
     
     public boolean evaluateRule(Line lineToEvaluate) {
-        HashMap<String, String> metrics = lineToEvaluate.getMetrics();
-        int firstMetricValue = Integer.parseInt(metrics.get(firstMetric));
-        boolean firstConditionValue = evaluateCondition(firstMetricValue, firstThresholdValue);
-        
-        if (logicOperator.isEmpty())
-            return firstConditionValue;
-        
-        int secondMetricValue = Integer.parseInt(metrics.get(secondMetric));
-        boolean secondConditionValue = evaluateCondition(secondMetricValue, secondThresholdValue);
-        
-        boolean fullExpressionValue = false;
+        boolean result = conditions.get(0).evaluateCondition(lineToEvaluate);
+        int i = 0;
+        for (int logicOperator: logicOperators)
+        {
+            result = compareConditions(result, logicOperator, conditions.get(++i).evaluateCondition(lineToEvaluate));
+        }
+        return result;
+    }
+    
+    public boolean compareConditions(boolean firstConditionValue, int logicOperator, boolean secondConditionValue)
+    {
+        boolean result = false;
         switch (logicOperator) {
             case AND:
-                fullExpressionValue = firstConditionValue && secondConditionValue;
+                result = firstConditionValue && secondConditionValue;
                 break;
             case OR:
-                fullExpressionValue = firstConditionValue || secondConditionValue;
+                result = firstConditionValue || secondConditionValue;
                 break;
         }
-        return fullExpressionValue;
+        return result;
     }
-    
-    public boolean evaluateCondition(int metricValue, int thresholdValue) {
-        boolean conditionValue = false;
-        switch (secondThresholdOperator) {
-            case LESS_THAN:
-                conditionValue = metricValue < thresholdValue;
-                break;
-            case LESS_THAN_EQUAL:
-                conditionValue = metricValue <= thresholdValue;
-                break;
-            case GREATER_THAN:
-                conditionValue = metricValue > thresholdValue;
-                break;
-            case GREATER_THAN_EQUAL:
-                conditionValue = metricValue >= thresholdValue;
-                break;
-            default:
-                break;
-        }
-        return conditionValue;
-    }
-    
-
-    public void setRuleName(String ruleName) {
-        this.ruleName = ruleName;
-    }
-
-    public void setFirstMetric(String firstMetric) {
-        this.firstMetric = firstMetric;
-    }
-
-    public void setFirstThresholdOperator(String firstThresholdOperator) {
-        this.firstThresholdOperator = firstThresholdOperator;
-    }
-
-    public void setFirstThresholdValue(int firstThresholdValue) {
-        this.firstThresholdValue = firstThresholdValue;
-    }
-
-    public void setLogicOperator(String logicOperator) {
-        this.logicOperator = logicOperator;
-    }
-
-    public void setSecondMetric(String secondMetric) {
-        this.secondMetric = secondMetric;
-    }
-    
-    public void setSecondThresholdOperator(String secondThresholdOperator) {
-        this.secondThresholdOperator = secondThresholdOperator;
-    }
-    
-    public void setSecondThresholdValue(int secondThresholdValue) {
-        this.secondThresholdValue = secondThresholdValue;
-    }
-    
     
     
 }
