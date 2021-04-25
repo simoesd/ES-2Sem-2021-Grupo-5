@@ -4,8 +4,6 @@ package metricas;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.codahale.metrics.Counter;
 
@@ -18,15 +16,13 @@ public class CYCLO_method extends Metrica {
 	}
 
 	@Override
-	protected void extractMetrics() {
-		
+	protected void extractMetrics() {		
 		ArrayList<File> filesInDirectory = getMaestro().getFilesInDirectory();
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
 			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
 			filterCode(file);
 		}
-
 	}
 
 	@Override
@@ -46,7 +42,5 @@ public class CYCLO_method extends Metrica {
 			}		   
 		}
 		scanner.close();
-	}
-	
-	
+	}	
 }

@@ -4,13 +4,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.codahale.metrics.Counter;
 
 public class LOC_class extends Metrica {
 
-	private boolean enteredClass = false;
-	private Counter className;
+	private Counter counter;
 
 	public LOC_class(Maestro metricas) {
 		super(metricas);
@@ -22,36 +23,43 @@ public class LOC_class extends Metrica {
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
 			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
-			className = new Counter();
-			className = this.counter(getPackageClassName());
+			counter = new Counter();
+			counter = this.counter(getPackageClassName());
 			filterCode(file);
-			enteredClass = false;
 		}
 	}
 
 	@Override
-	protected void applyMetricFilter(String s, Counter counter) { //este programa ainda conta como 2 linhas 1 linha que foi separada em duas 
-		s = s.trim();
-		if (enteredClass ==false) {
-			if (isClass(s)) {
-				enteredClass = true;
-			}
-		} else {
-				if (!s.startsWith("//") && !s.startsWith("*") && !s.startsWith("@") && !s.startsWith("/*")) { //não lida totalmente com os blocos de comentario
-					if (!s.equals("{") && !s.equals("}") && !s.isBlank()) {
-						className.inc();
-					}
-				}
-		}
+	protected void applyMetricFilter(String s, Counter counter) { 
+		s = s.replaceAll("\t", "");
+		if(s != "" && !(s.startsWith("package") || s.startsWith("import")))
+			counter.inc();
 	}
 	
 	@Override
 	protected void filterCode(File file) {
         try {
             Scanner sc = new Scanner(file);
+            Pattern pattern = Pattern.compile("//.*|/\\*((.|\\n)(?!=*/))+\\*/"); //Pattern para reconhecer e retirar elementos entre // \n || /* */
+            boolean isMultiLineComment= false;            
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
-                applyMetricFilter(line, null);
+				Matcher matcher = pattern.matcher(line);
+				while (matcher.find()) {
+					    line = line.replace(matcher.group(), "");
+				}
+                if(line.contains("/*") ) { // É o ínicio de um MultiLineComment "/*"
+                    isMultiLineComment = true;
+                    line = line.split("/*")[0];
+    			}else if(line.contains("*/") ) { // É o final de um MultiLineComment "*/"
+                    isMultiLineComment = false;
+                    if(line.length() < 2)
+                  	  line = line.split("*/", 1)[1];
+                    else 
+                  	  line = "";
+    			}
+                if(!isMultiLineComment)
+                	applyMetricFilter(line, counter);
             }
             sc.close();
         } catch (FileNotFoundException e) {

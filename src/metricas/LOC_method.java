@@ -1,16 +1,12 @@
 package metricas;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import com.codahale.metrics.Counter;
 
 public class LOC_method extends Metrica {
-
-	// private final String filter = "class";
-		private Counter methodName = new Counter();
 
 	public LOC_method(Maestro metricas) {
 		super(metricas);
@@ -26,18 +22,13 @@ public class LOC_method extends Metrica {
 		}
 	}	
 	
-	protected void applyMetricFilter(String s, Counter counter) { // não lida totalmente com blocos de comentário nem metodos internos a outros
-		// métodos. também há interferencias na definicão de vetores entre
-		s = s.trim();
-		String[] line = s.split(" ");
-		String temp = getMethodName(s, line);
-		
-		if (!s.startsWith("//") && !s.startsWith("*") && !s.startsWith("@") && !s.startsWith("/*") && !s.endsWith("*/")) {
-			} else { // estamos dentro do método
-				if (!s.equals("{") && !s.equals("}") && !s.isBlank()) {
-					methodName.inc();
-				}
-			}
+	protected void applyMetricFilter(String s, Counter counter) {
+		Scanner scanner = new Scanner(s);
+		while (scanner.hasNextLine()) {
+			scanner.nextLine();
+			counter.inc();	   
+		}
+		scanner.close();
 	}
 	
 }

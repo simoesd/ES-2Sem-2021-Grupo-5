@@ -36,7 +36,7 @@ public abstract class Metrica extends MetricRegistry {
 
 	protected abstract void applyMetricFilter(String line, Counter counter);
 
-	protected void filterCode(File file) {
+	protected synchronized void filterCode(File file) {
 		try {
 			Scanner sc = new Scanner(file);
 			int incr = -1;
@@ -45,7 +45,7 @@ public abstract class Metrica extends MetricRegistry {
 								  Pattern.compile("\"(.*?)\""), //Pattern para reconhecer e retirar elementos entre " "
 								  Pattern.compile("//.*|/\\*((.|\\n)(?!=*/))+\\*/") }; 	//Pattern para reconhecer e retirar elementos entre // \n || /* */
 			Counter counter = new Counter();
-			Boolean addLine, isClassOrEnum = false, isMultiLineComment= false;
+			boolean addLine, isClassOrEnum = false, isMultiLineComment= false;
 			while (sc.hasNextLine()) {
 				addLine = false;
 				String line = sc.nextLine();
@@ -67,7 +67,6 @@ public abstract class Metrica extends MetricRegistry {
 				}
 				if(!isMultiLineComment && incr == 0 && (line.contains(" class ") || line.contains(" enum "))) { //Deteção de classes aninhadas e enums
 					isClassOrEnum = true;
-					System.out.println(line);
 				}
 				char[] charLine = line.toCharArray();
 				for(int i = 0; i != charLine.length; i++) {
@@ -81,7 +80,6 @@ public abstract class Metrica extends MetricRegistry {
 							if(!isClassOrEnum) {							
 								addLine = true;
 								counter = new Counter();
-								System.out.println(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
 								counter = counter(getPackageClassName() + "." + getMethodName(line, line.split(" ")));
 							}
 							break;
@@ -95,7 +93,6 @@ public abstract class Metrica extends MetricRegistry {
 						switch(incr) {
 						case 0: // Acabou a class
 							incr--;
-							System.out.println(line);
 							break;
 						case 1: //Acabou o método
 							incr--;
