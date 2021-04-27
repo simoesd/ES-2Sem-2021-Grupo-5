@@ -53,7 +53,7 @@ public class MainWindow {
 	private JPanel panel_3;
 	private ArrayList<RuleGUI> rulesGUI = new ArrayList<>();
 //	private ArrayList<Rule> rules = new ArrayList<>();
-	private int incrementer = 1;
+	private int incrementerRemoves = 1;
 
 	/**
 	 * Launch the application.
@@ -137,7 +137,7 @@ public class MainWindow {
 				for (int i = 0; i < tempRules.size(); i++) {
 					if (tempRules.get(i).getCheckbox().isSelected()) {
 						rulesGUI.remove(tempRules.get(i));
-						incrementer--;
+						incrementerRemoves--;
 					}
 				}
 
@@ -162,7 +162,7 @@ public class MainWindow {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (incrementer <= 5) {
+				if (incrementerRemoves <= 5) {
 					ruleTitle.setVisible(true);
 					JPanel panel_1 = new JPanel();
 					panel.add(panel_1);
@@ -214,16 +214,16 @@ public class MainWindow {
 					enableDefaultValue(value1, "0");
 					panel_1.add(value1);
 
-					JButton addConditionButton = new JButton("Add Condition");
-					panel_1.add(addConditionButton);
-					addConditionButton.addActionListener(new ActionListener() {
+					JButton add2ndConditionButton = new JButton("Add Condition");
+					panel_1.add(add2ndConditionButton);
+					add2ndConditionButton.addActionListener(new ActionListener() {
 
 						@Override
 						public void actionPerformed(ActionEvent e) {
 
-							JComboBox logicOp = new JComboBox();
-							logicOp.setModel(new DefaultComboBoxModel(new String[] { "AND", "OR" }));
-							panel_1.add(logicOp);
+							JComboBox logicOp1 = new JComboBox();
+							logicOp1.setModel(new DefaultComboBoxModel(new String[] { "AND", "OR" }));
+							panel_1.add(logicOp1);
 
 							JComboBox metric2 = new JComboBox();
 							metric2.setModel(new DefaultComboBoxModel(new String[] { "CYCLO_METHOD", "LOC_METHOD",
@@ -243,29 +243,94 @@ public class MainWindow {
 
 							for (RuleGUI r : rulesGUI) {
 								if (r.getPanel_1() == panel_1) {
-									r.addConditionRule(logicOp, metric2, mathSymbol2, value2);
+									r.add2ndConditionRule(logicOp1, metric2, mathSymbol2, value2);
 								}
 							}
-							addConditionButton.setVisible(false);
-							addConditionButton.setEnabled(false);
-							JButton removeRuleCondition = new JButton("Remove Condition");
-							panel_1.add(removeRuleCondition);
+							add2ndConditionButton.setVisible(false);
+							add2ndConditionButton.setEnabled(false);
+							JButton removeRule2ndCondition = new JButton("Remove Condition");
+							JButton add3rdConditionButton = new JButton("Add Condition");
+							panel_1.add(add3rdConditionButton);
+							add3rdConditionButton.addActionListener(new ActionListener() {
 
-							removeRuleCondition.addActionListener(new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									removeRule2ndCondition.setVisible(false);
+									removeRule2ndCondition.setEnabled(false);
+									JComboBox logicOp2 = new JComboBox();
+									logicOp2.setModel(new DefaultComboBoxModel(new String[] { "AND", "OR" }));
+									panel_1.add(logicOp2);
+
+									JComboBox metric3 = new JComboBox();
+									metric3.setModel(new DefaultComboBoxModel(new String[] { "CYCLO_METHOD",
+											"LOC_METHOD", "LOC_CLASS", "WMC_CLASS", "NOM_CLASS" }));
+									panel_1.add(metric3);
+
+									JComboBox mathSymbol3 = new JComboBox();
+									mathSymbol3.setModel(
+											new DefaultComboBoxModel(new String[] { ">", "<", "\u2265", "\u2264" }));
+									panel_1.add(mathSymbol3);
+
+									JTextField value3 = new JTextField();
+									value3.setColumns(10);
+									value3.setHorizontalAlignment(SwingConstants.CENTER);
+									enableDefaultValue(value3, "0");
+									panel_1.add(value3);
+
+									for (RuleGUI r : rulesGUI) {
+										if (r.getPanel_1() == panel_1) {
+											r.add3rdConditionRule(logicOp2, metric3, mathSymbol3, value3);
+										}
+									}
+									add3rdConditionButton.setVisible(false);
+									add3rdConditionButton.setEnabled(false);
+									JButton removeRule3rdCondition = new JButton("Remove Condition");
+									panel_1.add(removeRule3rdCondition);
+
+									removeRule3rdCondition.addActionListener(new ActionListener() {
+
+										@Override
+										public void actionPerformed(ActionEvent e) {
+											for (RuleGUI r : rulesGUI) {
+												if (r.getPanel_1() == panel_1) {
+													r.getLogicOp2().setVisible(false);
+													r.getMetric3().setVisible(false);
+													r.getMathSymbol3().setVisible(false);
+													r.getValue3().setVisible(false);
+													r.remove3rdConditionRule();
+													removeRule3rdCondition.setVisible(false);
+													removeRule3rdCondition.setEnabled(false);
+													removeRule2ndCondition.setVisible(true);
+													removeRule2ndCondition.setEnabled(true);
+													add3rdConditionButton.setVisible(true);
+													add3rdConditionButton.setEnabled(true);
+
+												}
+											}
+										}
+									});
+									mainPanel.updateUI();
+								}
+							});
+							panel_1.add(removeRule2ndCondition);
+
+							removeRule2ndCondition.addActionListener(new ActionListener() {
 
 								@Override
 								public void actionPerformed(ActionEvent e) {
 									for (RuleGUI r : rulesGUI) {
 										if (r.getPanel_1() == panel_1) {
-											r.getLogicOp().setVisible(false);
+											r.getLogicOp1().setVisible(false);
 											r.getMetric2().setVisible(false);
 											r.getMathSymbol2().setVisible(false);
 											r.getValue2().setVisible(false);
-											r.removeConditionRule();
-											removeRuleCondition.setVisible(false);
-											removeRuleCondition.setEnabled(false);
-											addConditionButton.setVisible(true);
-											addConditionButton.setEnabled(true);
+											r.remove2ndConditionRule();
+											removeRule2ndCondition.setVisible(false);
+											removeRule2ndCondition.setEnabled(false);
+											add3rdConditionButton.setVisible(false);
+											add3rdConditionButton.setEnabled(false);
+											add2ndConditionButton.setVisible(true);
+											add2ndConditionButton.setEnabled(true);
 
 										}
 									}
@@ -278,7 +343,7 @@ public class MainWindow {
 					RuleGUI rule = new RuleGUI(panel_1, ruleName, metric1, mathSymbol1, value1, checkbox);
 					rulesGUI.add(rule);
 					mainPanel.updateUI();
-					incrementer++;
+					incrementerRemoves++;
 				} else {
 					JOptionPane.showMessageDialog(panel, "Atingiu o limite de 5 regras");
 				}
@@ -329,42 +394,50 @@ public class MainWindow {
 						String mathSymbol1 = getMathSymbolString(rg.getMathSymbol1().getSelectedIndex());
 						int value1 = Integer.parseInt(rg.getValue1().getText());
 
-						if (rg.getLogicOp() != null) {
-							String logicOp = rg.getLogicOp().getSelectedItem().toString();
+						if (rg.getLogicOp1() != null) {
+							String logicOp1 = rg.getLogicOp1().getSelectedItem().toString();
 							String metric2 = rg.getMetric2().getSelectedItem().toString();
 							String mathSymbol2 = getMathSymbolString(rg.getMathSymbol2().getSelectedIndex());
 							int value2 = Integer.parseInt(rg.getValue2().getText());
 
-//						Rule r = new Rule(title, metric1, mathSymbol1, value1, logicOp, metric2, mathSymbol2, value2);
+//						Rule r = new Rule(title, metric1, mathSymbol1, value1, logicOp1, metric2, mathSymbol2, value2);
 //						rules.add(r);
 						}
+						if (rg.getLogicOp2() != null) {
+							String logicOp2 = rg.getLogicOp2().getSelectedItem().toString();
+							String metric3 = rg.getMetric3().getSelectedItem().toString();
+							String mathSymbol3 = getMathSymbolString(rg.getMathSymbol3().getSelectedIndex());
+							int value3 = Integer.parseInt(rg.getValue3().getText());
+//							Rule r = new Rule(title, metric1, mathSymbol1, value1, logicOp1, metric2, mathSymbol2, value2, logicOp2, metric3, mathSymbol3, value3);
+//							rules.add(r);
+						}
+
 //					Rule r = new Rule(title, metric1, mathSymbol1, value1);
 //					rules.add(r);
 
 					}
-				}
+//					String resultsFilePath = maestro.startMetricCounters(rules);
+					String resultsFilePath = maestro.startMetricCounters();
 
-//				String resultsFilePath = maestro.startMetricCounters(rules);
-				String resultsFilePath = maestro.startMetricCounters();
+					ImageIcon tempIcon = new ImageIcon("src/icons/excel.png");
+					Image tempImg = tempIcon.getImage();
+					BufferedImage bi = new BufferedImage(40, 40, BufferedImage.TYPE_INT_ARGB);
+					Graphics g = bi.createGraphics();
+					g.drawImage(tempImg, 0, 0, 40, 40, null, null);
+					ImageIcon popupIcon = new ImageIcon(bi);
 
-				ImageIcon tempIcon = new ImageIcon("src/icons/excel.png");
-				Image tempImg = tempIcon.getImage();
-				BufferedImage bi = new BufferedImage(40, 40, BufferedImage.TYPE_INT_ARGB);
-				Graphics g = bi.createGraphics();
-				g.drawImage(tempImg, 0, 0, 40, 40, null, null);
-				ImageIcon popupIcon = new ImageIcon(bi);
+					Object[] popupOptions = { "Sim", "Não" };
+					int popupResult = JOptionPane.showOptionDialog(frame,
+							"Análise completa com sucesso! Deseja visualizar os resultados?", "Análise completa!",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, popupIcon, popupOptions,
+							popupOptions[0]);
 
-				Object[] popupOptions = { "Sim", "Não" };
-				int popupResult = JOptionPane.showOptionDialog(frame,
-						"Análise completa com sucesso! Deseja visualizar os resultados?", "Análise completa!",
-						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, popupIcon, popupOptions,
-						popupOptions[0]);
+					if (popupResult == 0)
+						showImportedData(resultsFilePath);
+					else {
 
-				if (popupResult == 0)
-					showImportedData(resultsFilePath);
-				else {
-
-					mainPanel.updateUI();
+						mainPanel.updateUI();
+					}
 				}
 
 			}
@@ -421,23 +494,79 @@ public class MainWindow {
 		boolean isValid = true;
 		for (RuleGUI rg : rulesGUI) {
 			try {
+				String firstMetric = rg.getMetric1().getSelectedItem().toString();
+				ArrayList<String> validClassMetrics = new ArrayList<>();
+				validClassMetrics.add("LOC_CLASS");
+				validClassMetrics.add("WMC_CLASS");
+				validClassMetrics.add("NOM_CLASS");
+
+				ArrayList<String> validMethodMetrics = new ArrayList<>();
+				validClassMetrics.add("CYCLO_METHOD");
+				validClassMetrics.add("LOC_METHOD");
+
+				if (rg.getMetric2() != null && rg.getMetric3() != null) {
+					String secondMetric = rg.getMetric2().getSelectedItem().toString();
+					String thirdMetric = rg.getMetric3().getSelectedItem().toString();
+					
+					if ((firstMetric.contains("CLASS") && secondMetric.contains("CLASS")
+							&& thirdMetric.contains("CLASS"))
+							|| (firstMetric.contains("METHOD") && secondMetric.contains("METHOD")
+									&& thirdMetric.contains("METHOD"))) {
+//						if(firstMetric.){
+//							
+//						}
+					
+
+//					} else if (!(validMethodMetrics.contains(firstMetric) && validMethodMetrics.contains(secondMetric)
+//							&& validMethodMetrics.contains(thirdMetric))) {
+//						System.out.println("OLA BICHAS 2");
+//						isValid=false;
+//						throw new Exception();
+					} else {
+						System.out.println("OLA BICHAS 1");
+						isValid = false;
+						throw new Exception();
+					}
+
+				} else if (rg.getMetric2() != null && rg.getMetric3() == null) {
+					String secondMetric = rg.getMetric2().getSelectedItem().toString();
+					if ((firstMetric.contains("CLASS") && secondMetric.contains("CLASS"))
+							|| (firstMetric.contains("METHOD") && secondMetric.contains("METHOD"))) {
+
+//					} else if (!(validMethodMetrics.contains(firstMetric) && validMethodMetrics.contains(secondMetric))) {
+//						System.out.println("OLA BICHAS 4");
+//						isValid=false;
+//						throw new Exception();
+						
+					} else {
+						System.out.println("OLA BICHAS 3");
+						isValid = false;
+						throw new Exception("asdasdas");
+					}
+				}
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(panel, e.getMessage());
+				return isValid;
+			}
+			try {
 				Integer.parseInt(rg.getValue1().getText());
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(panel, "Certifique-se que inseriu corretamente os valores");
 				isValid = false;
-				break;
+				return isValid;
 			}
 
-			if (rg.getLogicOp() != null) {
+			if (rg.getLogicOp1() != null) {
 				try {
 					Integer.parseInt(rg.getValue2().getText());
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(panel, "Certifique-se que inseriu corretamente os valores");
 					isValid = false;
-					break;
+					return isValid;
 				}
 			}
 		}
+
 		return isValid;
 	}
 
