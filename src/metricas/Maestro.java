@@ -61,19 +61,15 @@ public class Maestro {
 		try {
 			String projetctDirectory = getProjectDirectory();
 			projetctDirectory=projetctDirectory.replace("\\", "/");
-			String b[]=projetctDirectory.split("/");
-					
+			String b[]=projetctDirectory.split("/");					
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet();
 			createHeaderExcel(sheet);
-			exportResults(sheet);
-			
+			exportResults(sheet);			
 			FileOutputStream fos = new FileOutputStream(getProjectDirectory() + "\\" + b[b.length -1] + "_metricas" + ".xlsx");
-			workbook.write(fos);
-			
+			workbook.write(fos);		
 			fos.close();
-			workbook.close();
-			
+			workbook.close();			
 			incrementer = 1;
 			return getProjectDirectory() + "\\" + b[b.length -1] + "_metricas" + ".xlsx";
 		} catch (IOException e) {
@@ -87,7 +83,6 @@ public class Maestro {
 		for (String u : getLOC_class().getCounters().keySet()) {			
 			String temp = u;
 			temp = u.replace("/", " ");
-			System.out.println("u: " + u);
 			String[] splitted = temp.split(" ");
 			String namePck = splitted[0];
 			String nameClass = splitted[1];
@@ -114,10 +109,8 @@ public class Maestro {
 	}
 
 	private void createHeaderExcel(XSSFSheet sheet) throws IOException {
-
 	    Row firstRow = sheet.createRow(incrementer);
 	    String[] header = {"MethodID","Package","Class","Method"," NOM_class","LOC_class","WMC_class","is_God_Class","LOC_method","CYCLO_method","is_Long_Method"};
-
         for (int i = 0; i < header.length; i++) {
             Cell cell = firstRow.createCell(i);
             cell.setCellValue(header[i]);
@@ -126,10 +119,8 @@ public class Maestro {
 	}
 
 	private void writeExcel(XSSFSheet sheet, String[] line) throws IOException {
-
 	    Row firstRow = sheet.createRow(incrementer);
-	    firstRow.createCell(0).setCellValue(incrementer);
-	    
+	    firstRow.createCell(0).setCellValue(incrementer);	    
         for (int i = 1; i < line.length + 1; i++) {
             Cell cell = firstRow.createCell(i);
             try {
@@ -179,7 +170,6 @@ public class Maestro {
         shortPath = absolutePath.substring(stringLength);
         shortPath = shortPath.replace("\\", ".");
         shortPath = shortPath.replace(".java", "");
-        System.out.println(shortPath);
         if(shortPath.split("\\.").length < 2)
             shortPath = "defaultPackage." +  shortPath;
         shortPath = shortPath.substring(0, shortPath.lastIndexOf(".")) + "/" + shortPath.substring(shortPath.lastIndexOf(".") + 1);

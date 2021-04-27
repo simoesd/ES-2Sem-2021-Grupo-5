@@ -50,10 +50,10 @@ public abstract class Metrica extends MetricRegistry {
 			methodCode = "";
 			while (sc.hasNextLine()) {
 				addLine = false;
-				line = sc.nextLine();
-				
+				line = sc.nextLine();				
 				filterOutJunk();	
 				
+
 				char[] charLine = line.toCharArray();
 				for(int i = 0; i != charLine.length; i++) {
 					if(!isMultiLineComment && charLine[i] == '{') {
@@ -169,17 +169,6 @@ public abstract class Metrica extends MetricRegistry {
         methodName = temp2[temp2.length-1] + "(" + temp3[0] + ")" ;
         return methodName;
     }
-
-//	private int positionArray(String[] lineArray, String s) {
-//		int posicaoArray = -1;
-//		for (int i = 0; i < lineArray.length; i++) {
-//			if (lineArray[i].contains(s)) {
-//				posicaoArray = i;
-//				break;
-//			}
-//		}
-//		return posicaoArray;
-//	}
 
 	protected Thread getThread() {
 		return myThread;
