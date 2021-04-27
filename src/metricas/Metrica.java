@@ -41,7 +41,7 @@ public abstract class Metrica extends MetricRegistry {
 		return t;
 	}
 
-	protected abstract void applyMetricFilter(String line);
+	protected abstract void applyMetricFilter(String methodCode);
 
 	protected void filterCode(File file) {
 		try {

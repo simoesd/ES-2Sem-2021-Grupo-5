@@ -26,16 +26,16 @@ public class CYCLO_method extends Metrica {
 	
 	
 	@Override
-	protected void applyMetricFilter(String s) {  
-		Scanner scanner = new Scanner(s);
+	protected void applyMetricFilter(String methodCode) {  
+		Scanner scanner = new Scanner(methodCode);
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();
 			String[] splitLine = line.split(" ");
 			String[] filterToApply = filter.split(",");
-			for (String l : splitLine) {
-				l = l.replaceAll("\t", "");
+			for (String word : splitLine) {
+				word = word.replaceAll("\t", "");
 				for (String f : filterToApply) {
-					if (l.equals(f) || l.startsWith(f + "(")) {
+					if (word.equals(f) || word.startsWith(f + "(")) {
 						counter.inc();
 					}
 				}

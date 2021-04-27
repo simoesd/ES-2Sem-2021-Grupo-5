@@ -24,8 +24,8 @@ public class LOC_method extends Metrica {
 	}	
 	
 	@Override
-	protected void applyMetricFilter(String s) {
-		Scanner scanner = new Scanner(s);
+	protected void applyMetricFilter(String methodCode) {
+		Scanner scanner = new Scanner(methodCode);
 		while (scanner.hasNextLine()) {
 			scanner.nextLine();
 			counter.inc();	   

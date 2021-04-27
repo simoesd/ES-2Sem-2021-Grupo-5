@@ -24,9 +24,9 @@ public class WMC_class extends Metrica {
 			String absolutePath = file.getAbsolutePath();
 			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
 			counter=counter(getPackageClassName());
-			for (String s : cycloSortedMap.keySet()) {
-				if (s.contains(getPackageClassName())) {
-					counter.inc(cycloSortedMap.get(s).getCount());
+			for (String counterName : cycloSortedMap.keySet()) {
+				if (counterName.contains(getPackageClassName())) {
+					counter.inc(cycloSortedMap.get(counterName).getCount());
 				}
 			}
 		}
@@ -34,6 +34,6 @@ public class WMC_class extends Metrica {
 	}
 
 	@Override
-	protected void applyMetricFilter(String line) {}
+	protected void applyMetricFilter(String methodCode) {}
 
 }

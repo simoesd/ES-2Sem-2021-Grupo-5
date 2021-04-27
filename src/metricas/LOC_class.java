@@ -27,9 +27,9 @@ public class LOC_class extends Metrica {
 	}
 	
 	@Override
-	protected void applyMetricFilter(String s) { 
-		s = s.replaceAll("\t", "");
-		if(s != "" && !(s.startsWith("package") || s.startsWith("import")))
+	protected void applyMetricFilter(String methodCode) { 
+		methodCode = methodCode.replaceAll("\t", "");
+		if(methodCode != "" && !(methodCode.startsWith("package") || methodCode.startsWith("import")))
 			counter.inc();
 	}
 	
