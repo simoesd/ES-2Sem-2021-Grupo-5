@@ -14,6 +14,7 @@ public class WMC_class extends Metrica {
 	public WMC_class(Maestro metricas) {
 		super(metricas);	
 		metricName = "WMC_class";
+		isClassMetric = true;
 	}
 
 	@Override

@@ -13,6 +13,7 @@ public class LOC_method extends Metrica {
 	public LOC_method(Maestro metricas) {
 		super(metricas);
 		metricName = "LOC_method";
+		isClassMetric = false;
 	}
 
 	@Override

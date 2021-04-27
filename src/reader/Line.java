@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 
+import rules.Rule;
+
 public class Line {
 	private int methodID;
 	private String pkg, cls, method; //package, class and method names
@@ -116,6 +118,11 @@ public class Line {
 	public void addMetrics(HashMap<String, String> metrics)
 	{
 	    metrics.putAll(metrics);
+	}
+	
+	public void calculateRule(Rule rule)
+	{
+	    addMetric(rule.ruleName, Boolean.toString(rule.evaluateRule(this)));
 	}
 
 }

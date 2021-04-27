@@ -12,6 +12,7 @@ public abstract class Metrica extends MetricRegistry {
 	private String packageClassName;
 	private Thread myThread;
 	public String metricName;
+	public boolean isClassMetric;
 
 	public Metrica(Maestro metricas) {
 		super();
@@ -125,6 +126,11 @@ public abstract class Metrica extends MetricRegistry {
 	public String getMetricName()
 	{
 	    return metricName;
+	}
+	
+	public boolean isClassMetric()
+	{
+	    return isClassMetric;
 	}
 
 }
