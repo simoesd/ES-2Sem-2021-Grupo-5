@@ -5,8 +5,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import com.codahale.metrics.Counter;
-
 public class CYCLO_method extends Metrica {
 
 	private final String filter = "for,if,while,case";
@@ -25,9 +23,10 @@ public class CYCLO_method extends Metrica {
 			filterCode(file);
 		}
 	}
-
+	
+	
 	@Override
-	protected void applyMetricFilter(String s, Counter counter) {  
+	protected void applyMetricFilter(String s) {  
 		Scanner scanner = new Scanner(s);
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();

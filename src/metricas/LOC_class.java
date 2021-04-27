@@ -27,7 +27,7 @@ public class LOC_class extends Metrica {
 	}
 	
 	@Override
-	protected void applyMetricFilter(String s, Counter counter) { 
+	protected void applyMetricFilter(String s) { 
 		s = s.replaceAll("\t", "");
 		if(s != "" && !(s.startsWith("package") || s.startsWith("import")))
 			counter.inc();
@@ -41,7 +41,7 @@ public class LOC_class extends Metrica {
                 line = sc.nextLine();
 				filterOutJunk();
                 if(!isMultiLineComment)
-                	applyMetricFilter(line, counter);
+                	applyMetricFilter(line);
             }
             sc.close();
         } catch (FileNotFoundException e) {

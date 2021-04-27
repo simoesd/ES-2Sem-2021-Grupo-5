@@ -2,7 +2,6 @@ package metricas;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.Stack;
 import java.util.regex.Matcher;
@@ -42,7 +41,7 @@ public abstract class Metrica extends MetricRegistry {
 		return t;
 	}
 
-	protected abstract void applyMetricFilter(String line, Counter counter);
+	protected abstract void applyMetricFilter(String line);
 
 	protected void filterCode(File file) {
 		try {
@@ -55,11 +54,6 @@ public abstract class Metrica extends MetricRegistry {
 				
 				filterOutJunk();	
 				
-				System.out.println(line);
-//				if(!isMultiLineComment && incr >= 0 && ((" " + line.replaceAll("\t", "")).contains(" class ") || (" " + line.replaceAll("\t", "")).contains(" enum ") || (" " + line.replaceAll("\t", "")).contains(" interface "))) { //Deteção de classes aninhadas e enums
-//					System.out.println("eu aconteço");
-//					isNonMethodBlock = true;
-//				}
 				char[] charLine = line.toCharArray();
 				for(int i = 0; i != charLine.length; i++) {
 					if(!isMultiLineComment && charLine[i] == '{') {
@@ -69,11 +63,12 @@ public abstract class Metrica extends MetricRegistry {
 					}else{
 						if(incr > 0 && !isNonMethodBlock) //Linha dentro de um método
 							addLine = true;
-						if(incr == 0) {
+						if(incr == 0) { //Linha fora de método
 							betweenMethodsBuffer.push(line);
 						}
 					}
 				}
+				
 				if(!isMultiLineComment && addLine) {
 					if(methodCode.isEmpty())
 						methodCode = methodCode + line;
@@ -146,7 +141,7 @@ public abstract class Metrica extends MetricRegistry {
 			}else {
 				addLine = false;
 				methodCode = methodCode + "\n" + line;
-				applyMetricFilter(methodCode, counter);
+				applyMetricFilter(methodCode);
 				methodCode = new String("");
 			}
 			break;
