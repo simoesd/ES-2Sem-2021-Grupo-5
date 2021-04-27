@@ -29,23 +29,23 @@ public class Rule implements Serializable{
         line.addMetric("LOC_method", "3");
         line.addMetric("CYCLO_method", "1");
         
-//        ArrayList<Rule> rules = new ArrayList<>();
-//        
-//        Condition condition1 = new Condition("LOC_method", Condition.GREATER_THAN, 50);
-//        Condition condition2 = new Condition("CYCLO_method", Condition.GREATER_THAN, 10);
-//        Condition condition3 = new Condition("WMC_class", Condition.GREATER_THAN, 50);
-//        Condition condition4 = new Condition("NOM_class", Condition.GREATER_THAN, 10);
-//        Rule long_method = new Rule("long_method", condition1);
-//        long_method.addCondition(condition2, AND);
-//        Rule god_class = new Rule("god_class", condition3);
-//        god_class.addCondition(condition4, OR);
-//        
-//        rules.add(long_method);
-//        rules.add(god_class);
+        ArrayList<Rule> rules = new ArrayList<>();
         
-        Map.Entry<String, List<Rule>> entry = RuleFileManager.readRules().entrySet().iterator().next();
+        Condition condition1 = new Condition("LOC_method", Condition.GREATER_THAN, 50);
+        Condition condition2 = new Condition("CYCLO_method", Condition.GREATER_THAN, 10);
+        Condition condition3 = new Condition("WMC_class", Condition.GREATER_THAN, 50);
+        Condition condition4 = new Condition("NOM_class", Condition.GREATER_THAN, 10);
+        Rule long_method = new Rule("long_method", condition1);
+        long_method.addCondition(condition2, AND);
+        Rule god_class = new Rule("god_class", condition3);
+        god_class.addCondition(condition4, OR);
         
-        List<Rule> rules = entry.getValue();
+        rules.add(long_method);
+        rules.add(god_class);
+        
+//        Map.Entry<String, List<Rule>> entry = RuleFileManager.readRules().entrySet().iterator().next();
+//        
+//        List<Rule> rules = entry.getValue();
         
         for (Rule rule: rules) {
             boolean ruleValue = rule.evaluateRule(line);
@@ -57,9 +57,7 @@ public class Rule implements Serializable{
             System.out.println(entry2.getKey() + ": "+ entry2.getValue());
         }
         
-        System.out.println(entry.getKey());
-        RuleFileManager.clearHistory();
-//        RuleFileManager.writeEntry(rules);
+        RuleFileManager.writeEntry(rules);
     }
     
     public Rule(String ruleName, Condition condition)

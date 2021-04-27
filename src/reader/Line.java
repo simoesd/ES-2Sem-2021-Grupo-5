@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -14,7 +15,7 @@ public class Line {
 	private int methodID;
 	private String pkg, cls, method; //package, class and method names
 
-    private HashMap<String, String> metrics = new HashMap<>();
+    private LinkedHashMap<String, String> metrics = new LinkedHashMap<>();
     
     public Line()
     {
@@ -29,7 +30,7 @@ public class Line {
         this.method = method;
     }
     
-    public Line(int methodID, String pkg, String cls, String method, HashMap<String, String> metrics)
+    public Line(int methodID, String pkg, String cls, String method, LinkedHashMap<String, String> metrics)
     {
         this.methodID = methodID;
         this.pkg = pkg;

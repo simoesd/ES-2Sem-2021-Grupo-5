@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -117,7 +118,7 @@ public class Maestro {
 					temp2 = s.replace(".", "/");
 					String[] split2 = temp2.split("/");
 					String nameMtd = split2[2];
-					HashMap<String, String> lineMetrics = new HashMap<>();
+					LinkedHashMap<String, String> lineMetrics = new LinkedHashMap<>();
 					lineMetrics.putAll(classMetrics);
 					for (Metrica metric: metrics)
 		            {
@@ -213,6 +214,16 @@ public class Maestro {
 		shortPath = shortPath.replace("\\", ".");
 		shortPath = shortPath.replace(".java", "");
 		return shortPath;
+	}
+	
+	public void addRule(Rule rule)
+	{
+	    rules.add(rule);
+	}
+	
+	public void addRules(List<Rule> rules)
+	{
+	    this.rules.addAll(rules);
 	}
 
 	public ArrayList<File> getFilesInDirectory() {
