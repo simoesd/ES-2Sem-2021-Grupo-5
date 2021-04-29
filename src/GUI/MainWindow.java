@@ -384,62 +384,73 @@ public class MainWindow {
 		startAnalysisButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO análise (equipa winx)
-				String directoryPath = analysisPathTextField.getText();
-				Maestro maestro = new Maestro(directoryPath);
+				String directoryPath = "";
+				try {
+					directoryPath = analysisPathTextField.getText();
+					if (directoryPath.isEmpty()) {
+						throw new Exception("Tem que ter um projeto selecionado antes de analisar");
+					}
 
-				if (checkRuleValid()) {
-					for (RuleGUI rg : rulesGUI) {
-						String title = rg.getTitle().getText();
-						String metric1 = rg.getMetric1().getSelectedItem().toString();
-						String mathSymbol1 = getMathSymbolString(rg.getMathSymbol1().getSelectedIndex());
-						int value1 = Integer.parseInt(rg.getValue1().getText());
+					Maestro maestro = new Maestro(directoryPath);
 
-						if (rg.getLogicOp1() != null) {
-							String logicOp1 = rg.getLogicOp1().getSelectedItem().toString();
-							String metric2 = rg.getMetric2().getSelectedItem().toString();
-							String mathSymbol2 = getMathSymbolString(rg.getMathSymbol2().getSelectedIndex());
-							int value2 = Integer.parseInt(rg.getValue2().getText());
+					if (checkRuleValid()) {
+						for (RuleGUI rg : rulesGUI) {
+							String title = rg.getTitle().getText();
+							String metric1 = rg.getMetric1().getSelectedItem().toString();
+							String mathSymbol1 = getMathSymbolString(rg.getMathSymbol1().getSelectedIndex());
+							int value1 = Integer.parseInt(rg.getValue1().getText());
+
+							if (rg.getLogicOp1() != null) {
+								String logicOp1 = rg.getLogicOp1().getSelectedItem().toString();
+								String metric2 = rg.getMetric2().getSelectedItem().toString();
+								String mathSymbol2 = getMathSymbolString(rg.getMathSymbol2().getSelectedIndex());
+								int value2 = Integer.parseInt(rg.getValue2().getText());
 
 //						Rule r = new Rule(title, metric1, mathSymbol1, value1, logicOp1, metric2, mathSymbol2, value2);
 //						rules.add(r);
-						}
-						if (rg.getLogicOp2() != null) {
-							String logicOp2 = rg.getLogicOp2().getSelectedItem().toString();
-							String metric3 = rg.getMetric3().getSelectedItem().toString();
-							String mathSymbol3 = getMathSymbolString(rg.getMathSymbol3().getSelectedIndex());
-							int value3 = Integer.parseInt(rg.getValue3().getText());
+							}
+							if (rg.getLogicOp2() != null) {
+								String logicOp2 = rg.getLogicOp2().getSelectedItem().toString();
+								String metric3 = rg.getMetric3().getSelectedItem().toString();
+								String mathSymbol3 = getMathSymbolString(rg.getMathSymbol3().getSelectedIndex());
+								int value3 = Integer.parseInt(rg.getValue3().getText());
 //							Rule r = new Rule(title, metric1, mathSymbol1, value1, logicOp1, metric2, mathSymbol2, value2, logicOp2, metric3, mathSymbol3, value3);
 //							rules.add(r);
-						}
+							}
 
 //					Rule r = new Rule(title, metric1, mathSymbol1, value1);
 //					rules.add(r);
 
-					}
+						}
 //					String resultsFilePath = maestro.startMetricCounters(rules);
-					String resultsFilePath = maestro.startMetricCounters();
+						String resultsFilePath = maestro.startMetricCounters();
 
-					ImageIcon tempIcon = new ImageIcon("src/icons/excel.png");
-					Image tempImg = tempIcon.getImage();
-					BufferedImage bi = new BufferedImage(40, 40, BufferedImage.TYPE_INT_ARGB);
-					Graphics g = bi.createGraphics();
-					g.drawImage(tempImg, 0, 0, 40, 40, null, null);
-					ImageIcon popupIcon = new ImageIcon(bi);
+						ImageIcon tempIcon = new ImageIcon("src/icons/excel.png");
+						Image tempImg = tempIcon.getImage();
+						BufferedImage bi = new BufferedImage(40, 40, BufferedImage.TYPE_INT_ARGB);
+						Graphics g = bi.createGraphics();
+						g.drawImage(tempImg, 0, 0, 40, 40, null, null);
+						ImageIcon popupIcon = new ImageIcon(bi);
 
-					Object[] popupOptions = { "Sim", "Não" };
-					int popupResult = JOptionPane.showOptionDialog(frame,
-							"Análise completa com sucesso! Deseja visualizar os resultados?", "Análise completa!",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, popupIcon, popupOptions,
-							popupOptions[0]);
+						Object[] popupOptions = { "Sim", "Não" };
+						int popupResult = JOptionPane.showOptionDialog(frame,
+								"Análise completa com sucesso! Deseja visualizar os resultados?", "Análise completa!",
+								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, popupIcon, popupOptions,
+								popupOptions[0]);
 
-					if (popupResult == 0)
-						showImportedData(resultsFilePath);
-					else {
+						if (popupResult == 0)
+							showImportedData(resultsFilePath);
+						else {
 
-						mainPanel.updateUI();
+							mainPanel.updateUI();
+						}
+
 					}
-				}
+				} catch (Exception e) {
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(panel, e.getMessage());
 
+				}
 			}
 		});
 		analysisPanel.add(startAnalysisButton);
@@ -507,7 +518,7 @@ public class MainWindow {
 				if (rg.getMetric2() != null && rg.getMetric3() != null) {
 					String secondMetric = rg.getMetric2().getSelectedItem().toString();
 					String thirdMetric = rg.getMetric3().getSelectedItem().toString();
-					
+
 					if ((firstMetric.contains("CLASS") && secondMetric.contains("CLASS")
 							&& thirdMetric.contains("CLASS"))
 							|| (firstMetric.contains("METHOD") && secondMetric.contains("METHOD")
@@ -515,7 +526,6 @@ public class MainWindow {
 //						if(firstMetric.){
 //							
 //						}
-					
 
 //					} else if (!(validMethodMetrics.contains(firstMetric) && validMethodMetrics.contains(secondMetric)
 //							&& validMethodMetrics.contains(thirdMetric))) {
@@ -523,9 +533,8 @@ public class MainWindow {
 //						isValid=false;
 //						throw new Exception();
 					} else {
-						System.out.println("OLA BICHAS 1");
 						isValid = false;
-						throw new Exception();
+						throw new Exception("Não pode misturar métricas de diferentes tipos");
 					}
 
 				} else if (rg.getMetric2() != null && rg.getMetric3() == null) {
@@ -537,11 +546,10 @@ public class MainWindow {
 //						System.out.println("OLA BICHAS 4");
 //						isValid=false;
 //						throw new Exception();
-						
+
 					} else {
-						System.out.println("OLA BICHAS 3");
 						isValid = false;
-						throw new Exception("asdasdas");
+						throw new Exception("Não pode misturar métricas de diferentes tipos");
 					}
 				}
 			} catch (Exception e) {
