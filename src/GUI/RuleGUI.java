@@ -1,160 +1,159 @@
 package GUI;
 
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class RuleGUI {
+public class RuleGUI extends JPanel{
+    
+    
+    private JPanel parentPanel;
+    private JCheckBox toRemoveCheckbox;
+    
+    private JTextField ruleTitle;
+    
+    private boolean isClassRule;
+    
+    private List<ConditionGUI> conditions = new ArrayList<>();
+    private List<JComboBox<String>> logicOperators = new ArrayList<>();
 
-	private JPanel panel_1;
-	private JCheckBox checkbox;
-	private JTextField title;
-	//1st condition
-	private JComboBox<String> metric1;
-	private JComboBox<String> mathSymbol1;
-	private JTextField value1;
-	//2nd condition
-	private JComboBox<String> logicOp1;
-	private JComboBox<String> metric2;
-	private JComboBox<String> mathSymbol2;
-	private JTextField value2;
-	//3rd condition
-	private JComboBox<String> logicOp2;
-	private JComboBox<String> metric3;
-	private JComboBox<String> mathSymbol3;
-	private JTextField value3;
-	
+    private JButton addConditionButton = new JButton("Add Condition");
+    private JButton removeConditionButton = new JButton("Remove Condition");
+    
+    final String[] logicOpDefault = {"AND", "OR"};
+    
 
-	public RuleGUI(JPanel panel_1, JCheckBox checkbox, JTextField title, JComboBox<String> metric1,
-			JComboBox<String> mathSymbol1, JTextField value1, JComboBox<String> logicOp1, JComboBox<String> metric2,
-			JComboBox<String> mathSymbol2, JTextField value2, JComboBox<String> logicOp2, JComboBox<String> metric3,
-			JComboBox<String> mathSymbol3, JTextField value3) {
-		super();
-		this.panel_1 = panel_1;
-		this.checkbox = checkbox;
-		this.title = title;
-		this.metric1 = metric1;
-		this.mathSymbol1 = mathSymbol1;
-		this.value1 = value1;
-		this.logicOp1 = logicOp1;
-		this.metric2 = metric2;
-		this.mathSymbol2 = mathSymbol2;
-		this.value2 = value2;
-		this.logicOp2 = logicOp2;
-		this.metric3 = metric3;
-		this.mathSymbol3 = mathSymbol3;
-		this.value3 = value3;
-	}
+    public RuleGUI(JPanel parentPanel, boolean isClassRule) {
+        super();
+        this.setLayout(new FlowLayout());
+        this.toRemoveCheckbox = new JCheckBox();
+        this.ruleTitle = new JTextField();
+        this.isClassRule = isClassRule;
+        MainWindow.enableDefaultValue(ruleTitle, "   Custom_Rule   ");
+        this.parentPanel =  parentPanel;
+        conditions.add(new ConditionGUI());
+        
+        addConditionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (conditions.size() >= 8)
+                    JOptionPane.showMessageDialog(parentPanel , "bruh");
+                else {
+                    logicOperators.add(new JComboBox(logicOpDefault));
+                    conditions.add(new ConditionGUI());
+                }
+                initializePanel();
+            }
+        });
+        
+        removeConditionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                logicOperators.remove(logicOperators.size()-1);
+                conditions.remove(conditions.size()-1);
+                initializePanel();
+            }
+            
+        });
+        
+        initializePanel();
+    }
+    
+    public void initializePanel()
+    {
+        this.removeAll();
+        this.add(toRemoveCheckbox);
+        this.add(ruleTitle);
+        this.add(conditions.get(0));
+        
+        int i = 1;
+        for(JComboBox<String> logicOp: logicOperators)
+        {
+            this.add(logicOp);
+            this.add(conditions.get(i++));
+        }
+        
+        this.add(addConditionButton);
+        if (conditions.size() > 1)
+            this.add(removeConditionButton);
+        
+        this.parentPanel.updateUI();
+    }
+    
+    
+    public boolean isSelected()
+    {
+        return toRemoveCheckbox.isSelected();
+    }
+    
+    public List<ConditionGUI> getConditions()
+    {
+        return conditions;
+    }
+    
+    public JCheckBox getToRemoveCheckBox()
+    {
+        return toRemoveCheckbox;
+    }
+    
+    
+    class ConditionGUI extends JPanel{
+        private JComboBox<String> metric;
+        private JComboBox<String> thresholdOperator;
+        private JTextField thresholdValue;
+        
+        final String[] methodMetrics = {"CYCLO_METHOD", "LOC_METHOD"};
+        final String[] classMetrics = {"LOC_CLASS", "WMC_CLASS", "NOM_CLASS"};
+        final String[] thresholdOpDefault = {" > ", " < ", " \u2265 ", " \u2264 "};
+        
+        public ConditionGUI()
+        {
+            
 
-	public RuleGUI(JPanel panel_1, JTextField title, JComboBox<String> metric1, JComboBox<String> mathSymbol1, JTextField value1,
-			JComboBox<String> logicOp, JComboBox<String> metric2, JComboBox<String> mathSymbol2, JTextField value2, JCheckBox checkbox) {
-		super();
-		this.panel_1 = panel_1;
-		this.title = title;
-		this.metric1 = metric1;
-		this.mathSymbol1 = mathSymbol1;
-		this.value1 = value1;
-		this.logicOp1 = logicOp;
-		this.metric2 = metric2;
-		this.mathSymbol2 = mathSymbol2;
-		this.value2 = value2;
-		this.checkbox = checkbox;
-	}
-
-	public JPanel getPanel_1() {
-		return panel_1;
-	}
-
-	public JComboBox<String> getMetric1() {
-		return metric1;
-	}
-
-	public JComboBox<String> getMathSymbol1() {
-		return mathSymbol1;
-	}
-
-	public JTextField getValue1() {
-		return value1;
-	}
-
-	public JComboBox<String> getLogicOp1() {
-		return logicOp1;
-	}
-
-	public JComboBox<String> getMetric2() {
-		return metric2;
-	}
-
-	public JComboBox<String> getMathSymbol2() {
-		return mathSymbol2;
-	}
-
-	public JTextField getValue2() {
-		return value2;
-	}
-
-
-	public JCheckBox getCheckbox() {
-		return checkbox;
-	}
-	public JComboBox<String> getLogicOp2() {
-		return logicOp2;
-	}
-
-	public JComboBox<String> getMetric3() {
-		return metric3;
-	}
-
-	public JComboBox<String> getMathSymbol3() {
-		return mathSymbol3;
-	}
-
-
-	public JTextField getValue3() {
-		return value3;
-	}
-
-	public void add2ndConditionRule(JComboBox<String> logicOp1, JComboBox<String> metric2, JComboBox<String> mathSymbol2, JTextField value2) {
-		this.logicOp1 = logicOp1;
-		this.metric2 = metric2;
-		this.mathSymbol2 = mathSymbol2;
-		this.value2 = value2;
-	}
-
-	public void add3rdConditionRule(JComboBox<String> logicOp2, JComboBox<String> metric3, JComboBox<String> mathSymbol3, JTextField value3) {
-		this.logicOp2 = logicOp2;
-		this.metric3 = metric3;
-		this.mathSymbol3 = mathSymbol3;
-		this.value3 = value3;
-	}
-	
-	public void remove2ndConditionRule() {
-		this.logicOp1 = null;
-		this.metric2 = null;
-		this.mathSymbol2 = null;
-		this.value2 = null;
-	}
-	
-	public void remove3rdConditionRule() {
-		this.logicOp2 = null;
-		this.metric3 = null;
-		this.mathSymbol3 = null;
-		this.value3 = null;
-	}
-	
-	public RuleGUI(JPanel panel_1, JTextField title, JComboBox<String> metric1, JComboBox<String> mathSymbol1, JTextField value1, JCheckBox checkbox) {
-		super();
-		this.panel_1 = panel_1;
-		this.title = title;
-		this.metric1 = metric1;
-		this.mathSymbol1 = mathSymbol1;
-		this.value1 = value1;
-		this.checkbox = checkbox;
-	}
-
-	public JTextField getTitle() {
-		return title;
-	}
+            this.metric = isClassRule ? new JComboBox<String>(classMetrics) : new JComboBox<String>(methodMetrics);
+            
+            this.thresholdOperator = new JComboBox<String>(thresholdOpDefault);
+            this.thresholdValue = new JTextField();
+            MainWindow.enableDefaultValue(this.thresholdValue, "0");
+            initializePanel();
+        }
+        
+        public ConditionGUI(JComboBox<String> metric, JComboBox<String> thresholdOperator, JTextField thresholdValue)
+        {
+            this.metric = metric;
+            this.thresholdOperator = thresholdOperator;
+            this.thresholdValue = thresholdValue;
+            initializePanel();
+        }
+        
+        public void initializePanel()
+        {
+            this.removeAll();
+            this.add(metric);
+            this.add(thresholdOperator);
+            this.add(thresholdValue);
+        }
+        
+        public String getMetric()
+        {
+            return metric.getSelectedItem().toString();
+        }
+        
+        public String getValue()
+        {
+            return thresholdValue.getText();
+        }
+    }
 
 }

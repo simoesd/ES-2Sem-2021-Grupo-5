@@ -9,21 +9,22 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Desktop.Action;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -53,7 +54,7 @@ public class MainWindow {
 	private JPanel panel_3;
 	private ArrayList<RuleGUI> rulesGUI = new ArrayList<>();
 //	private ArrayList<Rule> rules = new ArrayList<>();
-	private int incrementerRemoves = 1;
+	private int ruleNumber = 1;
 
 	/**
 	 * Launch the application.
@@ -135,9 +136,9 @@ public class MainWindow {
 				ArrayList<RuleGUI> tempRules = new ArrayList<>();
 				rulesGUI.forEach(r -> tempRules.add(r));
 				for (int i = 0; i < tempRules.size(); i++) {
-					if (tempRules.get(i).getCheckbox().isSelected()) {
+					if (tempRules.get(i).isSelected()) {
 						rulesGUI.remove(tempRules.get(i));
-						incrementerRemoves--;
+						ruleNumber--;
 					}
 				}
 
@@ -148,7 +149,7 @@ public class MainWindow {
 					ruleTitle.setVisible(false);
 				}
 				for (int i = 0; i < rulesGUI.size(); i++) {
-					panel.add(rulesGUI.get(i).getPanel_1());
+					panel.add(rulesGUI.get(i));
 				}
 				panel.updateUI();
 			}
@@ -157,198 +158,55 @@ public class MainWindow {
 		JButton addRuleButton = new JButton("Add Rule");
 		panel_2.add(addRuleButton);
 		panel_2.add(removeRuleButton);
-
+		
 		addRuleButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (incrementerRemoves <= 5) {
+				if (ruleNumber <= 5) 
+				{
 					ruleTitle.setVisible(true);
-					JPanel panel_1 = new JPanel();
-					panel.add(panel_1);
 
-					panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-					JCheckBox checkbox = new JCheckBox("");
-					panel_1.add(checkbox);
-					checkbox.addActionListener(new ActionListener() {
+					Object[] popupOptions = { "Class", "Method" };
+                    int popupResult = JOptionPane.showOptionDialog(frame,
+                            "Do you wish to create a class or method rule?", "New rule option",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, getPopupImageIcon("src/icons/java.png"), popupOptions,
+                            popupOptions[0]);
 
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							int numOfSelChecBox = 0;
-							if (checkbox.isSelected()) {
-								removeRuleButton.setEnabled(true);
-							} else {
-								checkbox.setSelected(false);
-								for (RuleGUI r : rulesGUI) {
-									if (r.getCheckbox().isSelected() == true) {
-										numOfSelChecBox++;
-									}
-								}
-								if (numOfSelChecBox == 0) {
-									removeRuleButton.setEnabled(false);
-								}
+                    
+                    RuleGUI rule = new RuleGUI(panel, popupResult == 0);
+                    
+                    rulesGUI.add(rule);
+                    
+                    rule.getToRemoveCheckBox().addActionListener(new ActionListener() {
+                        
+                        @Override
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            boolean activateButton = false;
+                            
+                            for (RuleGUI tempRule: rulesGUI)
+                            {
+                                if (tempRule.isSelected())
+                                    activateButton = true;
+                            }
+                            
+                            removeRuleButton.setEnabled(activateButton);
+                        }
+                        
+                    });
+                    
+                    panel.add(rule);
+                    
+                    mainPanel.updateUI();
+                    ruleNumber++;
+                } else {
+                    JOptionPane.showMessageDialog(panel, "Atingiu o limite de 5 regras");
+                }
+            }
+        });
+					
 
-							}
-
-						}
-					});
-					JTextField ruleName = new JTextField();
-					ruleName.setHorizontalAlignment(SwingConstants.CENTER);
-					ruleName.setColumns(10);
-					enableDefaultValue(ruleName, "Título da Regra");
-
-					panel_1.add(ruleName);
-
-					JComboBox metric1 = new JComboBox();
-					metric1.setModel(new DefaultComboBoxModel(
-							new String[] { "CYCLO_METHOD", "LOC_METHOD", "LOC_CLASS", "WMC_CLASS", "NOM_CLASS" }));
-					panel_1.add(metric1);
-
-					JComboBox mathSymbol1 = new JComboBox();
-					mathSymbol1.setModel(new DefaultComboBoxModel(new String[] { ">", "<", "\u2265", "\u2264" }));
-					panel_1.add(mathSymbol1);
-
-					JTextField value1 = new JTextField();
-					value1.setHorizontalAlignment(SwingConstants.CENTER);
-					value1.setColumns(10);
-					enableDefaultValue(value1, "0");
-					panel_1.add(value1);
-
-					JButton add2ndConditionButton = new JButton("Add Condition");
-					panel_1.add(add2ndConditionButton);
-					add2ndConditionButton.addActionListener(new ActionListener() {
-
-						@Override
-						public void actionPerformed(ActionEvent e) {
-
-							JComboBox logicOp1 = new JComboBox();
-							logicOp1.setModel(new DefaultComboBoxModel(new String[] { "AND", "OR" }));
-							panel_1.add(logicOp1);
-
-							JComboBox metric2 = new JComboBox();
-							metric2.setModel(new DefaultComboBoxModel(new String[] { "CYCLO_METHOD", "LOC_METHOD",
-									"LOC_CLASS", "WMC_CLASS", "NOM_CLASS" }));
-							panel_1.add(metric2);
-
-							JComboBox mathSymbol2 = new JComboBox();
-							mathSymbol2
-									.setModel(new DefaultComboBoxModel(new String[] { ">", "<", "\u2265", "\u2264" }));
-							panel_1.add(mathSymbol2);
-
-							JTextField value2 = new JTextField();
-							value2.setColumns(10);
-							value2.setHorizontalAlignment(SwingConstants.CENTER);
-							enableDefaultValue(value2, "0");
-							panel_1.add(value2);
-
-							for (RuleGUI r : rulesGUI) {
-								if (r.getPanel_1() == panel_1) {
-									r.add2ndConditionRule(logicOp1, metric2, mathSymbol2, value2);
-								}
-							}
-							add2ndConditionButton.setVisible(false);
-							add2ndConditionButton.setEnabled(false);
-							JButton removeRule2ndCondition = new JButton("Remove Condition");
-							JButton add3rdConditionButton = new JButton("Add Condition");
-							panel_1.add(add3rdConditionButton);
-							add3rdConditionButton.addActionListener(new ActionListener() {
-
-								@Override
-								public void actionPerformed(ActionEvent e) {
-									removeRule2ndCondition.setVisible(false);
-									removeRule2ndCondition.setEnabled(false);
-									JComboBox logicOp2 = new JComboBox();
-									logicOp2.setModel(new DefaultComboBoxModel(new String[] { "AND", "OR" }));
-									panel_1.add(logicOp2);
-
-									JComboBox metric3 = new JComboBox();
-									metric3.setModel(new DefaultComboBoxModel(new String[] { "CYCLO_METHOD",
-											"LOC_METHOD", "LOC_CLASS", "WMC_CLASS", "NOM_CLASS" }));
-									panel_1.add(metric3);
-
-									JComboBox mathSymbol3 = new JComboBox();
-									mathSymbol3.setModel(
-											new DefaultComboBoxModel(new String[] { ">", "<", "\u2265", "\u2264" }));
-									panel_1.add(mathSymbol3);
-
-									JTextField value3 = new JTextField();
-									value3.setColumns(10);
-									value3.setHorizontalAlignment(SwingConstants.CENTER);
-									enableDefaultValue(value3, "0");
-									panel_1.add(value3);
-
-									for (RuleGUI r : rulesGUI) {
-										if (r.getPanel_1() == panel_1) {
-											r.add3rdConditionRule(logicOp2, metric3, mathSymbol3, value3);
-										}
-									}
-									add3rdConditionButton.setVisible(false);
-									add3rdConditionButton.setEnabled(false);
-									JButton removeRule3rdCondition = new JButton("Remove Condition");
-									panel_1.add(removeRule3rdCondition);
-
-									removeRule3rdCondition.addActionListener(new ActionListener() {
-
-										@Override
-										public void actionPerformed(ActionEvent e) {
-											for (RuleGUI r : rulesGUI) {
-												if (r.getPanel_1() == panel_1) {
-													r.getLogicOp2().setVisible(false);
-													r.getMetric3().setVisible(false);
-													r.getMathSymbol3().setVisible(false);
-													r.getValue3().setVisible(false);
-													r.remove3rdConditionRule();
-													removeRule3rdCondition.setVisible(false);
-													removeRule3rdCondition.setEnabled(false);
-													removeRule2ndCondition.setVisible(true);
-													removeRule2ndCondition.setEnabled(true);
-													add3rdConditionButton.setVisible(true);
-													add3rdConditionButton.setEnabled(true);
-
-												}
-											}
-										}
-									});
-									mainPanel.updateUI();
-								}
-							});
-							panel_1.add(removeRule2ndCondition);
-
-							removeRule2ndCondition.addActionListener(new ActionListener() {
-
-								@Override
-								public void actionPerformed(ActionEvent e) {
-									for (RuleGUI r : rulesGUI) {
-										if (r.getPanel_1() == panel_1) {
-											r.getLogicOp1().setVisible(false);
-											r.getMetric2().setVisible(false);
-											r.getMathSymbol2().setVisible(false);
-											r.getValue2().setVisible(false);
-											r.remove2ndConditionRule();
-											removeRule2ndCondition.setVisible(false);
-											removeRule2ndCondition.setEnabled(false);
-											add3rdConditionButton.setVisible(false);
-											add3rdConditionButton.setEnabled(false);
-											add2ndConditionButton.setVisible(true);
-											add2ndConditionButton.setEnabled(true);
-
-										}
-									}
-								}
-							});
-							mainPanel.updateUI();
-						}
-					});
-
-					RuleGUI rule = new RuleGUI(panel_1, ruleName, metric1, mathSymbol1, value1, checkbox);
-					rulesGUI.add(rule);
-					mainPanel.updateUI();
-					incrementerRemoves++;
-				} else {
-					JOptionPane.showMessageDialog(panel, "Atingiu o limite de 5 regras");
-				}
-			}
-		});
 
 		// Analysis Panel
 
@@ -393,44 +251,13 @@ public class MainWindow {
 
 					Maestro maestro = new Maestro(directoryPath);
 
-					if (checkRuleValid()) {
-						for (RuleGUI rg : rulesGUI) {
-							String title = rg.getTitle().getText();
-							String metric1 = rg.getMetric1().getSelectedItem().toString();
-							String mathSymbol1 = getMathSymbolString(rg.getMathSymbol1().getSelectedIndex());
-							int value1 = Integer.parseInt(rg.getValue1().getText());
-
-							if (rg.getLogicOp1() != null) {
-								String logicOp1 = rg.getLogicOp1().getSelectedItem().toString();
-								String metric2 = rg.getMetric2().getSelectedItem().toString();
-								String mathSymbol2 = getMathSymbolString(rg.getMathSymbol2().getSelectedIndex());
-								int value2 = Integer.parseInt(rg.getValue2().getText());
-
-//						Rule r = new Rule(title, metric1, mathSymbol1, value1, logicOp1, metric2, mathSymbol2, value2);
-//						rules.add(r);
-							}
-							if (rg.getLogicOp2() != null) {
-								String logicOp2 = rg.getLogicOp2().getSelectedItem().toString();
-								String metric3 = rg.getMetric3().getSelectedItem().toString();
-								String mathSymbol3 = getMathSymbolString(rg.getMathSymbol3().getSelectedIndex());
-								int value3 = Integer.parseInt(rg.getValue3().getText());
-//							Rule r = new Rule(title, metric1, mathSymbol1, value1, logicOp1, metric2, mathSymbol2, value2, logicOp2, metric3, mathSymbol3, value3);
-//							rules.add(r);
-							}
-
-//					Rule r = new Rule(title, metric1, mathSymbol1, value1);
-//					rules.add(r);
-
-						}
-//					String resultsFilePath = maestro.startMetricCounters(rules);
+					if (checkRuleValid()) 
+					{
+					        //TODO create Rules
+					    
 						String resultsFilePath = maestro.startMetricCounters();
-
-						ImageIcon tempIcon = new ImageIcon("src/icons/excel.png");
-						Image tempImg = tempIcon.getImage();
-						BufferedImage bi = new BufferedImage(40, 40, BufferedImage.TYPE_INT_ARGB);
-						Graphics g = bi.createGraphics();
-						g.drawImage(tempImg, 0, 0, 40, 40, null, null);
-						ImageIcon popupIcon = new ImageIcon(bi);
+						
+						ImageIcon popupIcon = getPopupImageIcon("src/icons/excel.png");
 
 						Object[] popupOptions = { "Sim", "Não" };
 						int popupResult = JOptionPane.showOptionDialog(frame,
@@ -501,77 +328,16 @@ public class MainWindow {
 
 	}
 
+	
 	private boolean checkRuleValid() {
 		boolean isValid = true;
 		for (RuleGUI rg : rulesGUI) {
 			try {
-				String firstMetric = rg.getMetric1().getSelectedItem().toString();
-				ArrayList<String> validClassMetrics = new ArrayList<>();
-				validClassMetrics.add("LOC_CLASS");
-				validClassMetrics.add("WMC_CLASS");
-				validClassMetrics.add("NOM_CLASS");
-
-				ArrayList<String> validMethodMetrics = new ArrayList<>();
-				validClassMetrics.add("CYCLO_METHOD");
-				validClassMetrics.add("LOC_METHOD");
-
-				if (rg.getMetric2() != null && rg.getMetric3() != null) {
-					String secondMetric = rg.getMetric2().getSelectedItem().toString();
-					String thirdMetric = rg.getMetric3().getSelectedItem().toString();
-
-					if ((firstMetric.contains("CLASS") && secondMetric.contains("CLASS")
-							&& thirdMetric.contains("CLASS"))
-							|| (firstMetric.contains("METHOD") && secondMetric.contains("METHOD")
-									&& thirdMetric.contains("METHOD"))) {
-//						if(firstMetric.){
-//							
-//						}
-
-//					} else if (!(validMethodMetrics.contains(firstMetric) && validMethodMetrics.contains(secondMetric)
-//							&& validMethodMetrics.contains(thirdMetric))) {
-//						System.out.println("OLA BICHAS 2");
-//						isValid=false;
-//						throw new Exception();
-					} else {
-						isValid = false;
-						throw new Exception("Não pode misturar métricas de diferentes tipos");
-					}
-
-				} else if (rg.getMetric2() != null && rg.getMetric3() == null) {
-					String secondMetric = rg.getMetric2().getSelectedItem().toString();
-					if ((firstMetric.contains("CLASS") && secondMetric.contains("CLASS"))
-							|| (firstMetric.contains("METHOD") && secondMetric.contains("METHOD"))) {
-
-//					} else if (!(validMethodMetrics.contains(firstMetric) && validMethodMetrics.contains(secondMetric))) {
-//						System.out.println("OLA BICHAS 4");
-//						isValid=false;
-//						throw new Exception();
-
-					} else {
-						isValid = false;
-						throw new Exception("Não pode misturar métricas de diferentes tipos");
-					}
-				}
-			} catch (Exception e) {
-				JOptionPane.showMessageDialog(panel, e.getMessage());
-				return isValid;
-			}
-			try {
-				Integer.parseInt(rg.getValue1().getText());
+				rg.getConditions().forEach(x -> Integer.parseInt(x.getValue()));
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(panel, "Certifique-se que inseriu corretamente os valores");
 				isValid = false;
 				return isValid;
-			}
-
-			if (rg.getLogicOp1() != null) {
-				try {
-					Integer.parseInt(rg.getValue2().getText());
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(panel, "Certifique-se que inseriu corretamente os valores");
-					isValid = false;
-					return isValid;
-				}
 			}
 		}
 
@@ -729,5 +495,15 @@ public class MainWindow {
 				super.focusLost(e);
 			}
 		});
+	}
+	
+	public static ImageIcon getPopupImageIcon(String iconPath) {
+
+        ImageIcon tempIcon = new ImageIcon(iconPath);
+        Image tempImg = tempIcon.getImage();
+        BufferedImage bi = new BufferedImage(40, 40, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bi.createGraphics();
+        g.drawImage(tempImg, 0, 0, 40, 40, null, null);
+        return new ImageIcon(bi);
 	}
 }
