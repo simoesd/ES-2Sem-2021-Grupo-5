@@ -2,6 +2,7 @@ package rules;
 
 import java.io.Serializable;
 
+import GUI.ConditionGUI;
 import reader.Line;
 
 public class Condition implements Serializable {
@@ -23,7 +24,7 @@ public class Condition implements Serializable {
     }
 
     public boolean evaluateCondition(Line line) {
-        int metricValue = Integer.parseInt(line.getMetrics().get(metricToEvaluate));
+        int metricValue = Integer.parseInt(line.getMetrics().get(metricToEvaluate.toUpperCase()));
         boolean conditionValue = false;
         switch (thresholdOperator) {
             case LESS_THAN:
@@ -41,4 +42,18 @@ public class Condition implements Serializable {
         }
         return conditionValue;
     }
+//    
+//    public ConditionGUI generateConditionGUI()
+//    {
+//        ConditionGUI conditionGUI = new ConditionGUI(isClassCondition());
+//        conditionGUI.setDefaultMetric(metricToEvaluate);
+//        conditionGUI.setDefaultThresholdOp(thresholdOperator);
+//        conditionGUI.setDefaultThresholdValue(String.valueOf(thresholdValue));
+//        return conditionGUI;
+//    }
+//    
+//    public boolean isClassCondition()
+//    {
+//        return metricToEvaluate.toLowerCase().contains("class");
+//    }
 }

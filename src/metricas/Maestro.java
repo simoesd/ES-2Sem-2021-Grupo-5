@@ -7,11 +7,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.util.SystemOutLogger;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -20,7 +23,7 @@ import rules.Rule;
 
 public class Maestro {
 
-	private ArrayList<Metrica> metrics = new ArrayList<Metrica>();
+	private LinkedList<Metrica> metrics = new LinkedList<Metrica>();
 	private ArrayList<Rule> rules = new ArrayList<Rule>();
 
 	private String projectDirectory;
@@ -37,41 +40,43 @@ public class Maestro {
 	}
 
 	public Maestro(String projectDirectory) {
-		metrics = new ArrayList<Metrica>();
+		metrics = new LinkedList<Metrica>();
 		filesInDirectory = new ArrayList<File>();
 		this.projectDirectory = projectDirectory;
 	}
 
 	public String startMetricCounters() {
 		openFolder(projectDirectory);
-		metrics.add(new LOC_class(this));
-		metrics.add(new LOC_method(this));
-		metrics.add(new CYCLO_method(this));
 		return result();
 	}
 
 	private String result() {
+        metrics.add(new LOC_class(this));
+        metrics.add(new LOC_method(this));
+        metrics.add(new CYCLO_method(this));
+        
 		metrics.forEach(t -> {
 			try {
 				t.getThread().join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
+		
 		metrics.add(new WMC_class(this));
 		metrics.add(new NOM_class(this));
+		
 		try {
-			getWMC_class().getThread().join();
-			getNOM_class().getThread().join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            getWMC_class().getThread().join();
+            getNOM_class().getThread().join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+		
 		try {
-			String projetctDirectory = getProjectDirectory();
-			projetctDirectory=projetctDirectory.replace("\\", "/");
-			String b[]=projetctDirectory.split("/");					
+			String projectDirectory = getProjectDirectory();
+			projectDirectory=projectDirectory.replace("\\", "/");
+			String b[]=projectDirectory.split("/");					
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet();
 			createHeaderExcel(sheet);
@@ -83,9 +88,8 @@ public class Maestro {
 			incrementer = 1;
 			return getProjectDirectory() + "\\" + b[b.length -1] + "_metricas" + ".xlsx";
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return ""; //TODO proper exception return
+			return "";
 		}
 	}
 
@@ -98,16 +102,7 @@ public class Maestro {
 			String[] splitted = temp.split(" ");
 			String namePck = splitted[0];
 			String nameClass = splitted[1];
-			Map<String, String> classMetrics = new HashMap<>();
-			for (Metrica metric: metrics)
-			{
-			    if (metric.isClassMetric())
-			        classMetrics.put(metric.getMetricName(), String.valueOf(metric.getCounters().get(u).getCount()));
-			}
-			
-//			String LOC_class = String.valueOf(getLOC_class().getCounters().get(u).getCount());
-//			String WMC_class = String.valueOf(getWMC_class().getCounters().get(u).getCount());
-//			String NOM_class = String.valueOf(getNOM_class().getCounters().get(u).getCount());
+			Map<String, String> classMetrics = new LinkedHashMap<>();
 			
 			for (String s : getCYCLO_method().getCounters().keySet()) {
 				if (s.contains(u)) {
@@ -119,22 +114,21 @@ public class Maestro {
 					lineMetrics.putAll(classMetrics);
 					for (Metrica metric: metrics)
 		            {
-		                if (!metric.isClassMetric())
+		                if (metric.isClassMetric())
+		                    lineMetrics.put(metric.getMetricName(), String.valueOf(metric.getCounters().get(u).getCount()));
+		                else
 		                    lineMetrics.put(metric.getMetricName(), String.valueOf(metric.getCounters().get(s).getCount()));
 		            }
 					
-//					String CYCLO_method = String.valueOf(getCYCLO_method().getCounters().get(s).getCount());
-//					String LOC_method = String.valueOf(getLOC_method().getCounters().get(s).getCount());
-//					String[] lineString = {NOM_class, LOC_class, WMC_class, LOC_method, CYCLO_method};
-					
 					Line line = new Line(incrementer, namePck, nameClass, nameMtd, lineMetrics);
+					
 					for (Rule rule: rules)
 					    line.calculateRule(rule);
 					
 					try {
+
 						writeExcel(sheet, line.toArray());
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -144,14 +138,23 @@ public class Maestro {
 
 	private void createHeaderExcel(XSSFSheet sheet) throws IOException {
 	    Row firstRow = sheet.createRow(incrementer);
-	    List<String> header = new ArrayList<>(Arrays.asList("MethodID", "Package", "Class", "Method"));
+	    LinkedList<String> header = new LinkedList<>(Arrays.asList("MethodID", "Package", "Class", "Method"));
+	    
+	    System.out.println("header");
 	    
 	    for(Metrica metric: metrics)
+	    {
+	        System.out.println(metric.getMetricName());
             header.add(metric.getMetricName());
+	    }
+
+
+	    
 	    
 	    for(Rule rule: rules)
 	        header.add(rule.ruleName);
 	    
+        
         for (int i = 0; i < header.size(); i++) {
             Cell cell = firstRow.createCell(i);
             cell.setCellValue(header.get(i));
@@ -161,6 +164,7 @@ public class Maestro {
 
 	private void writeExcel(XSSFSheet sheet, String[] line) throws IOException {
 	    Row firstRow = sheet.createRow(incrementer);
+	    
 	    
         for (int i = 0; i < line.length; i++) {
 			

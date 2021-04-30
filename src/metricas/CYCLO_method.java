@@ -11,7 +11,7 @@ public class CYCLO_method extends Metrica {
 
 	public CYCLO_method(Maestro metricas) {
 		super(metricas);
-		metricName = "CYCLO_method";
+		metricName = "CYCLO_METHOD";
 		isClassMetric = false;
 	}
 

@@ -9,17 +9,17 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.Desktop.Action;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -42,6 +42,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import metricas.Maestro;
 import reader.ExcelReader;
 import reader.Line;
+import rules.Rule;
+import rules.RuleFileManager;
 
 public class MainWindow {
 
@@ -53,7 +55,6 @@ public class MainWindow {
 	private JPanel panel_2;
 	private JPanel panel_3;
 	private ArrayList<RuleGUI> rulesGUI = new ArrayList<>();
-//	private ArrayList<Rule> rules = new ArrayList<>();
 	private int ruleNumber = 1;
 
 	/**
@@ -154,6 +155,29 @@ public class MainWindow {
 				panel.updateUI();
 			}
 		});
+//		
+//		JButton btnImportRules = new JButton("Import Rules");
+//		panel_2.add(btnImportRules);
+//		btnImportRules.addActionListener(new ActionListener() {
+//		    
+//		    @Override
+//		    public void actionPerformed(ActionEvent e) {
+//		        panel.removeAll();
+//		        HashMap<String, List<Rule>> ruleMap = RuleFileManager.readRules();
+//		        Set<String> timestamps = ruleMap.keySet();
+//		        
+//		        for(Map.Entry<String, List<Rule>> rules: ruleMap.entrySet())
+//		        {
+//		            for(Rule rule: rules.getValue())
+//		            {
+//		                RuleGUI tempRuleGUI = rule.generateRuleGUI(panel);
+//		                panel.add(tempRuleGUI);
+//		            }
+//		            break;
+//		        }
+//		        
+//		    }
+//		});
 
 		JButton addRuleButton = new JButton("Add Rule");
 		panel_2.add(addRuleButton);
@@ -171,7 +195,7 @@ public class MainWindow {
                     int popupResult = JOptionPane.showOptionDialog(frame,
                             "Do you wish to create a class or method rule?", "New rule option",
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, getPopupImageIcon("src/icons/java.png"), popupOptions,
-                            popupOptions[0]); //TODO fix closing popup
+                            popupOptions[0]);
 
                     if (popupResult >= 0)
                     {
@@ -242,7 +266,7 @@ public class MainWindow {
 		JButton startAnalysisButton = new JButton("  Analyze Directory  ");
 		startAnalysisButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO análise (equipa winx)
+			    
 				String directoryPath = "";
 				try {
 					directoryPath = analysisPathTextField.getText();
@@ -252,9 +276,12 @@ public class MainWindow {
 
 					Maestro maestro = new Maestro(directoryPath);
 
-					if (checkRuleValid()) 
+					if (checkValidRule()) 
 					{
-					        //TODO create Rules
+					    List<Rule> rules = new ArrayList<>();
+					    
+					    rulesGUI.forEach(x -> rules.add(x.generateRule()));
+					    maestro.addRules(rules);
 					    
 						String resultsFilePath = maestro.startMetricCounters();
 						
@@ -268,9 +295,6 @@ public class MainWindow {
 
 						if (popupResult == 0)
 							showImportedData(resultsFilePath);
-						else {
-//							mainPanel.updateUI();
-						}
 
 					}
 				} catch (Exception e) {
@@ -328,7 +352,7 @@ public class MainWindow {
 	}
 
 	
-	private boolean checkRuleValid() {
+	private boolean checkValidRule() {
 		boolean isValid = true;
 		for (RuleGUI rg : rulesGUI) {
 			try {
@@ -343,36 +367,12 @@ public class MainWindow {
 		return isValid;
 	}
 
-	private String getMathSymbolString(int index) {
-		String mathSymbol = "";
-		switch (index) {
-		case 0:
-//			mathSymbol=Rule.GREATER_THAN;
-			return mathSymbol;
-		case 1:
-//			mathSymbol=Rule.LESS_THAN;
-			return mathSymbol;
-
-		case 2:
-//			mathSymbol=Rule.GREATER_THAN_EQUAL;
-			return mathSymbol;
-		case 3:
-//			mathSymbol=Rule.LESS_THAN_EQUAL;
-			return mathSymbol;
-
-		default:
-			return mathSymbol;
-		}
-	}
-
 	private void showImportedData(String fileToImport) {
 		mainPanel.removeAll();
 
-		// TODO ivocar a importação (equipa PRR)
 		ArrayList<Line> lines = ExcelReader.readExcelFile(fileToImport);
 
 		String[] columnNames = lines.get(0).getColumnNames();
-//        String[][] linesAsString = new String[columnNames.length][];
 		ArrayList<String[]> linesAsString = new ArrayList<>();
 
 		for (int i = 0; i < lines.size(); i++) {
@@ -429,7 +429,7 @@ public class MainWindow {
 			filenameList.add(f.getName());
 		}
 
-		JList fileList = new JList(filenameList.toArray());
+		JList<String> fileList = new JList(filenameList.toArray());
 		JScrollPane listScrollPane = new JScrollPane(fileList);
 
 		mainPanel.add(listScrollPane, BorderLayout.WEST);

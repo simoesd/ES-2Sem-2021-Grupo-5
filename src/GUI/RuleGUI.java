@@ -4,6 +4,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -12,6 +13,9 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import rules.Condition;
+import rules.Rule;
 
 public class RuleGUI extends JPanel{
     
@@ -23,7 +27,7 @@ public class RuleGUI extends JPanel{
     
     private boolean isClassRule;
     
-    private List<ConditionGUI> conditions = new ArrayList<>();
+    private List<ConditionGUI> conditionsGUI = new ArrayList<>();
     private List<JComboBox<String>> logicOperators = new ArrayList<>();
 
     private JButton addConditionButton = new JButton("Add Condition");
@@ -40,17 +44,17 @@ public class RuleGUI extends JPanel{
         this.isClassRule = isClassRule;
         MainWindow.enableDefaultValue(ruleTitle, "   Custom_Rule   ");
         this.parentPanel =  parentPanel;
-        conditions.add(new ConditionGUI());
+        conditionsGUI.add(new ConditionGUI(isClassRule));
         
         addConditionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (conditions.size() >= 8)
+                if (conditionsGUI.size() >= 8)
                     JOptionPane.showMessageDialog(parentPanel , "bruh");
                 else {
-                    logicOperators.add(new JComboBox(logicOpDefault));
-                    conditions.add(new ConditionGUI());
+                    addNewLogicOperator(0);
+                    addNewConditionComboBox();
                 }
                 initializePanel();
             }
@@ -61,7 +65,7 @@ public class RuleGUI extends JPanel{
             public void actionPerformed(ActionEvent e)
             {
                 logicOperators.remove(logicOperators.size()-1);
-                conditions.remove(conditions.size()-1);
+                conditionsGUI.remove(conditionsGUI.size()-1);
                 initializePanel();
             }
             
@@ -70,22 +74,39 @@ public class RuleGUI extends JPanel{
         initializePanel();
     }
     
+    public void addNewLogicOperator(int defaultIndex)
+    {
+        JComboBox<String> newLogicOp = new JComboBox<>(logicOpDefault);
+        newLogicOp.setSelectedIndex(defaultIndex);
+        logicOperators.add(newLogicOp);
+    }
+    
+    public void addNewConditionComboBox()
+    {
+        conditionsGUI.add(new ConditionGUI(isClassRule));
+    }
+    
+    public void addCondition(ConditionGUI newCondition)
+    {
+        conditionsGUI.add(newCondition);
+    }
+    
     public void initializePanel()
     {
         this.removeAll();
         this.add(toRemoveCheckbox);
         this.add(ruleTitle);
-        this.add(conditions.get(0));
+        this.add(conditionsGUI.get(0));
         
         int i = 1;
         for(JComboBox<String> logicOp: logicOperators)
         {
             this.add(logicOp);
-            this.add(conditions.get(i++));
+            this.add(conditionsGUI.get(i++));
         }
         
         this.add(addConditionButton);
-        if (conditions.size() > 1)
+        if (conditionsGUI.size() > 1)
             this.add(removeConditionButton);
         
         this.parentPanel.updateUI();
@@ -99,7 +120,7 @@ public class RuleGUI extends JPanel{
     
     public List<ConditionGUI> getConditions()
     {
-        return conditions;
+        return conditionsGUI;
     }
     
     public JCheckBox getToRemoveCheckBox()
@@ -107,53 +128,28 @@ public class RuleGUI extends JPanel{
         return toRemoveCheckbox;
     }
     
-    
-    class ConditionGUI extends JPanel{
-        private JComboBox<String> metric;
-        private JComboBox<String> thresholdOperator;
-        private JTextField thresholdValue;
+    public Rule generateRule()
+    {
+        LinkedList<Condition> conditions = new LinkedList<>();
+        LinkedList<Integer> ruleLogicOperators = new LinkedList<>();
         
-        final String[] methodMetrics = {"CYCLO_METHOD", "LOC_METHOD"};
-        final String[] classMetrics = {"LOC_CLASS", "WMC_CLASS", "NOM_CLASS"};
-        final String[] thresholdOpDefault = {" > ", " < ", " \u2265 ", " \u2264 "};
-        
-        public ConditionGUI()
-        {
-            
+        conditionsGUI.forEach(x -> conditions.add(x.generateCondition()));
 
-            this.metric = isClassRule ? new JComboBox<String>(classMetrics) : new JComboBox<String>(methodMetrics);
-            
-            this.thresholdOperator = new JComboBox<String>(thresholdOpDefault);
-            this.thresholdValue = new JTextField();
-            MainWindow.enableDefaultValue(this.thresholdValue, "0");
-            initializePanel();
+        for (JComboBox<String> logicOp: logicOperators)
+        {
+            switch (logicOp.getSelectedIndex()) {
+                case 0:
+                    ruleLogicOperators.add(Rule.AND);
+                    break;
+                case 1:
+                    ruleLogicOperators.add(Rule.OR);
+                    break;
+            }
         }
         
-        public ConditionGUI(JComboBox<String> metric, JComboBox<String> thresholdOperator, JTextField thresholdValue)
-        {
-            this.metric = metric;
-            this.thresholdOperator = thresholdOperator;
-            this.thresholdValue = thresholdValue;
-            initializePanel();
-        }
-        
-        public void initializePanel()
-        {
-            this.removeAll();
-            this.add(metric);
-            this.add(thresholdOperator);
-            this.add(thresholdValue);
-        }
-        
-        public String getMetric()
-        {
-            return metric.getSelectedItem().toString();
-        }
-        
-        public String getValue()
-        {
-            return thresholdValue.getText();
-        }
+        return new Rule(ruleTitle.getText(), conditions, ruleLogicOperators);
     }
+    
+    
 
 }

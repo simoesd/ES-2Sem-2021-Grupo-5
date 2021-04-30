@@ -12,7 +12,7 @@ public class LOC_class extends Metrica {
 	
 	public LOC_class(Maestro metricas) {
 		super(metricas);
-		metricName = "LOC_class";
+		metricName = "LOC_CLASS";
 		isClassMetric = true;
 	}
 
