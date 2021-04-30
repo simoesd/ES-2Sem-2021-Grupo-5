@@ -4,26 +4,36 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import reader.Line;
+import rules.Rule;
+
 public class Maestro {
 
-	private ArrayList<Metrica> metrics;
+	private ArrayList<Metrica> metrics = new ArrayList<Metrica>();
+	private ArrayList<Rule> rules = new ArrayList<Rule>();
 
 	private String projectDirectory;
 	private static String SOURCE_CODE_LOCATION = "\\src";
 
-	private ArrayList<File> filesInDirectory;
+	private ArrayList<File> filesInDirectory = new ArrayList<File>();
 
 	private int incrementer = 0;
 
 	public Maestro() {
-		metrics = new ArrayList<Metrica>();
-		filesInDirectory = new ArrayList<File>();
+//		metrics = new ArrayList<Metrica>();
+//		rules = new ArrayList<Rule>();
+//		filesInDirectory = new ArrayList<File>();
 	}
 
 	public Maestro(String projectDirectory) {
@@ -85,25 +95,46 @@ public class Maestro {
 
 	private void exportResults(XSSFSheet sheet) {
 		for (String u : getLOC_class().getCounters().keySet()) {
+		    
 			String temp = u;
 			temp = u.replace(".", " ");
 			String[] splitted = temp.split(" ");
 			String namePck = splitted[0];
 			String nameClass = splitted[1];
-			String LOC_class = String.valueOf(getLOC_class().getCounters().get(u).getCount());
-			String WMC_class = String.valueOf(getWMC_class().getCounters().get(u).getCount());
-			String NOM_class = String.valueOf(getNOM_class().getCounters().get(u).getCount());
+			Map<String, String> classMetrics = new HashMap<>();
+			for (Metrica metric: metrics)
+			{
+			    if (metric.isClassMetric())
+			        classMetrics.put(metric.getMetricName(), String.valueOf(metric.getCounters().get(u).getCount()));
+			}
+			
+//			String LOC_class = String.valueOf(getLOC_class().getCounters().get(u).getCount());
+//			String WMC_class = String.valueOf(getWMC_class().getCounters().get(u).getCount());
+//			String NOM_class = String.valueOf(getNOM_class().getCounters().get(u).getCount());
+			
 			for (String s : getCYCLO_method().getCounters().keySet()) {
 				if (s.contains(u)) {
 					String temp2 = s;
 					temp2 = s.replace(".", "/");
-					String[] splitted2 = temp2.split("/");
-					String nameMtd = splitted2[2];
-					String CYCLO_method = String.valueOf(getCYCLO_method().getCounters().get(s).getCount());
-					String LOC_method = String.valueOf(getLOC_method().getCounters().get(s).getCount());
-					String[] line = {namePck , nameClass , nameMtd , NOM_class , LOC_class , WMC_class , "true" , LOC_method  , CYCLO_method , "true" };
+					String[] split2 = temp2.split("/");
+					String nameMtd = split2[2];
+					LinkedHashMap<String, String> lineMetrics = new LinkedHashMap<>();
+					lineMetrics.putAll(classMetrics);
+					for (Metrica metric: metrics)
+		            {
+		                if (!metric.isClassMetric())
+		                    lineMetrics.put(metric.getMetricName(), String.valueOf(metric.getCounters().get(s).getCount()));
+		            }
+					
+//					String CYCLO_method = String.valueOf(getCYCLO_method().getCounters().get(s).getCount());
+//					String LOC_method = String.valueOf(getLOC_method().getCounters().get(s).getCount());
+//					String[] lineString = {NOM_class, LOC_class, WMC_class, LOC_method, CYCLO_method};
+					
+					Line line = new Line(incrementer, namePck, nameClass, nameMtd, lineMetrics);
+					for (Rule rule: rules)
+					    line.calculateRule(rule);
 					try {
-						writeExcel(sheet, line);
+						writeExcel(sheet, line.toArray());
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -116,11 +147,17 @@ public class Maestro {
 	private void createHeaderExcel(XSSFSheet sheet) throws IOException {
 
 	    Row firstRow = sheet.createRow(incrementer);
-	    String[] header = {"MethodID","Package","Class","Method"," NOM_class","LOC_class","WMC_class","is_God_Class","LOC_method","CYCLO_method","is_Long_Method"};
-
-        for (int i = 0; i < header.length; i++) {
+	    List<String> header = new ArrayList<>(Arrays.asList("MethodID", "Package", "Class", "Method"));
+	    
+	    for(Metrica metric: metrics)
+            header.add(metric.getMetricName());
+	    
+	    for(Rule rule: rules)
+	        header.add(rule.ruleName);
+	    
+        for (int i = 0; i < header.size(); i++) {
             Cell cell = firstRow.createCell(i);
-            cell.setCellValue(header[i]);
+            cell.setCellValue(header.get(i));
         }
         incrementer++;
 	}
@@ -128,16 +165,15 @@ public class Maestro {
 	private void writeExcel(XSSFSheet sheet, String[] line) throws IOException {
 
 	    Row firstRow = sheet.createRow(incrementer);
-	    firstRow.createCell(0).setCellValue(incrementer);
 	    
-        for (int i = 1; i < line.length + 1; i++) {
+        for (int i = 0; i < line.length; i++) {
             Cell cell = firstRow.createCell(i);
             try {
-                int cellValue = Integer.parseInt(line[i-1]);
+                int cellValue = Integer.parseInt(line[i]);
                 cell.setCellValue(cellValue);
             } catch (NumberFormatException e) {
-                if (Boolean.parseBoolean(line[i-1])) {
-                    switch (line[i-1].toLowerCase()) {
+                if (Boolean.parseBoolean(line[i])) {
+                    switch (line[i].toLowerCase()) {
                         case "true":
                             cell.setCellValue(true);
                             break;
@@ -146,7 +182,7 @@ public class Maestro {
                             break;
                     }
                 } else {
-                    cell.setCellValue(line[i-1]);
+                    cell.setCellValue(line[i]);
                 }
             }
         }
@@ -178,6 +214,16 @@ public class Maestro {
 		shortPath = shortPath.replace("\\", ".");
 		shortPath = shortPath.replace(".java", "");
 		return shortPath;
+	}
+	
+	public void addRule(Rule rule)
+	{
+	    rules.add(rule);
+	}
+	
+	public void addRules(List<Rule> rules)
+	{
+	    this.rules.addAll(rules);
 	}
 
 	public ArrayList<File> getFilesInDirectory() {
