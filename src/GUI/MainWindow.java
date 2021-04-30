@@ -171,35 +171,36 @@ public class MainWindow {
                     int popupResult = JOptionPane.showOptionDialog(frame,
                             "Do you wish to create a class or method rule?", "New rule option",
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, getPopupImageIcon("src/icons/java.png"), popupOptions,
-                            popupOptions[0]);
+                            popupOptions[0]); //TODO fix closing popup
 
-                    
-                    RuleGUI rule = new RuleGUI(panel, popupResult == 0);
-                    
-                    rulesGUI.add(rule);
-                    
-                    rule.getToRemoveCheckBox().addActionListener(new ActionListener() {
+                    if (popupResult >= 0)
+                    {
+                        RuleGUI rule = new RuleGUI(panel, popupResult == 0);
                         
-                        @Override
-                        public void actionPerformed(ActionEvent e)
-                        {
-                            boolean activateButton = false;
-                            
-                            for (RuleGUI tempRule: rulesGUI)
+                        rulesGUI.add(rule);
+                        
+                        rule.getToRemoveCheckBox().addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e)
                             {
-                                if (tempRule.isSelected())
-                                    activateButton = true;
+                                boolean activateButton = false;
+                                
+                                for (RuleGUI tempRule: rulesGUI)
+                                {
+                                    if (tempRule.isSelected())
+                                        activateButton = true;
+                                }
+                                
+                                removeRuleButton.setEnabled(activateButton);
                             }
                             
-                            removeRuleButton.setEnabled(activateButton);
-                        }
+                        });
                         
-                    });
-                    
-                    panel.add(rule);
-                    
-                    mainPanel.updateUI();
-                    ruleNumber++;
+                        panel.add(rule);
+                        
+                        mainPanel.updateUI();
+                        ruleNumber++;
+                    }
                 } else {
                     JOptionPane.showMessageDialog(panel, "Atingiu o limite de 5 regras");
                 }
@@ -268,8 +269,7 @@ public class MainWindow {
 						if (popupResult == 0)
 							showImportedData(resultsFilePath);
 						else {
-
-							mainPanel.updateUI();
+//							mainPanel.updateUI();
 						}
 
 					}
@@ -315,8 +315,7 @@ public class MainWindow {
 		importProjectButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!importPathTextField.getText().isEmpty()) {
-					System.out.println(importPathTextField.getText());
-					showImportedData(importPathTextField.getText()); // showImportedData(getFileName(importPathTextField.getText()));
+					showImportedData(importPathTextField.getText());
 				} else {
 					JOptionPane.showMessageDialog(importProjectButton, "Preencha o path do ficheiro");
 				}
