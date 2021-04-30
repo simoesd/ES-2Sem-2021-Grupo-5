@@ -71,19 +71,15 @@ public class Maestro {
 		try {
 			String projetctDirectory = getProjectDirectory();
 			projetctDirectory=projetctDirectory.replace("\\", "/");
-			String b[]=projetctDirectory.split("/");
-					
+			String b[]=projetctDirectory.split("/");					
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet();
 			createHeaderExcel(sheet);
-			exportResults(sheet);
-			
+			exportResults(sheet);			
 			FileOutputStream fos = new FileOutputStream(getProjectDirectory() + "\\" + b[b.length -1] + "_metricas" + ".xlsx");
-			workbook.write(fos);
-			
+			workbook.write(fos);		
 			fos.close();
-			workbook.close();
-			
+			workbook.close();			
 			incrementer = 1;
 			return getProjectDirectory() + "\\" + b[b.length -1] + "_metricas" + ".xlsx";
 		} catch (IOException e) {
@@ -94,10 +90,11 @@ public class Maestro {
 	}
 
 	private void exportResults(XSSFSheet sheet) {
+		
 		for (String u : getLOC_class().getCounters().keySet()) {
 		    
 			String temp = u;
-			temp = u.replace(".", " ");
+			temp = u.replace("/", " ");
 			String[] splitted = temp.split(" ");
 			String namePck = splitted[0];
 			String nameClass = splitted[1];
@@ -133,6 +130,7 @@ public class Maestro {
 					Line line = new Line(incrementer, namePck, nameClass, nameMtd, lineMetrics);
 					for (Rule rule: rules)
 					    line.calculateRule(rule);
+					
 					try {
 						writeExcel(sheet, line.toArray());
 					} catch (IOException e) {
@@ -145,7 +143,6 @@ public class Maestro {
 	}
 
 	private void createHeaderExcel(XSSFSheet sheet) throws IOException {
-
 	    Row firstRow = sheet.createRow(incrementer);
 	    List<String> header = new ArrayList<>(Arrays.asList("MethodID", "Package", "Class", "Method"));
 	    
@@ -163,10 +160,10 @@ public class Maestro {
 	}
 
 	private void writeExcel(XSSFSheet sheet, String[] line) throws IOException {
-
 	    Row firstRow = sheet.createRow(incrementer);
 	    
         for (int i = 0; i < line.length; i++) {
+			
             Cell cell = firstRow.createCell(i);
             try {
                 int cellValue = Integer.parseInt(line[i]);
@@ -196,26 +193,33 @@ public class Maestro {
 	}
 
 	private void listFilesForFolder(File folder) {
-		for (File fileEntry : folder.listFiles()) {
-			if (fileEntry.isDirectory()) {
-				listFilesForFolder(fileEntry);
-			} else {
-				if (fileEntry.getAbsolutePath().endsWith(".java")) {
-					filesInDirectory.add(fileEntry);
+		if(folder.listFiles() != null) {
+			for (File fileEntry : folder.listFiles()) {
+				if (fileEntry.isDirectory()) {
+					listFilesForFolder(fileEntry);
+				} else {
+					if (fileEntry.getAbsolutePath().endsWith(".java")) {
+						filesInDirectory.add(fileEntry);
+					}
 				}
 			}
 		}
 	}
 
 	public String cutAbsolutePath(String absolutePath) { // retorna package.class
-		String shortPath = getProjectDirectory() + getSourceCodeLocation();
-		int stringLength = shortPath.length() + 1;
-		shortPath = absolutePath.substring(stringLength);
-		shortPath = shortPath.replace("\\", ".");
-		shortPath = shortPath.replace(".java", "");
-		return shortPath;
-	}
 	
+        String shortPath = getProjectDirectory() + getSourceCodeLocation();
+        int stringLength = shortPath.length() + 1;
+        shortPath = absolutePath.substring(stringLength);
+        shortPath = shortPath.replace("\\", ".");
+        shortPath = shortPath.replace(".java", "");
+        if(shortPath.split("\\.").length < 2)
+            shortPath = "defaultPackage." +  shortPath;
+        shortPath = shortPath.substring(0, shortPath.lastIndexOf(".")) + "/" + shortPath.substring(shortPath.lastIndexOf(".") + 1);
+        return shortPath;
+		
+    }
+
 	public void addRule(Rule rule)
 	{
 	    rules.add(rule);

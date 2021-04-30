@@ -1,15 +1,15 @@
 package metricas;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import com.codahale.metrics.Counter;
 
 public class LOC_class extends Metrica {
 
-	private boolean enteredClass = false;
-	private Counter className;
-
+	
 	public LOC_class(Maestro metricas) {
 		super(metricas);
 		metricName = "LOC_class";
@@ -18,30 +18,36 @@ public class LOC_class extends Metrica {
 
 	@Override
 	protected void extractMetrics() {
-		ArrayList<File> filesInDirectory = getMetricas().getFilesInDirectory();
+		ArrayList<File> filesInDirectory = getMaestro().getFilesInDirectory();
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
-			setPackageClassName(getMetricas().cutAbsolutePath(absolutePath));
-			className = new Counter();
-			className = this.counter(getPackageClassName());
-			this.openReadFile(file);
-			enteredClass = false;
+			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
+			counter = this.counter(getPackageClassName());
+			filterCode(file);
 		}
 	}
-
+	
 	@Override
-	protected void applyFilter(String s) { //este programa ainda conta como 2 linhas 1 linha que foi separada em duas 
-		s = s.trim();
-		if (enteredClass ==false) {
-			if (isClass(s)) {
-				enteredClass = true;
-			}
-		} else {
-				if (!s.startsWith("//") && !s.startsWith("*") && !s.startsWith("@") && !s.startsWith("/*")) { //não lida totalmente com os blocos de comentario
-					if (!s.equals("{") && !s.equals("}") && !s.isBlank()) {
-						className.inc();
-					}
-				}
-		}
+	protected void applyMetricFilter(String methodCode) { 
+		methodCode = methodCode.replaceAll("\t", "");
+		if(methodCode != "" && !(methodCode.startsWith("package") || methodCode.startsWith("import")))
+			counter.inc();
 	}
+	
+	@Override
+	protected void filterCode(File file) {
+        try {
+            Scanner sc = new Scanner(file);
+            while (sc.hasNextLine()) {
+                line = sc.nextLine();
+				filterOutJunk();
+                if(!isMultiLineComment)
+                	applyMetricFilter(line);
+            }
+            sc.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+	
 }

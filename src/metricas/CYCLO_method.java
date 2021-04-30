@@ -1,14 +1,13 @@
 package metricas;
 
+
 import java.io.File;
 import java.util.ArrayList;
-
-import com.codahale.metrics.Counter;
+import java.util.Scanner;
 
 public class CYCLO_method extends Metrica {
 
 	private final String filter = "for,if,while,case";
-	private Counter methodName = new Counter();
 
 	public CYCLO_method(Maestro metricas) {
 		super(metricas);
@@ -17,34 +16,32 @@ public class CYCLO_method extends Metrica {
 	}
 
 	@Override
-	protected void extractMetrics() {
-		
-		ArrayList<File> filesInDirectory = getMetricas().getFilesInDirectory();
+	protected void extractMetrics() {		
+		ArrayList<File> filesInDirectory = getMaestro().getFilesInDirectory();
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
-			setPackageClassName(getMetricas().cutAbsolutePath(absolutePath));
-			this.openReadFile(file);
+			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
+			filterCode(file);
 		}
-
 	}
-
+	
+	
 	@Override
-	protected void applyFilter(String s) {  //TODO Lidar com a situação dos comentários
-		String[] line = s.split(" ");
-		String[] filterToApply = filter.split(",");
-		
-		String temp = methodName(s, line);
-		if (!temp.isBlank()) {
-			methodName = new Counter();
-			methodName = this.counter(getPackageClassName() + "." + temp);
-		}
-		for (String l : line) {
-			l = l.replace("\t", "");
-			for (String f : filterToApply) {
-				if (l.equals(f)) {
-					methodName.inc();
+	protected void applyMetricFilter(String methodCode) {  
+		Scanner scanner = new Scanner(methodCode);
+		while (scanner.hasNextLine()) {
+			String line = scanner.nextLine();
+			String[] splitLine = line.split(" ");
+			String[] filterToApply = filter.split(",");
+			for (String word : splitLine) {
+				word = word.replaceAll("\t", "");
+				for (String f : filterToApply) {
+					if (word.equals(f) || word.startsWith(f + "(")) {
+						counter.inc();
+					}
 				}
-			}
+			}		   
 		}
-	}
+		scanner.close();
+	}	
 }
