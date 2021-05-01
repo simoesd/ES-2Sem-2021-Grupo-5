@@ -11,24 +11,21 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.Scrollbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.nio.channels.InterruptedByTimeoutException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -47,7 +44,6 @@ import metricas.Maestro;
 import reader.ExcelReader;
 import reader.Line;
 import rules.Rule;
-import rules.RuleFileManager;
 
 public class MainWindow {
 
@@ -91,13 +87,13 @@ public class MainWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame("Code Smeller");
-		
+
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		int width = gd.getDisplayMode().getWidth();
 		int height = gd.getDisplayMode().getHeight();
-		
-		frame.setBounds(0, 0, width, height);
-		//frame.setResizable(false);
+
+		frame.setBounds(0, 0, width - 100, height - 100);
+		// frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 
@@ -116,19 +112,18 @@ public class MainWindow {
 		// Rules Panel
 
 		panel = new JPanel();
-	
+
 		mainScrollPane = new JScrollPane(panel);
 
 		mainScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
-		
+
 		mainPanel.add(mainScrollPane, BorderLayout.CENTER);
 		GridLayout gridLayout = new GridLayout(6, 1, 0, 10);
-		
-		
+
 		panel.setLayout(gridLayout);
-		
-		//panel.setBorder(new EmptyBorder(10,10,10,10));
-		
+
+		// panel.setBorder(new EmptyBorder(10,10,10,10));
+
 		panel_2 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_2.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
@@ -219,7 +214,7 @@ public class MainWindow {
 
 					if (popupResult >= 0) {
 						RuleGUI rule = new RuleGUI(panel, popupResult == 0);
-						
+
 						rulesGUI.add(rule);
 
 						rule.getToRemoveCheckBox().addActionListener(new ActionListener() {
@@ -315,8 +310,9 @@ public class MainWindow {
 							showImportedData(resultsFilePath);
 
 					}
+
 				} catch (Exception e) {
-						JOptionPane.showMessageDialog(panel, e.getMessage());
+					JOptionPane.showMessageDialog(panel, e.getMessage());
 
 				}
 			}
@@ -398,7 +394,7 @@ public class MainWindow {
 		return isValid;
 	}
 
-	private void showImportedData(String fileToImport) {
+	private void showImportedData(String fileToImport) { //TODO VERIFICAR CONDIÇOES NECESSARIAS PARA TORNAR VIAVEL A AVALIAÇÃO DE CODE SMELLS
 		mainPanel.removeAll();
 
 		ArrayList<Line> lines = ExcelReader.readExcelFile(fileToImport);
@@ -415,7 +411,77 @@ public class MainWindow {
 
 		JScrollPane tableScrollPane = new JScrollPane(tempTable);
 		tableScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+		//if pathFile contains jasml_0.10
+		ArrayList<Line> dataToEvaluateCodeSmells = ExcelReader.readExcelFile("Code_Smells.xlsx");
+		String[] columnNamesEvaluationFile = dataToEvaluateCodeSmells.get(0).getColumnNames();
+		for (int i = 0; i < columnNamesEvaluationFile.length; i++) {
+			System.out.println(columnNamesEvaluationFile[i]);
 
+		}
+		ArrayList<String> fileResultsIsGodClass = new ArrayList<>();
+		ArrayList<String> fileResultsIsLongMethod = new ArrayList<>();
+		ArrayList<String[]> fileResults = new ArrayList<>();
+		int j = 1;
+		for (int i = 0; i < dataToEvaluateCodeSmells.size(); i++) {
+			String[] tempArray = new String[2];
+			for (int u = 0; u < dataToEvaluateCodeSmells.get(i).toArray().length; u++) {
+				try {
+					Integer.parseInt(dataToEvaluateCodeSmells.get(i).toArray()[u]);
+				} catch (Exception e) {
+					if (dataToEvaluateCodeSmells.get(i).toArray()[u].toLowerCase().equals("true")
+							|| dataToEvaluateCodeSmells.get(i).toArray()[u].toLowerCase().equals("false")) {
+						tempArray[j] = dataToEvaluateCodeSmells.get(i).toArray()[u];
+						j--;
+
+					}
+				}
+
+			}
+			fileResults.add(tempArray);
+			j = 1;
+		}
+
+		for (int i = 0; i < fileResults.size(); i++) {
+			fileResultsIsGodClass.add(fileResults.get(i)[0]);
+			fileResultsIsLongMethod.add(fileResults.get(i)[1]);
+		}
+
+		ArrayList<String> isGodClass = new ArrayList<>();
+		ArrayList<String> isLongMethod = new ArrayList<>();
+		for (int i = 0; i < columnNames.length; i++) {
+			if (columnNames[i].toLowerCase().equals("is_god_class")) {
+				for (int u = 0; u < fileResults.size(); u++) {
+					isGodClass.add(codeSmellsEvaluation(linesAsString, fileResultsIsGodClass, u, i));
+				}
+
+			} else if (columnNames[i].toLowerCase().equals("is_long_method")) {
+				for (int u = 0; u < fileResults.size(); u++) {
+					isLongMethod.add(codeSmellsEvaluation(linesAsString, fileResultsIsLongMethod, u, i));
+				}
+			}
+		}
+
+		String[] fileResultsColumnName = { "Method_ID", "Is_God_Class", "Is_Long_Method" };
+		ArrayList<String[]> resultsOfEvaluation = new ArrayList<>();
+
+		String[] tempGodClass = new String[isGodClass.size()];
+		String[] tempLongMethod = new String[isLongMethod.size()];
+		for (int i = 0; i < isGodClass.size(); i++) {
+			tempGodClass[i] = isGodClass.get(i);
+			tempLongMethod[i] = isLongMethod.get(i);
+		}
+
+		for (int i = 0; i < tempGodClass.length; i++) {
+
+			String[] teste = {String.valueOf(i+1), tempLongMethod[i].toString(),tempGodClass[i].toString()};
+			resultsOfEvaluation.add(i, teste);
+		}
+
+		JTable tempTable2 = new JTable(resultsOfEvaluation.toArray(new String[0][0]), fileResultsColumnName);
+		
+		JScrollPane tableScrollPane2 = new JScrollPane(tempTable2);
+		tableScrollPane2.setBorder(new EmptyBorder(0, 0, 0, 0));
+// ATE AQUI
 		JLabel fileTitle = new JLabel(fileToImport, SwingConstants.CENTER);
 
 		int[] projectData = getProjectData(lines);
@@ -448,7 +514,8 @@ public class MainWindow {
 		northPanel.add(metricPanel, BorderLayout.CENTER);
 		northPanel.add(backButton, BorderLayout.WEST);
 		mainPanel.add(northPanel, BorderLayout.NORTH);
-		mainPanel.add(tableScrollPane, BorderLayout.CENTER);
+		mainPanel.add(tableScrollPane, BorderLayout.WEST);
+		mainPanel.add(tableScrollPane2, BorderLayout.EAST);
 		mainPanel.updateUI();
 	}
 
@@ -535,5 +602,32 @@ public class MainWindow {
 		Graphics g = bi.createGraphics();
 		g.drawImage(tempImg, 0, 0, 40, 40, null, null);
 		return new ImageIcon(bi);
+	}
+
+	private String codeSmellsEvaluation(ArrayList<String[]> rulesResults, ArrayList<String> fileResults, int u, int i) {
+
+		switch (rulesResults.get(u)[i]) {
+		case "true":
+			if (fileResults.get(u).toLowerCase().equals("true")) {
+				System.out.println("VP");
+				return "VP";
+			} else if (fileResults.get(u).toLowerCase().equals("false")) {
+				System.out.println("FP");
+				return "FP";
+			}
+
+		case "false":
+
+			if (fileResults.get(u).toLowerCase().equals("true")) {
+				System.out.println("FN");
+				return "FN";
+			} else if (fileResults.get(u).toLowerCase().equals("false")) {
+				System.out.println("VN");
+				return "VN";
+			}
+
+		}
+
+		return "";
 	}
 }
