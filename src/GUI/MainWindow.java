@@ -7,8 +7,11 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Scrollbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -25,6 +28,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -47,6 +51,7 @@ import rules.RuleFileManager;
 
 public class MainWindow {
 
+	private static final int HORIZONTAL_SCROLLBAR_NEVER = 0;
 	private JFrame frame;
 	private JTextField analysisPathTextField;
 	private JTextField importPathTextField;
@@ -54,6 +59,7 @@ public class MainWindow {
 	private JPanel panel;
 	private JPanel panel_2;
 	private JPanel panel_3;
+	JScrollPane mainScrollPane;
 	private ArrayList<RuleGUI> rulesGUI = new ArrayList<>();
 	private int ruleNumber = 1;
 
@@ -85,8 +91,13 @@ public class MainWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame("Code Smeller");
-		frame.setBounds(100, 100, 1242, 624);
-		frame.setResizable(false);
+		
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		int width = gd.getDisplayMode().getWidth();
+		int height = gd.getDisplayMode().getHeight();
+		
+		frame.setBounds(0, 0, width, height);
+		//frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 
@@ -105,9 +116,19 @@ public class MainWindow {
 		// Rules Panel
 
 		panel = new JPanel();
-		mainPanel.add(panel, BorderLayout.CENTER);
-		panel.setLayout(new GridLayout(6, 1, 0, 0));
+	
+		mainScrollPane = new JScrollPane(panel);
 
+		mainScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+		
+		mainPanel.add(mainScrollPane, BorderLayout.CENTER);
+		GridLayout gridLayout = new GridLayout(6, 1, 0, 10);
+		
+		
+		panel.setLayout(gridLayout);
+		
+		//panel.setBorder(new EmptyBorder(10,10,10,10));
+		
 		panel_2 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_2.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
@@ -182,56 +203,50 @@ public class MainWindow {
 		JButton addRuleButton = new JButton("Add Rule");
 		panel_2.add(addRuleButton);
 		panel_2.add(removeRuleButton);
-		
+
 		addRuleButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (ruleNumber <= 5) 
-				{
+				if (ruleNumber <= 5) {
 					ruleTitle.setVisible(true);
 
 					Object[] popupOptions = { "Class", "Method" };
-                    int popupResult = JOptionPane.showOptionDialog(frame,
-                            "Do you wish to create a class or method rule?", "New rule option",
-                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, getPopupImageIcon("src/icons/java.png"), popupOptions,
-                            popupOptions[0]);
+					int popupResult = JOptionPane.showOptionDialog(frame,
+							"Do you wish to create a class or method rule?", "New rule option",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+							getPopupImageIcon("src/icons/java.png"), popupOptions, popupOptions[0]);
 
-                    if (popupResult >= 0)
-                    {
-                        RuleGUI rule = new RuleGUI(panel, popupResult == 0);
-                        
-                        rulesGUI.add(rule);
-                        
-                        rule.getToRemoveCheckBox().addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e)
-                            {
-                                boolean activateButton = false;
-                                
-                                for (RuleGUI tempRule: rulesGUI)
-                                {
-                                    if (tempRule.isSelected())
-                                        activateButton = true;
-                                }
-                                
-                                removeRuleButton.setEnabled(activateButton);
-                            }
-                            
-                        });
-                        
-                        panel.add(rule);
-                        
-                        mainPanel.updateUI();
-                        ruleNumber++;
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(panel, "Atingiu o limite de 5 regras");
-                }
-            }
-        });
-					
+					if (popupResult >= 0) {
+						RuleGUI rule = new RuleGUI(panel, popupResult == 0);
+						
+						rulesGUI.add(rule);
 
+						rule.getToRemoveCheckBox().addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								boolean activateButton = false;
+
+								for (RuleGUI tempRule : rulesGUI) {
+									if (tempRule.isSelected())
+										activateButton = true;
+								}
+
+								removeRuleButton.setEnabled(activateButton);
+							}
+
+						});
+
+						panel.add(rule);
+
+						mainPanel.updateUI();
+						ruleNumber++;
+					}
+				} else {
+					JOptionPane.showMessageDialog(panel, "Atingiu o limite de 5 regras");
+				}
+			}
+		});
 
 		// Analysis Panel
 
@@ -266,7 +281,7 @@ public class MainWindow {
 		JButton startAnalysisButton = new JButton("  Analyze Directory  ");
 		startAnalysisButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-			    
+
 				String directoryPath = "";
 				try {
 					directoryPath = analysisPathTextField.getText();
@@ -274,17 +289,20 @@ public class MainWindow {
 						throw new Exception("Tem que ter um projeto selecionado antes de analisar");
 					}
 
+					if (replicatedTitledRules()) {
+						throw new Exception("As regras têm de ter nomes diferentes");
+					}
+
 					Maestro maestro = new Maestro(directoryPath);
 
-					if (checkValidRule()) 
-					{
-					    List<Rule> rules = new ArrayList<>();
-					    
-					    rulesGUI.forEach(x -> rules.add(x.generateRule()));
-					    maestro.addRules(rules);
-					    
+					if (checkValidRule()) {
+						List<Rule> rules = new ArrayList<>();
+
+						rulesGUI.forEach(x -> rules.add(x.generateRule()));
+						maestro.addRules(rules);
+
 						String resultsFilePath = maestro.startMetricCounters();
-						
+
 						ImageIcon popupIcon = getPopupImageIcon("src/icons/excel.png");
 
 						Object[] popupOptions = { "Sim", "Não" };
@@ -298,11 +316,24 @@ public class MainWindow {
 
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(panel, e.getMessage());
+						JOptionPane.showMessageDialog(panel, e.getMessage());
 
 				}
 			}
+
+			private boolean replicatedTitledRules() {
+				boolean sameTitle = false;
+				for (int i = 0; i < rulesGUI.size(); i++) {
+					for (int j = i + 1; j < rulesGUI.size(); j++) {
+						if (rulesGUI.get(i).getRuleTitleAsString().equals(rulesGUI.get(j).getRuleTitleAsString())) {
+							sameTitle = true;
+							return sameTitle;
+						}
+					}
+				}
+				return sameTitle;
+			}
+
 		});
 		analysisPanel.add(startAnalysisButton);
 		analysisPanel.add(Box.createRigidArea(hMargin));
@@ -321,6 +352,7 @@ public class MainWindow {
 
 		JButton importFileBrowserButton = new JButton("Browse...");
 		importFileBrowserButton.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser importFileChooser = new JFileChooser();
 				FileNameExtensionFilter xlsxFilter = new FileNameExtensionFilter(".xlsx", "xlsx");
@@ -351,7 +383,6 @@ public class MainWindow {
 
 	}
 
-	
 	private boolean checkValidRule() {
 		boolean isValid = true;
 		for (RuleGUI rg : rulesGUI) {
@@ -433,7 +464,7 @@ public class MainWindow {
 		JScrollPane listScrollPane = new JScrollPane(fileList);
 
 		mainPanel.add(listScrollPane, BorderLayout.WEST);
-		mainPanel.add(panel, BorderLayout.CENTER);
+		mainPanel.add(mainScrollPane, BorderLayout.CENTER);
 		mainPanel.add(panel_2, BorderLayout.SOUTH);
 		mainPanel.add(panel_3, BorderLayout.NORTH);
 		mainPanel.updateUI();
@@ -495,14 +526,14 @@ public class MainWindow {
 			}
 		});
 	}
-	
+
 	public static ImageIcon getPopupImageIcon(String iconPath) {
 
-        ImageIcon tempIcon = new ImageIcon(iconPath);
-        Image tempImg = tempIcon.getImage();
-        BufferedImage bi = new BufferedImage(40, 40, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = bi.createGraphics();
-        g.drawImage(tempImg, 0, 0, 40, 40, null, null);
-        return new ImageIcon(bi);
+		ImageIcon tempIcon = new ImageIcon(iconPath);
+		Image tempImg = tempIcon.getImage();
+		BufferedImage bi = new BufferedImage(40, 40, BufferedImage.TYPE_INT_ARGB);
+		Graphics g = bi.createGraphics();
+		g.drawImage(tempImg, 0, 0, 40, 40, null, null);
+		return new ImageIcon(bi);
 	}
 }
