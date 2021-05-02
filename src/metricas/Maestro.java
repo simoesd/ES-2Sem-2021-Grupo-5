@@ -109,7 +109,7 @@ public class Maestro {
 					String temp2 = s;
 					temp2 = s.replace(".", "/");
 					String[] split2 = temp2.split("/");
-					String nameMtd = split2[2];
+					String nameMtd = split2[split2.length-1];
 					LinkedHashMap<String, String> lineMetrics = new LinkedHashMap<>();
 					lineMetrics.putAll(classMetrics);
 					for (Metrica metric: metrics)
@@ -140,11 +140,9 @@ public class Maestro {
 	    Row firstRow = sheet.createRow(incrementer);
 	    LinkedList<String> header = new LinkedList<>(Arrays.asList("MethodID", "Package", "Class", "Method"));
 	    
-	    System.out.println("header");
 	    
 	    for(Metrica metric: metrics)
 	    {
-	        System.out.println(metric.getMetricName());
             header.add(metric.getMetricName());
 	    }
 

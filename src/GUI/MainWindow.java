@@ -17,10 +17,10 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.nio.channels.InterruptedByTimeoutException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -394,7 +394,8 @@ public class MainWindow {
 		return isValid;
 	}
 
-	private void showImportedData(String fileToImport) { //TODO VERIFICAR CONDIÇOES NECESSARIAS PARA TORNAR VIAVEL A AVALIAÇÃO DE CODE SMELLS
+	private void showImportedData(String fileToImport) { // TODO VERIFICAR CONDIÇOES NECESSARIAS PARA TORNAR VIAVEL A
+															// AVALIAÇÃO DE CODE SMELLS
 		mainPanel.removeAll();
 
 		ArrayList<Line> lines = ExcelReader.readExcelFile(fileToImport);
@@ -410,77 +411,125 @@ public class MainWindow {
 		tempTable.setAutoResizeMode(0);
 
 		JScrollPane tableScrollPane = new JScrollPane(tempTable);
-		tableScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
-		//if pathFile contains jasml_0.10
-		ArrayList<Line> dataToEvaluateCodeSmells = ExcelReader.readExcelFile("Code_Smells.xlsx");
-		String[] columnNamesEvaluationFile = dataToEvaluateCodeSmells.get(0).getColumnNames();
-		for (int i = 0; i < columnNamesEvaluationFile.length; i++) {
-			System.out.println(columnNamesEvaluationFile[i]);
+		tableScrollPane.setBorder(new EmptyBorder(0, 100, 20, -50000));
+		// if pathFile contains jasml_0.10
+		try {
 
-		}
-		ArrayList<String> fileResultsIsGodClass = new ArrayList<>();
-		ArrayList<String> fileResultsIsLongMethod = new ArrayList<>();
-		ArrayList<String[]> fileResults = new ArrayList<>();
-		int j = 1;
-		for (int i = 0; i < dataToEvaluateCodeSmells.size(); i++) {
-			String[] tempArray = new String[2];
-			for (int u = 0; u < dataToEvaluateCodeSmells.get(i).toArray().length; u++) {
-				try {
-					Integer.parseInt(dataToEvaluateCodeSmells.get(i).toArray()[u]);
-				} catch (Exception e) {
-					if (dataToEvaluateCodeSmells.get(i).toArray()[u].toLowerCase().equals("true")
-							|| dataToEvaluateCodeSmells.get(i).toArray()[u].toLowerCase().equals("false")) {
-						tempArray[j] = dataToEvaluateCodeSmells.get(i).toArray()[u];
-						j--;
+			if (analysisPathTextField.getText().contains("jasml_0.10")) {
+				ArrayList<Line> dataToEvaluateCodeSmells = ExcelReader.readExcelFile("Code_Smells.xlsx");
+				String[] columnNamesEvaluationFile = dataToEvaluateCodeSmells.get(0).getColumnNames();
+				for (int i = 0; i < columnNamesEvaluationFile.length; i++) {
 
+				}
+				ArrayList<String> fileResultsIsGodClass = new ArrayList<>();
+				ArrayList<String> fileResultsIsLongMethod = new ArrayList<>();
+				ArrayList<String[]> fileResults = new ArrayList<>();
+				int size = 5;
+				int j = 0;
+				for (int i = 0; i < dataToEvaluateCodeSmells.size(); i++) {
+					String[] tempArray = new String[size];
+					for (int u = 0; u < dataToEvaluateCodeSmells.get(i).toArray().length; u++) {
+						try {
+							Integer.parseInt(dataToEvaluateCodeSmells.get(i).toArray()[u]);
+						} catch (Exception e) {
+							tempArray[j] = dataToEvaluateCodeSmells.get(i).toArray()[u];
+							j++;
+						}
+					}
+					j = 0;
+
+					fileResults.add(tempArray);
+				}
+
+				for (int i = 0; i < fileResults.size(); i++) {
+
+					fileResultsIsGodClass.add(fileResults.get(i)[0]);
+					fileResultsIsGodClass.add(fileResults.get(i)[1]);
+					fileResultsIsGodClass.add(fileResults.get(i)[2]);
+					fileResultsIsGodClass.add(fileResults.get(i)[3]);
+
+					fileResultsIsLongMethod.add(fileResults.get(i)[0]);
+					fileResultsIsLongMethod.add(fileResults.get(i)[1]);
+					fileResultsIsLongMethod.add(fileResults.get(i)[2]);
+					fileResultsIsLongMethod.add(fileResults.get(i)[4]);
+				}
+				ArrayList<String[]> isGodClass = new ArrayList<>();
+				ArrayList<String[]> isLongMethod = new ArrayList<>();
+				for (int i = 0; i < columnNames.length; i++) {
+					if (columnNames[i].toLowerCase().equals("is_god_class")) {
+						for (int u = 0; u < fileResultsIsGodClass.size(); u = u + 4) {
+							isGodClass.add(codeSmellsEvaluation(linesAsString, fileResultsIsGodClass, u, i));
+						}
+
+					} else if (columnNames[i].toLowerCase().equals("is_long_method")) {
+						for (int u = 0; u < fileResultsIsLongMethod.size(); u = u + 4) {
+							isLongMethod.add(codeSmellsEvaluation(linesAsString, fileResultsIsLongMethod, u, i));
+						}
 					}
 				}
+				SortedMap<Integer, String> sortedMapGodClass = new TreeMap<Integer, String>();
+				isGodClass.forEach(x -> sortedMapGodClass.put(Integer.parseInt(x[0]), x[1]));
+				SortedMap<Integer, String> sortedMapLongMethod = new TreeMap<Integer, String>();
+				isLongMethod.forEach(x -> sortedMapLongMethod.put(Integer.parseInt(x[0]), x[1]));
+				System.out.println(sortedMapGodClass);
 
-			}
-			fileResults.add(tempArray);
-			j = 1;
-		}
+				for (int incToFillMap = 0; incToFillMap < linesAsString.size(); incToFillMap++) {
+					if (!sortedMapGodClass.containsKey(incToFillMap)) {
+						sortedMapGodClass.put(incToFillMap, "N/A");
+					}
+					if (!sortedMapLongMethod.containsKey(incToFillMap)) {
+						sortedMapLongMethod.put(incToFillMap, "N/A");
+					}
+				}
+//				ArrayList<String> isGodClassSorted = new ArrayList<>();
+//				ArrayList<String> isLongMethodSorted = new ArrayList<>();
 
-		for (int i = 0; i < fileResults.size(); i++) {
-			fileResultsIsGodClass.add(fileResults.get(i)[0]);
-			fileResultsIsLongMethod.add(fileResults.get(i)[1]);
-		}
+				String[] fileResultsColumnName = { "Method_ID", "Is_God_Class", "Is_Long_Method" };
+				ArrayList<String[]> resultsOfEvaluation = new ArrayList<>();
 
-		ArrayList<String> isGodClass = new ArrayList<>();
-		ArrayList<String> isLongMethod = new ArrayList<>();
-		for (int i = 0; i < columnNames.length; i++) {
-			if (columnNames[i].toLowerCase().equals("is_god_class")) {
-				for (int u = 0; u < fileResults.size(); u++) {
-					isGodClass.add(codeSmellsEvaluation(linesAsString, fileResultsIsGodClass, u, i));
+//				Boolean isGodClassEmpty = isGodClassSorted.isEmpty();
+//				Boolean isLongMethodEmpty = isLongMethodSorted.isEmpty();
+//
+//				int numberOfLinesResults = Math.max(isGodClassSorted.size(), isLongMethodSorted.size()); //TODO
+//
+//				String[] tempGodClass = new String[numberOfLinesResults];
+//				String[] tempLongMethod = new String[numberOfLinesResults];
+//
+//				for (int i = 0; i < numberOfLinesResults; i++) {
+//
+//					if (isGodClassEmpty) {
+//						tempGodClass[i] = "N/A";
+//					} else {
+//						tempGodClass[i] = isGodClassSorted.get(i); TODO
+//					}
+//					if (isLongMethodEmpty) {
+//						tempLongMethod[i] = "N/A";
+//					} else {
+//						tempLongMethod[i] = isLongMethodSorted.get(i); TODO
+//					}
+//
+//				}
+
+				for (int i = 0; i < linesAsString.size(); i++) {
+
+					String[] teste = { String.valueOf(i + 1), sortedMapGodClass.get(i).toString(),
+							sortedMapLongMethod.get(i).toString() };
+					resultsOfEvaluation.add(i, teste);
+				}
+				if (resultsOfEvaluation.isEmpty()) {
+					throw new Exception("Não definiu nenhuma regra!");
 				}
 
-			} else if (columnNames[i].toLowerCase().equals("is_long_method")) {
-				for (int u = 0; u < fileResults.size(); u++) {
-					isLongMethod.add(codeSmellsEvaluation(linesAsString, fileResultsIsLongMethod, u, i));
-				}
+				JTable tempTable2 = new JTable(resultsOfEvaluation.toArray(new String[0][0]), fileResultsColumnName);
+
+				JScrollPane tableScrollPane2 = new JScrollPane(tempTable2);
+				tableScrollPane2.setBorder(new EmptyBorder(0, 10, 20, 100));
+
+				mainPanel.add(tableScrollPane2, BorderLayout.EAST);
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
-		String[] fileResultsColumnName = { "Method_ID", "Is_God_Class", "Is_Long_Method" };
-		ArrayList<String[]> resultsOfEvaluation = new ArrayList<>();
-
-		String[] tempGodClass = new String[isGodClass.size()];
-		String[] tempLongMethod = new String[isLongMethod.size()];
-		for (int i = 0; i < isGodClass.size(); i++) {
-			tempGodClass[i] = isGodClass.get(i);
-			tempLongMethod[i] = isLongMethod.get(i);
-		}
-
-		for (int i = 0; i < tempGodClass.length; i++) {
-
-			String[] teste = {String.valueOf(i+1), tempLongMethod[i].toString(),tempGodClass[i].toString()};
-			resultsOfEvaluation.add(i, teste);
-		}
-
-		JTable tempTable2 = new JTable(resultsOfEvaluation.toArray(new String[0][0]), fileResultsColumnName);
-		
-		JScrollPane tableScrollPane2 = new JScrollPane(tempTable2);
-		tableScrollPane2.setBorder(new EmptyBorder(0, 0, 0, 0));
 // ATE AQUI
 		JLabel fileTitle = new JLabel(fileToImport, SwingConstants.CENTER);
 
@@ -514,8 +563,7 @@ public class MainWindow {
 		northPanel.add(metricPanel, BorderLayout.CENTER);
 		northPanel.add(backButton, BorderLayout.WEST);
 		mainPanel.add(northPanel, BorderLayout.NORTH);
-		mainPanel.add(tableScrollPane, BorderLayout.WEST);
-		mainPanel.add(tableScrollPane2, BorderLayout.EAST);
+		mainPanel.add(tableScrollPane, BorderLayout.CENTER);
 		mainPanel.updateUI();
 	}
 
@@ -604,30 +652,62 @@ public class MainWindow {
 		return new ImageIcon(bi);
 	}
 
-	private String codeSmellsEvaluation(ArrayList<String[]> rulesResults, ArrayList<String> fileResults, int u, int i) {
+	private String[] codeSmellsEvaluation(ArrayList<String[]> rulesResults, ArrayList<String> fileResults, int u,
+			int i) {
+		int colunaEncontrada = -1;
+		int linhaEncontrada = -1;
+//		System.out.println(fileResults.get(u));
+//		System.out.println(fileResults.get(u+1));
+//		System.out.println(fileResults.get(u+2));
+		for (int tempInt = 0; tempInt < rulesResults.size(); tempInt++) {
 
-		switch (rulesResults.get(u)[i]) {
-		case "true":
-			if (fileResults.get(u).toLowerCase().equals("true")) {
-				System.out.println("VP");
-				return "VP";
-			} else if (fileResults.get(u).toLowerCase().equals("false")) {
-				System.out.println("FP");
-				return "FP";
+			for (int tempInt2 = 0; tempInt2 < rulesResults.get(tempInt).length
+					&& tempInt2 + 2 < rulesResults.get(tempInt).length; tempInt2++) {
+//				System.out.println("package ->>>> " + rulesResults.get(tempInt)[tempInt2].toLowerCase());
+//				System.out.println("classe ->>>> " + rulesResults.get(tempInt)[tempInt2+1].toLowerCase());
+//				System.out.println("metodo ->>>> " + rulesResults.get(tempInt)[tempInt2+2].toLowerCase());
+
+				if (rulesResults.get(tempInt)[tempInt2].toLowerCase().equals(fileResults.get(u).toLowerCase())
+						&& rulesResults.get(tempInt)[tempInt2 + 1].toLowerCase()
+								.equals(fileResults.get(u + 1).toLowerCase())
+						&& rulesResults.get(tempInt)[tempInt2 + 2].toLowerCase()
+								.equals(fileResults.get(u + 2).toLowerCase())) {
+					colunaEncontrada = tempInt;
+					linhaEncontrada = tempInt2;
+					break;
+				}
+
 			}
-
-		case "false":
-
-			if (fileResults.get(u).toLowerCase().equals("true")) {
-				System.out.println("FN");
-				return "FN";
-			} else if (fileResults.get(u).toLowerCase().equals("false")) {
-				System.out.println("VN");
-				return "VN";
-			}
-
 		}
+		try {
 
-		return "";
+			switch (rulesResults.get(colunaEncontrada)[i]) {
+
+			case "true":
+				if (fileResults.get(u + 3).toLowerCase().equals("true")) {
+					String[] temp = { String.valueOf(colunaEncontrada), "VP" };
+					return temp;
+				} else if (fileResults.get(u + 3).toLowerCase().equals("false")) {
+					String[] temp = { String.valueOf(colunaEncontrada), "FP" };
+					return temp;
+				}
+
+			case "false":
+
+				if (fileResults.get(u + 3).toLowerCase().equals("true")) {
+					String[] temp = { String.valueOf(colunaEncontrada), "FN" };
+					return temp;
+				} else if (fileResults.get(u + 3).toLowerCase().equals("false")) {
+					String[] temp = { String.valueOf(colunaEncontrada), "VN" };
+					return temp;
+				}
+
+			}
+		} catch (Exception e) {
+			String[] temp = { String.valueOf(colunaEncontrada), "N/A" };
+			return temp;
+		}
+		String[] temp = { String.valueOf(colunaEncontrada), "N/A" };
+		return temp;
 	}
 }
