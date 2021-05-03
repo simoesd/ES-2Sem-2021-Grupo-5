@@ -16,10 +16,7 @@ import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -43,7 +40,6 @@ import metricas.Maestro;
 import reader.ExcelReader;
 import reader.Line;
 import rules.Rule;
-import rules.RuleFileManager;
 
 public class MainWindow {
 

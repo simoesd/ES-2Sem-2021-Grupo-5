@@ -154,6 +154,27 @@ public abstract class Metrica extends MetricRegistry {
 		}
 	}
 
+//	public String getMethodName(Stack<String> stack) {
+//        String methodName = stack.pop();
+//        while(!methodName.contains("(")) {
+//        	if(!stack.isEmpty())
+//        		methodName = stack.pop() + " " + methodName;
+//        	else
+//        		return "";
+//        }
+//        methodName = methodName.trim();
+//        methodName = methodName.replaceAll("\t", "");
+//        System.out.println("methodName: " + methodName);
+//        String[] temp = methodName.split("\\(");
+//        String tempContent = "";
+//        for(int i = 0; i < temp.length; i++) { tempContent += "\"" + temp[i] + "\", "; }
+//        System.out.println("temp: " + tempContent);
+//        String[] temp2 = temp[0].split(" ");
+//        String[] temp3 = temp[1].split("\\)");
+//        methodName = temp2[temp2.length-1] + "(" + temp3[0] + ")" ;
+//        return methodName;
+//    }
+	
 	public String getMethodName(Stack<String> stack) {
         String methodName = stack.pop();
         while(!methodName.contains("(")) {
@@ -167,7 +188,26 @@ public abstract class Metrica extends MetricRegistry {
         String[] temp = methodName.split("\\(");
         String[] temp2 = temp[0].split(" ");
         String[] temp3 = temp[1].split("\\)");
-        methodName = temp2[temp2.length-1] + "(" + temp3[0] + ")" ;
+        String temp3Content = "";
+        for(int i = 0; i < temp3.length; i++) { temp3Content += "\"" + temp3[i] + "\", "; }
+        System.out.println("temp3: " + temp3Content);
+        String params = temp3[0];
+        String[] words = params.split(" ");
+        String wordsContent = "";
+        for(int i = 0; i < words.length; i++) { wordsContent += "\"" + words[i] + "\", "; }
+        System.out.println("words: " + wordsContent);
+        System.out.println("words length: " + words.length);
+        String dataTypes = "";
+        for(int i = 0; i < words.length; i = i+2) {
+        	dataTypes += words[i] + ", ";
+        	System.out.println("dataTypes: " + dataTypes);
+        }
+        if(!dataTypes.isEmpty()) {
+        	System.out.println("cropping");
+        	dataTypes = dataTypes.substring(0, dataTypes.length() - 2);
+        }
+        methodName = temp2[temp2.length-1] + "(" + dataTypes + ")" ;
+        System.out.println("methodName: " + methodName);
         return methodName;
     }
 
