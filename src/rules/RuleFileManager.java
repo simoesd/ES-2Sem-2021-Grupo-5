@@ -54,7 +54,7 @@ public class RuleFileManager {
             ois.close();
             fileReader.close();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            
         } finally {
             return readInfo;
         }

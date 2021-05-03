@@ -131,7 +131,11 @@ public class MainWindow {
 
 		mainPanel.add(panel_3, BorderLayout.NORTH);
 
+		JButton btnSaveRules = new JButton("Save Rules");
+		JButton btnRuleHistory = new JButton("Check Rule History");
 		JButton removeRuleButton = new JButton("Remove Rule");
+        JButton addRuleButton = new JButton("Add Rule");
+        
 		removeRuleButton.setEnabled(false);
 		removeRuleButton.addActionListener(new ActionListener() {
 
@@ -152,6 +156,7 @@ public class MainWindow {
 				removeRuleButton.setEnabled(false);
 				if (rulesGUI.isEmpty()) {
 					ruleTitle.setVisible(false);
+					btnSaveRules.setEnabled(false);
 				}
 				for (int i = 0; i < rulesGUI.size(); i++) {
 					panel.add(rulesGUI.get(i));
@@ -160,7 +165,8 @@ public class MainWindow {
 			}
 		});
 		
-		JButton btnSaveRules = new JButton("Save Rules");
+
+        btnSaveRules.setEnabled(false);
 		panel_2.add(btnSaveRules);
 		btnSaveRules.addActionListener(new ActionListener() {
             
@@ -168,7 +174,7 @@ public class MainWindow {
             public void actionPerformed(ActionEvent e) {
                 List<Rule> rulesToWrite = new LinkedList<>();
                 rulesGUI.forEach(x -> rulesToWrite.add(x.generateRule()));
-                RuleFileManager.writeEntry(rulesToWrite); //Overwriting past entries
+                RuleFileManager.writeEntry(rulesToWrite);
                 
                 Object[] popupOptions = { "Ok" };
                 int popupResult = JOptionPane.showOptionDialog(frame,
@@ -181,7 +187,7 @@ public class MainWindow {
 		
 		
 		//TODO import
-		JButton btnRuleHistory = new JButton("Check Rule History");
+		
 		panel_2.add(btnRuleHistory);
 		btnRuleHistory.addActionListener(new ActionListener() {
 		    
@@ -238,12 +244,34 @@ public class MainWindow {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         
+                        rulesGUI.clear();
                         panel.removeAll();
+                        panel.add(ruleTitle);
                         for(Rule rule: rules.get(ruleHistory.getSelectedIndex()))
                         {
                             RuleGUI importedRuleGUI = new RuleGUI(panel, true);
                             importedRuleGUI.setupGUIFromRule(rule);
+                            rulesGUI.add(importedRuleGUI);
+                            importedRuleGUI.getToRemoveCheckBox().addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e)
+                                {
+                                    boolean activateButton = false;
+                                    
+                                    for (RuleGUI tempRule: rulesGUI)
+                                    {
+                                        if (tempRule.isSelected())
+                                            activateButton = true;
+                                    }
+                                    
+                                    removeRuleButton.setEnabled(activateButton);
+                                }
+                                
+                            });
+                            
                             panel.add(importedRuleGUI);
+                            
+                            btnSaveRules.setEnabled(true);
                             ruleHistoryDialog.setVisible(false);
                         }
                         
@@ -260,7 +288,7 @@ public class MainWindow {
 		    }
 		});
 
-		JButton addRuleButton = new JButton("Add Rule");
+		
 		panel_2.add(addRuleButton);
 		panel_2.add(removeRuleButton);
 		
@@ -302,6 +330,8 @@ public class MainWindow {
                         });
                         
                         panel.add(rule);
+                        
+                        btnSaveRules.setEnabled(true);
                         
                         mainPanel.updateUI();
                         ruleNumber++;
@@ -460,10 +490,10 @@ public class MainWindow {
 			linesAsString.add(lines.get(i).toArray());
 		}
 
-		JTable tempTable = new JTable(linesAsString.toArray(new String[0][0]), columnNames);
-		tempTable.setAutoResizeMode(0);
+		JTable lineTable = new JTable(linesAsString.toArray(new String[0][0]), columnNames);
+		lineTable.setAutoResizeMode(0);
 
-		JScrollPane tableScrollPane = new JScrollPane(tempTable);
+		JScrollPane tableScrollPane = new JScrollPane(lineTable);
 		tableScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 
 		JLabel fileTitle = new JLabel(fileToImport, SwingConstants.CENTER);

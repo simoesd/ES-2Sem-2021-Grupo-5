@@ -162,7 +162,6 @@ public class RuleGUI extends JPanel{
     		conditionGUI.setupGUIFromCondition(condition);
     		addCondition(conditionGUI);
     	}
-    	System.out.println(conditionsGUI.size() + "vs" + rule.conditions.size());
     	for (int logicOp: rule.logicOperators)
     		addNewLogicOperator(logicOp);
     	initializePanel();
