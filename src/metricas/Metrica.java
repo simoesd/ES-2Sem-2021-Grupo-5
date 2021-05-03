@@ -153,7 +153,7 @@ public abstract class Metrica extends MetricRegistry {
 			break;					
 		}
 	}
-
+	
 	public String getMethodName(Stack<String> stack) {
         String methodName = stack.pop();
         while(!methodName.contains("(")) {
@@ -167,7 +167,16 @@ public abstract class Metrica extends MetricRegistry {
         String[] temp = methodName.split("\\(");
         String[] temp2 = temp[0].split(" ");
         String[] temp3 = temp[1].split("\\)");
-        methodName = temp2[temp2.length-1] + "(" + temp3[0] + ")" ;
+        String params = temp3[0];
+        String[] paramWords = params.split(" ");
+        String dataTypes = "";
+        for(int i = 0; i < paramWords.length; i = i+2) { // adding every other word from the parameters, to only get the dataTypes in the end
+        	dataTypes += paramWords[i] + ",";
+        }
+        if(!dataTypes.isEmpty()) {
+        	dataTypes = dataTypes.substring(0, dataTypes.length() - 1); // remove the last ", "
+        }
+        methodName = temp2[temp2.length-1] + "(" + dataTypes + ")" ;
         return methodName;
     }
 
