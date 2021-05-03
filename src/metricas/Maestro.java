@@ -109,7 +109,7 @@ public class Maestro {
 					String temp2 = s;
 					temp2 = s.replace(".", "/");
 					String[] split2 = temp2.split("/");
-					String nameMtd = split2[2];
+					String nameMtd = split2[split2.length-1];
 					LinkedHashMap<String, String> lineMetrics = new LinkedHashMap<>();
 					lineMetrics.putAll(classMetrics);
 					for (Metrica metric: metrics)
