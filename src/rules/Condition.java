@@ -11,10 +11,10 @@ public class Condition implements Serializable {
     public int thresholdOperator;
     public int thresholdValue; 
     
-    public static final int LESS_THAN = 0;
-    public static final int LESS_THAN_EQUAL = 1;
-    public static final int GREATER_THAN = 2;
-    public static final int GREATER_THAN_EQUAL = 3;
+    public static final int GREATER_THAN = 0;
+    public static final int LESS_THAN = 1;
+    public static final int GREATER_THAN_EQUAL = 2;
+    public static final int LESS_THAN_EQUAL = 3;
     
     public Condition(String metricToEvaluate, int thresholdOperator, int thresholdValue)
     {
@@ -42,7 +42,7 @@ public class Condition implements Serializable {
         }
         return conditionValue;
     }
-//    
+    
 //    public ConditionGUI generateConditionGUI()
 //    {
 //        ConditionGUI conditionGUI = new ConditionGUI(isClassCondition());
@@ -51,9 +51,9 @@ public class Condition implements Serializable {
 //        conditionGUI.setDefaultThresholdValue(String.valueOf(thresholdValue));
 //        return conditionGUI;
 //    }
-//    
-//    public boolean isClassCondition()
-//    {
-//        return metricToEvaluate.toLowerCase().contains("class");
-//    }
+    
+    public boolean isClassCondition()
+    {
+        return metricToEvaluate.toLowerCase().contains("class");
+    }
 }

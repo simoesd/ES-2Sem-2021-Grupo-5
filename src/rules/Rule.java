@@ -15,6 +15,7 @@ import reader.Line;
 
 public class Rule implements Serializable{
     public String ruleName;
+    public boolean isClassRule;
     
     public LinkedList<Condition> conditions = new LinkedList<>();
     public LinkedList<Integer> logicOperators = new LinkedList<>();
@@ -37,9 +38,9 @@ public class Rule implements Serializable{
         Condition condition2 = new Condition("CYCLO_method", Condition.GREATER_THAN, 10);
         Condition condition3 = new Condition("WMC_class", Condition.GREATER_THAN, 50);
         Condition condition4 = new Condition("NOM_class", Condition.GREATER_THAN, 10);
-        Rule long_method = new Rule("long_method", condition1);
+        Rule long_method = new Rule("long_method", condition1, true);
         long_method.addCondition(condition2, AND);
-        Rule god_class = new Rule("god_class", condition3);
+        Rule god_class = new Rule("god_class", condition3, true);
         god_class.addCondition(condition4, OR);
         
         rules.add(long_method);
@@ -62,25 +63,28 @@ public class Rule implements Serializable{
         
     }
     
-    public Rule(String ruleName, Condition condition)
+    public Rule(String ruleName, Condition condition, boolean isClassRule)
     {
         this.ruleName = ruleName;
         this.conditions.add(condition);
+        this.isClassRule = isClassRule;
     }
     
-    public Rule(String ruleName, String metric, int thresholdOperator, int thresholdValue)
+    public Rule(String ruleName, String metric, int thresholdOperator, int thresholdValue, boolean isClassRule)
     {
         this.ruleName = ruleName;
         this.conditions.add(new Condition(metric, thresholdOperator, thresholdValue));
+        this.isClassRule = isClassRule;
     }
     
-    public Rule(String ruleName, LinkedList<Condition> conditions, LinkedList<Integer> logicOperators)
+    public Rule(String ruleName, LinkedList<Condition> conditions, LinkedList<Integer> logicOperators, boolean isClassRule)
     {
         if (logicOperators.size() != conditions.size() - 1)
             throw new IllegalArgumentException();
         this.ruleName = ruleName;
         this.conditions = conditions;
         this.logicOperators = logicOperators;
+        this.isClassRule = isClassRule;
     }
     
     public void addCondition(Condition condition, Integer logicOperator)
@@ -120,6 +124,7 @@ public class Rule implements Serializable{
         }
         return result;
     }
+    
 //    
 //    public RuleGUI generateRuleGUI(JPanel panel)
 //    {

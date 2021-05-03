@@ -134,7 +134,7 @@ public class RuleGUI extends JPanel{
         LinkedList<Integer> ruleLogicOperators = new LinkedList<>();
         
         conditionsGUI.forEach(x -> conditions.add(x.generateCondition()));
-
+        
         for (JComboBox<String> logicOp: logicOperators)
         {
             switch (logicOp.getSelectedIndex()) {
@@ -147,9 +147,30 @@ public class RuleGUI extends JPanel{
             }
         }
         
-        return new Rule(ruleTitle.getText(), conditions, ruleLogicOperators);
+        return new Rule(ruleTitle.getText(), conditions, ruleLogicOperators, isClassRule);
     }
     
+    public void setupGUIFromRule(Rule rule)
+    {
+    	conditionsGUI.clear();
+    	logicOperators.clear();
+    	ruleTitle.setText(rule.ruleName);
+    	isClassRule = rule.isClassRule;
+    	for (Condition condition: rule.conditions)
+    	{
+    		ConditionGUI conditionGUI = new ConditionGUI(isClassRule);
+    		conditionGUI.setupGUIFromCondition(condition);
+    		addCondition(conditionGUI);
+    	}
+    	System.out.println(conditionsGUI.size() + "vs" + rule.conditions.size());
+    	for (int logicOp: rule.logicOperators)
+    		addNewLogicOperator(logicOp);
+    	initializePanel();
+    }
     
+    public String getRuleTitle()
+    {
+    	return ruleTitle.getText();
+    }
 
 }

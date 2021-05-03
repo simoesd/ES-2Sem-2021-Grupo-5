@@ -74,9 +74,11 @@ public class ConditionGUI extends JPanel {
         return new Condition(metric.getSelectedItem().toString(), conditionThresholdOperator, conditionThresholdValue);
     }
     
-    public void setDefaultThresholdOp(int defaultIndex)
+    public void setupGUIFromCondition(Condition condition)
     {
-        thresholdOperator.setSelectedIndex(defaultIndex);
+    	setDefaultMetric(condition.metricToEvaluate);
+        thresholdOperator.setSelectedIndex(condition.thresholdOperator);
+        thresholdValue.setText(String.valueOf(condition.thresholdValue));
     }
     
     public void setDefaultMetric(String defaultMetric)
@@ -86,10 +88,5 @@ public class ConditionGUI extends JPanel {
             if (metric.getItemAt(i).toUpperCase().equals(defaultMetric.toUpperCase()))
                 metric.setSelectedItem(metric.getItemAt(i));
         }
-    }
-    
-    public void setDefaultThresholdValue(String defaultThresholdValue)
-    {
-        MainWindow.enableDefaultValue(thresholdValue, defaultThresholdValue);
     }
 }

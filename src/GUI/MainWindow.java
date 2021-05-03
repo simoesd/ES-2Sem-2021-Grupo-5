@@ -16,7 +16,9 @@ import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +27,8 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -155,29 +159,99 @@ public class MainWindow {
 				panel.updateUI();
 			}
 		});
-//		
-//		JButton btnImportRules = new JButton("Import Rules");
-//		panel_2.add(btnImportRules);
-//		btnImportRules.addActionListener(new ActionListener() {
-//		    
-//		    @Override
-//		    public void actionPerformed(ActionEvent e) {
-//		        panel.removeAll();
-//		        HashMap<String, List<Rule>> ruleMap = RuleFileManager.readRules();
-//		        Set<String> timestamps = ruleMap.keySet();
-//		        
-//		        for(Map.Entry<String, List<Rule>> rules: ruleMap.entrySet())
-//		        {
-//		            for(Rule rule: rules.getValue())
-//		            {
-//		                RuleGUI tempRuleGUI = rule.generateRuleGUI(panel);
-//		                panel.add(tempRuleGUI);
-//		            }
-//		            break;
-//		        }
-//		        
-//		    }
-//		});
+		
+		JButton btnSaveRules = new JButton("Save Rules");
+		panel_2.add(btnSaveRules);
+		btnSaveRules.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<Rule> rulesToWrite = new LinkedList<>();
+                rulesGUI.forEach(x -> rulesToWrite.add(x.generateRule()));
+                RuleFileManager.writeEntry(rulesToWrite); //Overwriting past entries
+                
+                Object[] popupOptions = { "Ok" };
+                int popupResult = JOptionPane.showOptionDialog(frame,
+                        "Rule set saved successfuly!", "Rule set saved!",
+                        JOptionPane.PLAIN_MESSAGE, JOptionPane.INFORMATION_MESSAGE, null, popupOptions,
+                        popupOptions[0]);
+                
+            }
+        });
+		
+		
+		//TODO import
+		JButton btnRuleHistory = new JButton("Check Rule History");
+		panel_2.add(btnRuleHistory);
+		btnRuleHistory.addActionListener(new ActionListener() {
+		    
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		    	
+		    	JDialog ruleHistoryDialog = new JDialog(frame, "Rule History");
+		    	ruleHistoryDialog.setLayout(new BorderLayout());
+		    	ruleHistoryDialog.setResizable(true);
+		    	
+		    	JPanel dialogTitlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		    	
+		    	JLabel ruleHistoryTitle = new JLabel("RULE HISTORY", SwingConstants.CENTER);
+		    	dialogTitlePanel.add(ruleHistoryTitle);
+		    	ruleHistoryDialog.add(dialogTitlePanel, BorderLayout.NORTH);
+		    	
+		    	JPanel historyComboBoxPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                HashMap<String, List<Rule>> ruleMap = RuleFileManager.readRules();
+                List<List<Rule>> rules = new LinkedList<>(ruleMap.values());
+                Set<String> timestamps = ruleMap.keySet();
+                
+                JComboBox<String> ruleHistory = new JComboBox<String>(timestamps.toArray(new String[0]));
+                historyComboBoxPanel.add(ruleHistory);
+                ruleHistoryDialog.add(historyComboBoxPanel, BorderLayout.CENTER);
+                
+                JPanel historyButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                JButton clearHistoryButton = new JButton("Clear Rule History");
+                historyButtonPanel.add(clearHistoryButton);
+                clearHistoryButton.addActionListener(new ActionListener() {
+                    
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        RuleFileManager.clearHistory(); //TODO not working
+                        Object[] popupOptions = { "Ok" };
+                        JOptionPane.showOptionDialog(frame,
+                                "Rule history cleared!", "Rule history cleared!",
+                                JOptionPane.PLAIN_MESSAGE, JOptionPane.INFORMATION_MESSAGE, null, popupOptions,
+                                popupOptions[0]);
+                        ruleHistoryDialog.setVisible(false);
+                    }
+                });
+                
+                JButton importRulesButton = new JButton("Import Rule Set");
+                historyButtonPanel.add(importRulesButton);
+                importRulesButton.addActionListener(new ActionListener() {
+                    
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        
+                        panel.removeAll();
+                        for(Rule rule: rules.get(ruleHistory.getSelectedIndex()))
+                        {
+                            RuleGUI importedRuleGUI = new RuleGUI(panel, true);
+                            importedRuleGUI.setupGUIFromRule(rule);
+                            panel.add(importedRuleGUI);
+                            ruleHistoryDialog.setVisible(false);
+                        }
+                        
+                    }
+                });
+                
+                ruleHistoryDialog.add(historyButtonPanel, BorderLayout.SOUTH);
+                
+                ruleHistoryDialog.pack();
+                ruleHistoryDialog.setLocationRelativeTo(null);
+                ruleHistoryDialog.setVisible(true);
+                
+		        
+		    }
+		});
 
 		JButton addRuleButton = new JButton("Add Rule");
 		panel_2.add(addRuleButton);
