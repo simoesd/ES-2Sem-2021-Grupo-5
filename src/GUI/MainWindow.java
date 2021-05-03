@@ -203,8 +203,15 @@ public class MainWindow {
                 List<List<Rule>> rules = new LinkedList<>(ruleMap.values());
                 Set<String> timestamps = ruleMap.keySet();
                 
-                JComboBox<String> ruleHistory = new JComboBox<String>(timestamps.toArray(new String[0]));
-                historyComboBoxPanel.add(ruleHistory);
+                JComboBox<String> ruleHistory = new JComboBox<String>();
+                
+                if (timestamps.size() > 0)
+                {
+                    timestamps.forEach(ruleHistory::addItem);
+                    historyComboBoxPanel.add(ruleHistory);
+                }
+                else
+                    historyComboBoxPanel.add(new JLabel("Your rule set history is empty!"));
                 ruleHistoryDialog.add(historyComboBoxPanel, BorderLayout.CENTER);
                 
                 JPanel historyButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));

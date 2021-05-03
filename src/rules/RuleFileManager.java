@@ -46,6 +46,7 @@ public class RuleFileManager {
         InputStream fileReader = FileInputStream.nullInputStream();
         try
         {
+            ruleFile.createNewFile();
             fileReader = new FileInputStream(ruleFile);
             ObjectInputStream ois = new ObjectInputStream(fileReader);
             for (;;)
@@ -67,6 +68,7 @@ public class RuleFileManager {
     public static void clearHistory()
     {
         File ruleFile = new File(HISTORY_FILE_PATH);
+        ruleFile.delete();
     }
     
 }
