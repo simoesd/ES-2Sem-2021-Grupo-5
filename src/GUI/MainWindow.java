@@ -186,8 +186,6 @@ public class MainWindow {
         });
 		
 		
-		//TODO import
-		
 		panel_2.add(btnRuleHistory);
 		btnRuleHistory.addActionListener(new ActionListener() {
 		    
@@ -196,7 +194,7 @@ public class MainWindow {
 		    	
 		    	JDialog ruleHistoryDialog = new JDialog(frame, "Rule History");
 		    	ruleHistoryDialog.setLayout(new BorderLayout());
-		    	ruleHistoryDialog.setResizable(true);
+		    	ruleHistoryDialog.setResizable(false);
 		    	
 		    	JPanel dialogTitlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		    	
@@ -281,7 +279,7 @@ public class MainWindow {
                 ruleHistoryDialog.add(historyButtonPanel, BorderLayout.SOUTH);
                 
                 ruleHistoryDialog.pack();
-                ruleHistoryDialog.setLocationRelativeTo(null);
+                ruleHistoryDialog.setLocationRelativeTo(frame);
                 ruleHistoryDialog.setVisible(true);
                 
 		        
@@ -411,7 +409,6 @@ public class MainWindow {
 				} catch (Exception e) {
 					e.printStackTrace();
 					JOptionPane.showMessageDialog(panel, e.getMessage());
-
 				}
 			}
 		});

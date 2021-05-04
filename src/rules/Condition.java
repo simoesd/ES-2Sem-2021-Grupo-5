@@ -43,14 +43,6 @@ public class Condition implements Serializable {
         return conditionValue;
     }
     
-//    public ConditionGUI generateConditionGUI()
-//    {
-//        ConditionGUI conditionGUI = new ConditionGUI(isClassCondition());
-//        conditionGUI.setDefaultMetric(metricToEvaluate);
-//        conditionGUI.setDefaultThresholdOp(thresholdOperator);
-//        conditionGUI.setDefaultThresholdValue(String.valueOf(thresholdValue));
-//        return conditionGUI;
-//    }
     
     public boolean isClassCondition()
     {
