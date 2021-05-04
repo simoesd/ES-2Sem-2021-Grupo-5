@@ -15,10 +15,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -37,9 +37,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+
+import org.apache.poi.util.SystemOutLogger;
 
 import metricas.Maestro;
 import reader.ExcelReader;
@@ -500,7 +504,8 @@ public class MainWindow {
 		try {
 
 			if (analysisPathTextField.getText().contains("jasml_0.10")) {
-				comparewithCodeSmellsFile(columnNames, linesAsString);
+//				comparewithCodeSmellsFile(columnNames, linesAsString);
+			    temp(lines.get(0).getMetricNames(), lines);
 
 			}
 		} catch (Exception e) {
@@ -627,140 +632,82 @@ public class MainWindow {
 		return new ImageIcon(bi);
 	}
 
-	private void comparewithCodeSmellsFile(String[] columnNames, ArrayList<String[]> linesAsString) throws Exception {
-
-		ArrayList<Line> dataToEvaluateCodeSmells = ExcelReader.readExcelFile("Code_Smells.xlsx");
-		ArrayList<String> fileResultsIsGodClass = new ArrayList<>();
-		ArrayList<String> fileResultsIsLongMethod = new ArrayList<>();
-		ArrayList<String[]> fileResults = new ArrayList<>(); // guarda vetores, cada um com o
-																// pckg,class,method,boolean,boolean da linha
-
-		int size = 5; // (pckg,class,method,boolean,boolean)
-		int j = 0;
-
-		for (int i = 0; i < dataToEvaluateCodeSmells.size(); i++) {
-			String[] tempArray = new String[size];
-			for (int u = 0; u < dataToEvaluateCodeSmells.get(i).toArray().length; u++) {
-				try {
-					Integer.parseInt(dataToEvaluateCodeSmells.get(i).toArray()[u]);
-				} catch (Exception e) {
-					tempArray[j] = dataToEvaluateCodeSmells.get(i).toArray()[u];
-					j++;
-				}
-			}
-			j = 0;
-			fileResults.add(tempArray);
-		}
-
-		for (int i = 0; i < fileResults.size(); i++) {
-
-			fileResultsIsGodClass.add(fileResults.get(i)[0]); // pckg
-			fileResultsIsGodClass.add(fileResults.get(i)[1]); // class
-			fileResultsIsGodClass.add(fileResults.get(i)[2]); // method
-			fileResultsIsGodClass.add(fileResults.get(i)[3]); // boolean is_god_class
-
-			fileResultsIsLongMethod.add(fileResults.get(i)[0]); // pckg
-			fileResultsIsLongMethod.add(fileResults.get(i)[1]); // class
-			fileResultsIsLongMethod.add(fileResults.get(i)[2]); // method
-			fileResultsIsLongMethod.add(fileResults.get(i)[4]); // boolean is_long_method
-		}
-
-		ArrayList<String[]> isGodClass = new ArrayList<>();
-		ArrayList<String[]> isLongMethod = new ArrayList<>();
-
-		for (int i = 0; i < columnNames.length; i++) {
-			if (columnNames[i].toLowerCase().equals("is_god_class")) {
-				for (int u = 0; u < fileResultsIsGodClass.size(); u = u + 4) {
-					isGodClass.add(codeSmellsEvaluation(linesAsString, fileResultsIsGodClass, u, i));
-				}
-
-			} else if (columnNames[i].toLowerCase().equals("is_long_method")) {
-				for (int u = 0; u < fileResultsIsLongMethod.size(); u = u + 4) {
-					isLongMethod.add(codeSmellsEvaluation(linesAsString, fileResultsIsLongMethod, u, i));
-				}
-			}
-		}
-
-		SortedMap<Integer, String> sortedMapGodClass = new TreeMap<Integer, String>();
-		isGodClass.forEach(x -> sortedMapGodClass.put(Integer.parseInt(x[0]), x[1]));
-		SortedMap<Integer, String> sortedMapLongMethod = new TreeMap<Integer, String>();
-		isLongMethod.forEach(x -> sortedMapLongMethod.put(Integer.parseInt(x[0]), x[1]));
-
-		for (int incToFillMap = 0; incToFillMap < linesAsString.size(); incToFillMap++) {
-			if (!sortedMapGodClass.containsKey(incToFillMap)) {
-				sortedMapGodClass.put(incToFillMap, "N/A");
-			}
-			if (!sortedMapLongMethod.containsKey(incToFillMap)) {
-				sortedMapLongMethod.put(incToFillMap, "N/A");
-			}
-		}
-
-		String[] fileResultsColumnName = { "Method_ID", "Is_God_Class", "Is_Long_Method" };
-		ArrayList<String[]> resultsOfEvaluation = new ArrayList<>();
-
-		for (int i = 0; i < linesAsString.size(); i++) {
-
-			String[] lineEvalResult = { String.valueOf(i + 1), sortedMapGodClass.get(i).toString(),
-					sortedMapLongMethod.get(i).toString() };
-			resultsOfEvaluation.add(i, lineEvalResult);
-		}
-		if (resultsOfEvaluation.isEmpty()) {
-			throw new Exception("Não definiu nenhuma regra!");
-		}
-
-		JTable tempTable2 = new JTable(resultsOfEvaluation.toArray(new String[0][0]), fileResultsColumnName);
-		JScrollPane tableScrollPane2 = new JScrollPane(tempTable2);
-		tableScrollPane2.setBorder(new EmptyBorder(0, 10, 20, 20));
-		mainPanel.add(tableScrollPane2, BorderLayout.EAST);
-
+	
+	public void temp(String[] columnNames, ArrayList<Line> linesAsString)
+	{
+	    ArrayList<Line> dataToEvaluateCodeSmells = ExcelReader.readExcelFile("Code_Smells.xlsx");
+	    JTable tempList = new JTable();
+	    DefaultTableModel tempListModel = (DefaultTableModel) tempList.getModel();
+	    tempListModel.addColumn(linesAsString.get(0).getColumnNames()[0]);
+	    for (int i  = 0; i < linesAsString.size(); i++)
+	    {
+	        int j = 0;
+	        String[] resultTableEntry = new String[4]; //TODO count number of rules
+	        resultTableEntry[j++] = String.valueOf(i+1);
+	        String ruleEvaluation;
+	        
+	        //get corresponding line from dataToEvaluateCodeSmells
+	        Line correspondingLine = null;
+	        for (Line line: dataToEvaluateCodeSmells)
+	        {
+	            if (line.getPkg().toLowerCase().equals(linesAsString.get(i).getPkg().toLowerCase()) && line.getCls().toLowerCase().equals(linesAsString.get(i).getCls().toLowerCase()) &&  line.getMethé().toLowerCase().equals(linesAsString.get(i).getMethé().toLowerCase()))
+	                correspondingLine = line;
+	        }
+	        if (correspondingLine != null)
+	        {
+    	        for (int u = 0; u < linesAsString.get(i).getMetrics().size(); u++)
+    	        {
+        	        try {
+                        boolean cellValue = customParseBoolean(linesAsString.get(i).metricsToArray()[u]);
+                        String ruleName = columnNames[u];
+                        if (i == 0)
+                            tempListModel.addColumn(ruleName);
+                        try {
+                            if (correspondingLine.getMetrics().containsKey(ruleName))
+                            {
+                                boolean dataToEvaluateRuleValue = customParseBoolean(correspondingLine.getMetrics().get(ruleName));
+                                if (cellValue)
+                                    if (dataToEvaluateRuleValue)
+                                        ruleEvaluation = "VP";
+                                    else 
+                                        ruleEvaluation = "FP";
+                                else
+                                    if (dataToEvaluateRuleValue)
+                                        ruleEvaluation = "FN";
+                                    else
+                                        ruleEvaluation = "VN";
+                            }
+                            else 
+                            {
+                                ruleEvaluation = "NA";
+                            }
+                        } catch (IllegalArgumentException e) {
+                            ruleEvaluation = "NA";
+                        }
+                        resultTableEntry[j++] = ruleEvaluation; 
+                    } catch (IllegalArgumentException e) {
+                        
+                    }
+    	        }
+    	        tempListModel.addRow(resultTableEntry);
+	        }
+	        else 
+	        {
+	            for (; j < resultTableEntry.length; j++)
+	                resultTableEntry[j] = "NA";
+	            tempListModel.addRow(resultTableEntry);
+	        }
+	    }
+	    JScrollPane tableScrollPane2 = new JScrollPane(tempList);
+        tableScrollPane2.setBorder(new EmptyBorder(0, 10, 20, 20));
+        mainPanel.add(tableScrollPane2, BorderLayout.EAST);
 	}
-
-	private String[] codeSmellsEvaluation(ArrayList<String[]> rulesResults, ArrayList<String> fileResults, int u,
-			int i) {
-		int linhaEncontrada = -1;
-		for (int tempInt = 0; tempInt < rulesResults.size(); tempInt++) {
-			for (int tempInt2 = 0; tempInt2 < rulesResults.get(tempInt).length
-					&& tempInt2 + 2 < rulesResults.get(tempInt).length; tempInt2++) {
-
-				if (rulesResults.get(tempInt)[tempInt2].toLowerCase().equals(fileResults.get(u).toLowerCase())
-						&& rulesResults.get(tempInt)[tempInt2 + 1].toLowerCase()
-								.equals(fileResults.get(u + 1).toLowerCase())
-						&& rulesResults.get(tempInt)[tempInt2 + 2].toLowerCase()
-								.equals(fileResults.get(u + 2).toLowerCase())) {
-					linhaEncontrada = tempInt;
-					break;
-				}
-			}
-		}
-		try {
-
-			switch (rulesResults.get(linhaEncontrada)[i]) {
-
-			case "true":
-				if (fileResults.get(u + 3).toLowerCase().equals("true")) {
-					String[] temp = { String.valueOf(linhaEncontrada), "VP" };
-					return temp;
-				} else if (fileResults.get(u + 3).toLowerCase().equals("false")) {
-					String[] temp = { String.valueOf(linhaEncontrada), "FP" };
-					return temp;
-				}
-
-			case "false":
-
-				if (fileResults.get(u + 3).toLowerCase().equals("true")) {
-					String[] temp = { String.valueOf(linhaEncontrada), "FN" };
-					return temp;
-				} else if (fileResults.get(u + 3).toLowerCase().equals("false")) {
-					String[] temp = { String.valueOf(linhaEncontrada), "VN" };
-					return temp;
-				}
-
-			}
-		} catch (Exception e) {
-			String[] temp = { String.valueOf(linhaEncontrada), "N/A" };
-			return temp;
-		}
-		String[] temp = { String.valueOf(linhaEncontrada), "N/A" };
-		return temp;
+	
+	public static boolean customParseBoolean(String stringToParse) throws IllegalArgumentException {
+	    if (stringToParse.equalsIgnoreCase("true"))
+	        return true;
+	    if (stringToParse.equalsIgnoreCase("false"))
+	        return false;
+        throw new IllegalArgumentException();
 	}
 }

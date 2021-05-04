@@ -171,16 +171,10 @@ public class Maestro {
                 int cellValue = Integer.parseInt(line[i]);
                 cell.setCellValue(cellValue);
             } catch (NumberFormatException e) {
-                if (Boolean.parseBoolean(line[i])) {
-                    switch (line[i].toLowerCase()) {
-                        case "true":
-                            cell.setCellValue(true);
-                            break;
-                        case "false":
-                            cell.setCellValue(false);
-                            break;
-                    }
-                } else {
+                try {
+                    boolean readBoolean = GUI.MainWindow.customParseBoolean(line[i]); //TODO not working correctly
+                    cell.setCellValue(readBoolean);
+                } catch (IllegalArgumentException e1){
                     cell.setCellValue(line[i]);
                 }
             }
