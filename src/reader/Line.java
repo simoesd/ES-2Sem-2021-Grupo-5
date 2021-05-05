@@ -77,7 +77,7 @@ public class Line {
                         break;
                 }
                 metrics.put(columnNameCell.getStringCellValue(), metricValue);
-			} while (metricValueIterator.hasNext());
+			} while (metricValueIterator.hasNext() && columnNameIterator.hasNext());
 		}
 	}		
 
@@ -103,6 +103,13 @@ public class Line {
 	    return columnValues.toArray(new String[0]);
 	}
 	
+	public String[] metricsToArray() {
+        List<String> columnValues = new ArrayList<>();
+        columnValues.addAll(metrics.values());
+        
+        return columnValues.toArray(new String[0]);
+    }
+	
 	public String[] getColumnNames()
 	{
 	    List<String> columnNames = new ArrayList<>();
@@ -112,6 +119,13 @@ public class Line {
         
 	    return columnNames.toArray(new String[0]);
 	}
+	
+	public String[] getMetricNames() {
+        List<String> columnValues = new ArrayList<>();
+        columnValues.addAll(metrics.keySet());
+        
+        return columnValues.toArray(new String[0]);
+    }
 	
 	public void addMetric(String metricName, String metric)
 	{
@@ -126,6 +140,11 @@ public class Line {
 	public void calculateRule(Rule rule)
 	{
 	    addMetric(rule.ruleName, Boolean.toString(rule.evaluateRule(this)));
+	}
+	
+	public String getMethé()
+	{
+	    return method;
 	}
 
 }

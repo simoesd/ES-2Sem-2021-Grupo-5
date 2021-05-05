@@ -1,8 +1,13 @@
 package GUI;
 
+import java.awt.Dimension;
+
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import rules.Condition;
 
@@ -19,9 +24,9 @@ public class ConditionGUI extends JPanel {
     {
         
         this.metric = isClassRule ? new JComboBox<String>(classMetrics) : new JComboBox<String>(methodMetrics);
-        
         this.thresholdOperator = new JComboBox<String>(thresholdOpDefault);
         this.thresholdValue = new JTextField();
+        thresholdValue.setPreferredSize(new Dimension(30, 26));
         MainWindow.enableDefaultValue(this.thresholdValue, "0");
         initializePanel();
         
@@ -40,6 +45,7 @@ public class ConditionGUI extends JPanel {
         this.removeAll();
         this.add(metric);
         this.add(thresholdOperator);
+        thresholdValue.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(thresholdValue);
     }
     

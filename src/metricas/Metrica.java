@@ -171,10 +171,10 @@ public abstract class Metrica extends MetricRegistry {
         String[] paramWords = params.split(" ");
         String dataTypes = "";
         for(int i = 0; i < paramWords.length; i = i+2) { // adding every other word from the parameters, to only get the dataTypes in the end
-        	dataTypes += paramWords[i] + ", ";
+        	dataTypes += paramWords[i] + ",";
         }
         if(!dataTypes.isEmpty()) {
-        	dataTypes = dataTypes.substring(0, dataTypes.length() - 2); // remove the last ", "
+        	dataTypes = dataTypes.substring(0, dataTypes.length() - 1); // remove the last ", "
         }
         methodName = temp2[temp2.length-1] + "(" + dataTypes + ")" ;
         return methodName;

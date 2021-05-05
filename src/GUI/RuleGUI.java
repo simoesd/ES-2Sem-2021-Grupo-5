@@ -1,6 +1,6 @@
 package GUI;
 
-import java.awt.FlowLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -13,6 +13,8 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 import rules.Condition;
 import rules.Rule;
@@ -22,10 +24,8 @@ public class RuleGUI extends JPanel{
     
     private JPanel parentPanel;
     private JCheckBox toRemoveCheckbox;
-    
     private JTextField ruleTitle;
-    
-    private boolean isClassRule;
+	private boolean isClassRule;
     
     private List<ConditionGUI> conditionsGUI = new ArrayList<>();
     private List<JComboBox<String>> logicOperators = new ArrayList<>();
@@ -38,20 +38,25 @@ public class RuleGUI extends JPanel{
 
     public RuleGUI(JPanel parentPanel, boolean isClassRule) {
         super();
-        this.setLayout(new FlowLayout());
+        
+        this.setLayout(new WrapLayout());
         this.toRemoveCheckbox = new JCheckBox();
-        this.ruleTitle = new JTextField();
+        this.ruleTitle = new JTextField(); 
+        ruleTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        ruleTitle.setPreferredSize(new Dimension(83, 26));
+        this.setBorder(new EmptyBorder(-10,30,-5,30));
         this.isClassRule = isClassRule;
-        MainWindow.enableDefaultValue(ruleTitle, "   Custom_Rule   ");
+        MainWindow.enableDefaultValue(ruleTitle, "Custom_Rule");
         this.parentPanel =  parentPanel;
         conditionsGUI.add(new ConditionGUI(isClassRule));
+        
         
         addConditionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
                 if (conditionsGUI.size() >= 8)
-                    JOptionPane.showMessageDialog(parentPanel , "bruh");
+                    JOptionPane.showMessageDialog(parentPanel , "Não é possível adicionar mais condições à regra");
                 else {
                     addNewLogicOperator(0);
                     addNewConditionComboBox();
@@ -127,6 +132,10 @@ public class RuleGUI extends JPanel{
     {
         return toRemoveCheckbox;
     }
+    
+    public String getRuleTitleAsString() {
+  		return ruleTitle.getText();
+  	}
     
     public Rule generateRule()
     {

@@ -7,6 +7,8 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -16,7 +18,10 @@ import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -32,9 +37,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+
+import org.apache.poi.util.SystemOutLogger;
 
 import metricas.Maestro;
 import reader.ExcelReader;
@@ -50,6 +59,7 @@ public class MainWindow {
 	private JPanel panel;
 	private JPanel panel_2;
 	private JPanel panel_3;
+	JScrollPane mainScrollPane;
 	private ArrayList<RuleGUI> rulesGUI = new ArrayList<>();
 	private int ruleNumber = 1;
 
@@ -81,9 +91,21 @@ public class MainWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame("Code Smeller");
-		frame.setBounds(100, 100, 1242, 624);
-		frame.setResizable(false);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		int width = gd.getDisplayMode().getWidth();
+		int height = gd.getDisplayMode().getHeight();
+
+		frame.setBounds(0, 0, width - 100, height - 100);
+		// frame.setResizable(false);
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		frame.addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosing(java.awt.event.WindowEvent e) {
+				frame.setDefaultCloseOperation(popupSaveClose());
+			}
+		});
+
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -91,7 +113,6 @@ public class MainWindow {
 		JPanel importPanel = new JPanel();
 
 		Dimension hMargin = new Dimension(10, 0);
-		Dimension vMargin = new Dimension(0, 10);
 		EmptyBorder fullPadding = new EmptyBorder(10, 10, 10, 10);
 
 		mainPanel = new JPanel();
@@ -101,18 +122,42 @@ public class MainWindow {
 		// Rules Panel
 
 		panel = new JPanel();
-		mainPanel.add(panel, BorderLayout.CENTER);
-		panel.setLayout(new GridLayout(6, 1, 0, 0));
+
+		mainScrollPane = new JScrollPane(panel);
+
+		mainScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+
+		mainPanel.add(mainScrollPane, BorderLayout.CENTER);
+		GridLayout gridLayout = new GridLayout(6, 1, 0, 10);
+
+		panel.setLayout(gridLayout);
+
+		// panel.setBorder(new EmptyBorder(10,10,10,10));
 
 		panel_2 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_2.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		mainPanel.add(panel_2, BorderLayout.SOUTH);
 
-		panel_3 = new JPanel();
+		panel_3 = new JPanel(new BorderLayout());
 		JLabel title = new JLabel("CODE SMELLER");
+		title.setHorizontalAlignment(SwingConstants.CENTER);
 		title.setFont(new Font("Tahoma", Font.PLAIN, 40));
-		panel_3.add(title);
+		panel_3.add(title, BorderLayout.CENTER);
+		panel_3.setBorder(fullPadding);
+		JButton saveData = new JButton("Save");
+		JPanel panel_4 = new JPanel();
+		panel_4.add(saveData);
+		panel_3.add(panel_4, BorderLayout.EAST);
+
+		saveData.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// savedata();
+			}
+		});
+
 		title.setVisible(true);
 
 		JLabel ruleTitle = new JLabel("RULES");
@@ -151,14 +196,61 @@ public class MainWindow {
 				panel.updateUI();
 			}
 		});
-//		
-//		JButton btnImportRules = new JButton("Import Rules");
-//		panel_2.add(btnImportRules);
-//		btnImportRules.addActionListener(new ActionListener() {
-//		    
-//		    @Override
-//		    public void actionPerformed(ActionEvent e) {
-//		        panel.removeAll();
+
+		JButton btnImportRules = new JButton("History");
+		panel_2.add(btnImportRules);
+		btnImportRules.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				JFrame history = new JFrame("History");
+				history.setBounds(0, 0, 500, 700);
+				// frame.setResizable(false);
+				history.getContentPane().setLayout(new BorderLayout(0, 0));
+				JPanel panel_history = new JPanel(new BorderLayout());
+				history.getContentPane().add(panel_history, BorderLayout.CENTER);
+				history.setVisible(true);
+
+//				importHistory();
+
+				JPanel panel_southHistory = new JPanel(new BorderLayout());
+				JPanel panel_northHistory = new JPanel();
+
+				JButton importButton = new JButton("Import data");
+				JButton clearButton = new JButton("Clear history");
+
+				JLabel historyTitle = new JLabel("HISTORY");
+				historyTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
+				historyTitle.setHorizontalAlignment(SwingConstants.CENTER);
+
+				panel_history.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+				panel_southHistory.add(importButton, BorderLayout.WEST);
+				panel_southHistory.add(clearButton, BorderLayout.EAST);
+				panel_northHistory.add(historyTitle);
+
+				panel_history.add(panel_southHistory, BorderLayout.SOUTH);
+				panel_history.add(panel_northHistory, BorderLayout.NORTH);
+
+				importButton.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+//						importdata();
+
+					}
+				});
+
+				clearButton.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+//						cleardata()
+
+					}
+				});
+
 //		        HashMap<String, List<Rule>> ruleMap = RuleFileManager.readRules();
 //		        Set<String> timestamps = ruleMap.keySet();
 //		        
@@ -171,63 +263,58 @@ public class MainWindow {
 //		            }
 //		            break;
 //		        }
-//		        
-//		    }
-//		});
+
+			}
+		});
 
 		JButton addRuleButton = new JButton("Add Rule");
 		panel_2.add(addRuleButton);
 		panel_2.add(removeRuleButton);
-		
+		panel_2.setBorder(new EmptyBorder(10, 10, 0, 10));
+
 		addRuleButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (ruleNumber <= 5) 
-				{
+				if (ruleNumber <= 5) {
 					ruleTitle.setVisible(true);
 
 					Object[] popupOptions = { "Class", "Method" };
-                    int popupResult = JOptionPane.showOptionDialog(frame,
-                            "Do you wish to create a class or method rule?", "New rule option",
-                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, getPopupImageIcon("src/icons/java.png"), popupOptions,
-                            popupOptions[0]);
+					int popupResult = JOptionPane.showOptionDialog(frame,
+							"Do you wish to create a class or method rule?", "New rule option",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+							getPopupImageIcon("src/icons/java.png"), popupOptions, popupOptions[0]);
 
-                    if (popupResult >= 0)
-                    {
-                        RuleGUI rule = new RuleGUI(panel, popupResult == 0);
-                        
-                        rulesGUI.add(rule);
-                        
-                        rule.getToRemoveCheckBox().addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e)
-                            {
-                                boolean activateButton = false;
-                                
-                                for (RuleGUI tempRule: rulesGUI)
-                                {
-                                    if (tempRule.isSelected())
-                                        activateButton = true;
-                                }
-                                
-                                removeRuleButton.setEnabled(activateButton);
-                            }
-                            
-                        });
-                        
-                        panel.add(rule);
-                        
-                        mainPanel.updateUI();
-                        ruleNumber++;
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(panel, "Atingiu o limite de 5 regras");
-                }
-            }
-        });
-					
+					if (popupResult >= 0) {
+						RuleGUI rule = new RuleGUI(panel, popupResult == 0);
 
+						rulesGUI.add(rule);
+
+						rule.getToRemoveCheckBox().addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								boolean activateButton = false;
+
+								for (RuleGUI tempRule : rulesGUI) {
+									if (tempRule.isSelected())
+										activateButton = true;
+								}
+
+								removeRuleButton.setEnabled(activateButton);
+							}
+
+						});
+
+						panel.add(rule);
+
+						mainPanel.updateUI();
+						ruleNumber++;
+					}
+				} else {
+					JOptionPane.showMessageDialog(panel, "Atingiu o limite de 5 regras");
+				}
+			}
+		});
 
 		// Analysis Panel
 
@@ -262,7 +349,7 @@ public class MainWindow {
 		JButton startAnalysisButton = new JButton("  Analyze Directory  ");
 		startAnalysisButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-			    
+
 				String directoryPath = "";
 				try {
 					directoryPath = analysisPathTextField.getText();
@@ -270,17 +357,20 @@ public class MainWindow {
 						throw new Exception("Tem que ter um projeto selecionado antes de analisar");
 					}
 
+					if (replicatedTitledRules()) {
+						throw new Exception("As regras têm de ter nomes diferentes");
+					}
+
 					Maestro maestro = new Maestro(directoryPath);
 
-					if (checkValidRule()) 
-					{
-					    List<Rule> rules = new ArrayList<>();
-					    
-					    rulesGUI.forEach(x -> rules.add(x.generateRule()));
-					    maestro.addRules(rules);
-					    
+					if (checkValidRule()) {
+						List<Rule> rules = new ArrayList<>();
+
+						rulesGUI.forEach(x -> rules.add(x.generateRule()));
+						maestro.addRules(rules);
+
 						String resultsFilePath = maestro.startMetricCounters();
-						
+
 						ImageIcon popupIcon = getPopupImageIcon("src/icons/excel.png");
 
 						Object[] popupOptions = { "Sim", "Não" };
@@ -293,12 +383,26 @@ public class MainWindow {
 							showImportedData(resultsFilePath);
 
 					}
+
 				} catch (Exception e) {
-					e.printStackTrace();
 					JOptionPane.showMessageDialog(panel, e.getMessage());
 
 				}
 			}
+
+			private boolean replicatedTitledRules() {
+				boolean sameTitle = false;
+				for (int i = 0; i < rulesGUI.size(); i++) {
+					for (int j = i + 1; j < rulesGUI.size(); j++) {
+						if (rulesGUI.get(i).getRuleTitleAsString().equals(rulesGUI.get(j).getRuleTitleAsString())) {
+							sameTitle = true;
+							return sameTitle;
+						}
+					}
+				}
+				return sameTitle;
+			}
+
 		});
 		analysisPanel.add(startAnalysisButton);
 		analysisPanel.add(Box.createRigidArea(hMargin));
@@ -317,6 +421,7 @@ public class MainWindow {
 
 		JButton importFileBrowserButton = new JButton("Browse...");
 		importFileBrowserButton.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser importFileChooser = new JFileChooser();
 				FileNameExtensionFilter xlsxFilter = new FileNameExtensionFilter(".xlsx", "xlsx");
@@ -347,7 +452,25 @@ public class MainWindow {
 
 	}
 
-	
+	private int popupSaveClose() {
+		ImageIcon popupIcon = getPopupImageIcon("src/icons/question.png");
+		Object[] popupOptions = { "Sim", "Não" };
+
+		int popupResult = JOptionPane.showOptionDialog(frame, "Deseja guardar o seu histórico?", "Salvar Regras",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, popupIcon, popupOptions, popupOptions[0]);
+
+		if (popupResult == 0) {
+			// savedata();
+			return JFrame.EXIT_ON_CLOSE;
+
+		} else if (popupResult == 1) {
+			return JFrame.EXIT_ON_CLOSE;
+		}
+
+		return JFrame.DO_NOTHING_ON_CLOSE;
+
+	}
+
 	private boolean checkValidRule() {
 		boolean isValid = true;
 		for (RuleGUI rg : rulesGUI) {
@@ -365,22 +488,29 @@ public class MainWindow {
 
 	private void showImportedData(String fileToImport) {
 		mainPanel.removeAll();
-
 		ArrayList<Line> lines = ExcelReader.readExcelFile(fileToImport);
-
 		String[] columnNames = lines.get(0).getColumnNames();
 		ArrayList<String[]> linesAsString = new ArrayList<>();
 
 		for (int i = 0; i < lines.size(); i++) {
-			linesAsString.add(lines.get(i).toArray());
+			linesAsString.add(lines.get(i).toArray()); // colocar uma linha em cada vetor do array
 		}
 
 		JTable tempTable = new JTable(linesAsString.toArray(new String[0][0]), columnNames);
 		tempTable.setAutoResizeMode(0);
 
 		JScrollPane tableScrollPane = new JScrollPane(tempTable);
-		tableScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+		tableScrollPane.setBorder(new EmptyBorder(0, 20, 20, 0));
+		try {
 
+			if (analysisPathTextField.getText().contains("jasml_0.10")) {
+//				comparewithCodeSmellsFile(columnNames, linesAsString);
+			    temp(lines.get(0).getMetricNames(), lines);
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		JLabel fileTitle = new JLabel(fileToImport, SwingConstants.CENTER);
 
 		int[] projectData = getProjectData(lines);
@@ -429,7 +559,7 @@ public class MainWindow {
 		JScrollPane listScrollPane = new JScrollPane(fileList);
 
 		mainPanel.add(listScrollPane, BorderLayout.WEST);
-		mainPanel.add(panel, BorderLayout.CENTER);
+		mainPanel.add(mainScrollPane, BorderLayout.CENTER);
 		mainPanel.add(panel_2, BorderLayout.SOUTH);
 		mainPanel.add(panel_3, BorderLayout.NORTH);
 		mainPanel.updateUI();
@@ -491,14 +621,93 @@ public class MainWindow {
 			}
 		});
 	}
-	
+
 	public static ImageIcon getPopupImageIcon(String iconPath) {
 
-        ImageIcon tempIcon = new ImageIcon(iconPath);
-        Image tempImg = tempIcon.getImage();
-        BufferedImage bi = new BufferedImage(40, 40, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = bi.createGraphics();
-        g.drawImage(tempImg, 0, 0, 40, 40, null, null);
-        return new ImageIcon(bi);
+		ImageIcon tempIcon = new ImageIcon(iconPath);
+		Image tempImg = tempIcon.getImage();
+		BufferedImage bi = new BufferedImage(40, 40, BufferedImage.TYPE_INT_ARGB);
+		Graphics g = bi.createGraphics();
+		g.drawImage(tempImg, 0, 0, 40, 40, null, null);
+		return new ImageIcon(bi);
+	}
+
+	
+	public void temp(String[] columnNames, ArrayList<Line> linesAsString)
+	{
+	    ArrayList<Line> dataToEvaluateCodeSmells = ExcelReader.readExcelFile("Code_Smells.xlsx");
+	    JTable tempList = new JTable();
+	    DefaultTableModel tempListModel = (DefaultTableModel) tempList.getModel();
+	    tempListModel.addColumn(linesAsString.get(0).getColumnNames()[0]);
+	    for (int i  = 0; i < linesAsString.size(); i++)
+	    {
+	        int j = 0;
+	        String[] resultTableEntry = new String[4]; //TODO count number of rules
+	        resultTableEntry[j++] = String.valueOf(i+1);
+	        String ruleEvaluation;
+	        
+	        //get corresponding line from dataToEvaluateCodeSmells
+	        Line correspondingLine = null;
+	        for (Line line: dataToEvaluateCodeSmells)
+	        {
+	            if (line.getPkg().toLowerCase().equals(linesAsString.get(i).getPkg().toLowerCase()) && line.getCls().toLowerCase().equals(linesAsString.get(i).getCls().toLowerCase()) &&  line.getMethé().toLowerCase().equals(linesAsString.get(i).getMethé().toLowerCase()))
+	                correspondingLine = line;
+	        }
+	        if (correspondingLine != null)
+	        {
+    	        for (int u = 0; u < linesAsString.get(i).getMetrics().size(); u++)
+    	        {
+        	        try {
+                        boolean cellValue = customParseBoolean(linesAsString.get(i).metricsToArray()[u]);
+                        String ruleName = columnNames[u];
+                        if (i == 0)
+                            tempListModel.addColumn(ruleName);
+                        try {
+                            if (correspondingLine.getMetrics().containsKey(ruleName))
+                            {
+                                boolean dataToEvaluateRuleValue = customParseBoolean(correspondingLine.getMetrics().get(ruleName));
+                                if (cellValue)
+                                    if (dataToEvaluateRuleValue)
+                                        ruleEvaluation = "VP";
+                                    else 
+                                        ruleEvaluation = "FP";
+                                else
+                                    if (dataToEvaluateRuleValue)
+                                        ruleEvaluation = "FN";
+                                    else
+                                        ruleEvaluation = "VN";
+                            }
+                            else 
+                            {
+                                ruleEvaluation = "NA";
+                            }
+                        } catch (IllegalArgumentException e) {
+                            ruleEvaluation = "NA";
+                        }
+                        resultTableEntry[j++] = ruleEvaluation; 
+                    } catch (IllegalArgumentException e) {
+                        
+                    }
+    	        }
+    	        tempListModel.addRow(resultTableEntry);
+	        }
+	        else 
+	        {
+	            for (; j < resultTableEntry.length; j++)
+	                resultTableEntry[j] = "NA";
+	            tempListModel.addRow(resultTableEntry);
+	        }
+	    }
+	    JScrollPane tableScrollPane2 = new JScrollPane(tempList);
+        tableScrollPane2.setBorder(new EmptyBorder(0, 10, 20, 20));
+        mainPanel.add(tableScrollPane2, BorderLayout.EAST);
+	}
+	
+	public static boolean customParseBoolean(String stringToParse) throws IllegalArgumentException {
+	    if (stringToParse.equalsIgnoreCase("true"))
+	        return true;
+	    if (stringToParse.equalsIgnoreCase("false"))
+	        return false;
+        throw new IllegalArgumentException();
 	}
 }

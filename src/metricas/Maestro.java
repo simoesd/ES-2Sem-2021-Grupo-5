@@ -140,11 +140,9 @@ public class Maestro {
 	    Row firstRow = sheet.createRow(incrementer);
 	    LinkedList<String> header = new LinkedList<>(Arrays.asList("MethodID", "Package", "Class", "Method"));
 	    
-	    System.out.println("header");
 	    
 	    for(Metrica metric: metrics)
 	    {
-	        System.out.println(metric.getMetricName());
             header.add(metric.getMetricName());
 	    }
 
@@ -173,16 +171,10 @@ public class Maestro {
                 int cellValue = Integer.parseInt(line[i]);
                 cell.setCellValue(cellValue);
             } catch (NumberFormatException e) {
-                if (Boolean.parseBoolean(line[i])) {
-                    switch (line[i].toLowerCase()) {
-                        case "true":
-                            cell.setCellValue(true);
-                            break;
-                        case "false":
-                            cell.setCellValue(false);
-                            break;
-                    }
-                } else {
+                try {
+                    boolean readBoolean = GUI.MainWindow.customParseBoolean(line[i]); //TODO not working correctly
+                    cell.setCellValue(readBoolean);
+                } catch (IllegalArgumentException e1){
                     cell.setCellValue(line[i]);
                 }
             }
