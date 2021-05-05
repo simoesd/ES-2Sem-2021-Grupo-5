@@ -1,20 +1,17 @@
 package rules;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-
-import GUI.RuleGUI;
 import reader.Line;
 
 public class Rule implements Serializable{
-    public String ruleName;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -76936614853441537L;
+	public String ruleName;
     public boolean isClassRule;
     
     public LinkedList<Condition> conditions = new LinkedList<>();

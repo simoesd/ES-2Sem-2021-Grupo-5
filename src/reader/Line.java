@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 
-import metricas.Metrica;
 import rules.Rule;
 
 public class Line {

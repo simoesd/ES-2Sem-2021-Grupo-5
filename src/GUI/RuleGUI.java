@@ -22,7 +22,11 @@ import rules.Rule;
 public class RuleGUI extends JPanel{
     
     
-    private JPanel parentPanel;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -517667447012044612L;
+	private JPanel parentPanel;
     private JCheckBox toRemoveCheckbox;
     private JTextField ruleTitle;
 	private boolean isClassRule;

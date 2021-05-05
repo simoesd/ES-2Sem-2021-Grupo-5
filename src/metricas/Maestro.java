@@ -5,16 +5,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.util.SystemOutLogger;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -95,29 +92,24 @@ public class Maestro {
 
 	private void exportResults(XSSFSheet sheet) {
 		
-		for (String u : getLOC_class().getCounters().keySet()) {
-		    
-			String temp = u;
-			temp = u.replace("/", " ");
-			String[] splitted = temp.split(" ");
-			String namePck = splitted[0];
-			String nameClass = splitted[1];
+		for (String packageClassName : getLOC_class().getCounters().keySet()) {
+			String[] splitPackageClassName = packageClassName.replace("/", " ").split(" ");
+			String namePck = splitPackageClassName[0];
+			String nameClass = splitPackageClassName[1];
 			Map<String, String> classMetrics = new LinkedHashMap<>();
 			
-			for (String s : getCYCLO_method().getCounters().keySet()) {
-				if (s.contains(u)) {
-					String temp2 = s;
-					temp2 = s.replace(".", "/");
-					String[] split2 = temp2.split("/");
+			for (String packageClassMethodName : getCYCLO_method().getCounters().keySet()) {
+				if ((packageClassMethodName + "/").contains(packageClassName)) {
+					String[] split2 = packageClassMethodName.split("/");
 					String nameMtd = split2[split2.length-1];
 					LinkedHashMap<String, String> lineMetrics = new LinkedHashMap<>();
 					lineMetrics.putAll(classMetrics);
 					for (Metrica metric: metrics)
 		            {
 		                if (metric.isClassMetric())
-		                    lineMetrics.put(metric.getMetricName(), String.valueOf(metric.getCounters().get(u).getCount()));
+		                    lineMetrics.put(metric.getMetricName(), String.valueOf(metric.getCounters().get(packageClassName).getCount()));
 		                else
-		                    lineMetrics.put(metric.getMetricName(), String.valueOf(metric.getCounters().get(s).getCount()));
+		                    lineMetrics.put(metric.getMetricName(), String.valueOf(metric.getCounters().get(packageClassMethodName).getCount()));
 		            }
 					
 					Line line = new Line(incrementer, namePck, nameClass, nameMtd, lineMetrics);
@@ -202,7 +194,7 @@ public class Maestro {
 		}
 	}
 
-	public String cutAbsolutePath(String absolutePath) { // retorna package.class
+	public String cutAbsolutePath(String absolutePath) { // retorna package/class
 	
         String shortPath = getProjectDirectory() + getSourceCodeLocation();
         int stringLength = shortPath.length() + 1;

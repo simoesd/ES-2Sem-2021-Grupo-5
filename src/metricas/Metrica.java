@@ -116,10 +116,10 @@ public abstract class Metrica extends MetricRegistry {
 		case 0: //Começou o método
 			incr++;
 			String methodName;
-			if((methodName = getMethodName(betweenMethodsBuffer)) != "") {
+			if(!(methodName = getMethodName(betweenMethodsBuffer)).equals("")) {
 				isNonMethodBlock = false;
 				addLine = true;
-				counter = counter(getPackageClassName() + "/" + methodName);
+				counter = counter(getPackageClassName() + methodName);
 				betweenMethodsBuffer = new Stack<>();
 			} else {
 				isNonMethodBlock = true;
@@ -160,10 +160,12 @@ public abstract class Metrica extends MetricRegistry {
 	public String getMethodName(Stack<String> stack) {
         String methodName = stack.pop();
         while(!methodName.contains("(")) {
-        	if(!stack.isEmpty())
-        		methodName = stack.pop() + " " + methodName;
-        	else
-        		return "";
+            if(!stack.isEmpty())
+                methodName = methodName + " " + stack.pop() ;
+                if(methodName.contains(";"))
+                    return "";
+            else
+                return "";
         }
         methodName = methodName.trim();
         methodName = methodName.replaceAll("\t", "");
@@ -176,7 +178,10 @@ public abstract class Metrica extends MetricRegistry {
         Arrays.asList(paramPairs).forEach(x -> paramWords.add(x.trim().split(" ")[0]));
         String dataTypes = "";
         for(int i = 0; i < paramWords.size(); i++) { // adding every other word from the parameters, to only get the dataTypes in the end
-        	dataTypes += paramWords.get(i) + ",";
+        	if(paramWords.get(i).contains("."))
+        		dataTypes += paramWords.get(i).split(".")[paramWords.get(i).split(".").length -1] + ",";
+        	else
+        		dataTypes += paramWords.get(i) + ",";
         }
         if(!dataTypes.isEmpty()) {
         	dataTypes = dataTypes.substring(0, dataTypes.length() - 1); // remove the last ", "
@@ -194,7 +199,7 @@ public abstract class Metrica extends MetricRegistry {
 	}
 
 	protected String getPackageClassName() {
-		return packageClassName;
+		return packageClassName + "/";
 	}
 
 	protected void setPackageClassName(String packageClassName) {

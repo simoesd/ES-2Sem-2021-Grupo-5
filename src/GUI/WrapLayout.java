@@ -8,6 +8,11 @@ import javax.swing.SwingUtilities;
 //Layout taken from https://gist.github.com/jirkapenzes/4560255
 
 public class WrapLayout extends FlowLayout {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8943591645658327553L;
 	private Dimension preferredLayoutSize;
 
 	public WrapLayout() {

@@ -2,12 +2,15 @@ package rules;
 
 import java.io.Serializable;
 
-import GUI.ConditionGUI;
 import reader.Line;
 
 public class Condition implements Serializable {
     
-    public String metricToEvaluate;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7122426817088652910L;
+	public String metricToEvaluate;
     public int thresholdOperator;
     public int thresholdValue; 
     

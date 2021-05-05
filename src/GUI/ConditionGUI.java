@@ -2,9 +2,7 @@ package GUI;
 
 import java.awt.Dimension;
 
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -12,7 +10,11 @@ import javax.swing.SwingConstants;
 import rules.Condition;
 
 public class ConditionGUI extends JPanel {
-    private JComboBox<String> metric;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3893583795963286699L;
+	private JComboBox<String> metric;
     private JComboBox<String> thresholdOperator;
     private JTextField thresholdValue;
     

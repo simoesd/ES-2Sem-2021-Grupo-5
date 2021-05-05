@@ -172,7 +172,6 @@ public class MainWindow {
 
 		mainPanel.add(panel_3, BorderLayout.NORTH);
 
-		JButton btnRuleHistory = new JButton("Check Rule History");
 		JButton removeRuleButton = new JButton("Remove Rule");
         JButton addRuleButton = new JButton("Add Rule");
         
@@ -434,6 +433,7 @@ public class MainWindow {
 					}
 
 				} catch (Exception e) {
+					e.printStackTrace();
 					JOptionPane.showMessageDialog(panel, e.getMessage());
 				}
 			}
@@ -639,7 +639,6 @@ public class MainWindow {
 	public static int[] getProjectData(ArrayList<Line> lines) {
 		ArrayList<String> classNames = new ArrayList<>();
 		ArrayList<String> packageNames = new ArrayList<>();
-		int totalMethods = 0;
 		int totalLinesOfCode = 0;
 
 		for (Line line : lines) {
@@ -699,7 +698,6 @@ public class MainWindow {
 	    JTable tempList = new JTable();
 	    DefaultTableModel tempListModel = (DefaultTableModel) tempList.getModel();
 	    tempListModel.addColumn(lines.get(0).getColumnNames()[0]);
-	    int naCount = 0; //TODO temporário
 	    for (int i  = 0; i < lines.size(); i++)
 	    {
 	        int j = 0;
@@ -741,11 +739,9 @@ public class MainWindow {
                             else 
                             {
                                 ruleEvaluation = "NA";
-                                naCount++;
                             }
                         } catch (IllegalArgumentException e) {
                             ruleEvaluation = "NA";
-                            naCount++;
                         }
                         resultTableEntry[j++] = ruleEvaluation; 
                     } catch (IllegalArgumentException e) {
@@ -759,12 +755,10 @@ public class MainWindow {
 	            for (; j < resultTableEntry.length; j++)
 	            {
 	                resultTableEntry[j] = "NA";
-	                naCount++;
 	            }
 	            tempListModel.addRow(resultTableEntry);
 	        }
 	    }
-	    System.out.println("NA Count: " + naCount);
 	    JScrollPane tableScrollPane2 = new JScrollPane(tempList);
         tableScrollPane2.setBorder(new EmptyBorder(0, 10, 20, 20));
         mainPanel.add(tableScrollPane2, BorderLayout.EAST);

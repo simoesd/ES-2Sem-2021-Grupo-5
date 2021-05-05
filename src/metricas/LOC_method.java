@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import com.codahale.metrics.Counter;
-
 public class LOC_method extends Metrica {
 
 	public LOC_method(Maestro metricas) {

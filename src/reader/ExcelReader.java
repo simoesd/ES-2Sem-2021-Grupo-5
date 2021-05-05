@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class ExcelReader {
 	    	
 	    	List<Cell> columnNames = getColumnNames(rowIterator);
 	    	
-	    	ArrayList<Line> lineList = new ArrayList();
+	    	ArrayList<Line> lineList = new ArrayList<>();
 	    	while (rowIterator.hasNext()) { 
 	    		Row row = rowIterator.next();
 	    		Iterator<Cell> cellIterator = row.cellIterator();

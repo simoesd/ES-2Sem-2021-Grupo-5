@@ -5,8 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import com.codahale.metrics.Counter;
-
 public class LOC_class extends Metrica {
 
 	
