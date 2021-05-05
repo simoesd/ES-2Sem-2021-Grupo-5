@@ -251,7 +251,7 @@ public class MainWindow {
                     
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        RuleFileManager.clearHistory(); //TODO not working if you use it a second time
+                        RuleFileManager.clearHistory();
                         Object[] popupOptions = { "Ok" };
                         JOptionPane.showOptionDialog(frame,
                                 "Rule history cleared!", "Rule history cleared!",
@@ -508,7 +508,7 @@ public class MainWindow {
         if (showConfirmationPopUp)
         {
             Object[] popupOptions = { "Ok" };
-            int popupResult = JOptionPane.showOptionDialog(frame,
+            JOptionPane.showOptionDialog(frame,
                     "Rule set saved successfuly!", "Rule set saved!",
                     JOptionPane.PLAIN_MESSAGE, JOptionPane.INFORMATION_MESSAGE, null, popupOptions,
                     popupOptions[0]);
@@ -638,25 +638,20 @@ public class MainWindow {
 
 	public static int[] getProjectData(ArrayList<Line> lines) {
 		ArrayList<String> classNames = new ArrayList<>();
+		ArrayList<String> packageNames = new ArrayList<>();
 		int totalMethods = 0;
 		int totalLinesOfCode = 0;
 
 		for (Line line : lines) {
-			if (!classNames.contains(line.getCls())) {
-				classNames.add(line.getCls());
-				totalMethods += 5; // TODO fix with new line structure
-				totalLinesOfCode += 5; // TODO fix with new line structure
+			if (!classNames.contains(line.getPkg() + ".." + line.getCls())) { //Double period used as a separator for being an invalid character combination in both package and class names
+				classNames.add(line.getPkg() + ".." + line.getCls());
+				totalLinesOfCode += Integer.parseInt(line.getCaseInsensitiveMetric("loc_class"));
 			}
-		}
-
-		ArrayList<String> packageNames = new ArrayList<>();
-
-		for (Line line : lines) {
 			if (!packageNames.contains(line.getPkg()))
-				packageNames.add(line.getPkg());
+                packageNames.add(line.getPkg());
 		}
 
-		int[] result = { packageNames.size(), classNames.size(), totalMethods, totalLinesOfCode };
+		int[] result = { packageNames.size(), classNames.size(), lines.size(), totalLinesOfCode};
 		return result;
 	}
 
@@ -704,6 +699,7 @@ public class MainWindow {
 	    JTable tempList = new JTable();
 	    DefaultTableModel tempListModel = (DefaultTableModel) tempList.getModel();
 	    tempListModel.addColumn(lines.get(0).getColumnNames()[0]);
+	    int naCount = 0; //TODO temporário
 	    for (int i  = 0; i < lines.size(); i++)
 	    {
 	        int j = 0;
@@ -730,7 +726,7 @@ public class MainWindow {
                         try {
                             if (correspondingLine.getMetrics().containsKey(ruleName))
                             {
-                                boolean dataToEvaluateRuleValue = customParseBoolean(correspondingLine.getMetrics().get(ruleName));
+                                boolean dataToEvaluateRuleValue = customParseBoolean(correspondingLine.getCaseInsensitiveMetric(ruleName)); //TODO currently not quite working
                                 if (cellValue)
                                     if (dataToEvaluateRuleValue)
                                         ruleEvaluation = "VP";
@@ -745,9 +741,11 @@ public class MainWindow {
                             else 
                             {
                                 ruleEvaluation = "NA";
+                                naCount++;
                             }
                         } catch (IllegalArgumentException e) {
                             ruleEvaluation = "NA";
+                            naCount++;
                         }
                         resultTableEntry[j++] = ruleEvaluation; 
                     } catch (IllegalArgumentException e) {
@@ -759,10 +757,14 @@ public class MainWindow {
 	        else 
 	        {
 	            for (; j < resultTableEntry.length; j++)
+	            {
 	                resultTableEntry[j] = "NA";
+	                naCount++;
+	            }
 	            tempListModel.addRow(resultTableEntry);
 	        }
 	    }
+	    System.out.println("NA Count: " + naCount);
 	    JScrollPane tableScrollPane2 = new JScrollPane(tempList);
         tableScrollPane2.setBorder(new EmptyBorder(0, 10, 20, 20));
         mainPanel.add(tableScrollPane2, BorderLayout.EAST);

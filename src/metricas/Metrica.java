@@ -2,6 +2,9 @@ package metricas;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 import java.util.regex.Matcher;
@@ -168,10 +171,12 @@ public abstract class Metrica extends MetricRegistry {
         String[] temp2 = temp[0].split(" ");
         String[] temp3 = temp[1].split("\\)");
         String params = temp3[0];
-        String[] paramWords = params.split(" ");
+        String[] paramPairs = params.split(",");
+        List<String> paramWords = new ArrayList<>();
+        Arrays.asList(paramPairs).forEach(x -> paramWords.add(x.trim().split(" ")[0]));
         String dataTypes = "";
-        for(int i = 0; i < paramWords.length; i = i+2) { // adding every other word from the parameters, to only get the dataTypes in the end
-        	dataTypes += paramWords[i] + ",";
+        for(int i = 0; i < paramWords.size(); i++) { // adding every other word from the parameters, to only get the dataTypes in the end
+        	dataTypes += paramWords.get(i) + ",";
         }
         if(!dataTypes.isEmpty()) {
         	dataTypes = dataTypes.substring(0, dataTypes.length() - 1); // remove the last ", "
