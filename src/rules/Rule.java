@@ -21,20 +21,6 @@ public class Rule implements Serializable{
     public static final int OR = 1;
 
     
-    public Rule(String ruleName, Condition condition, boolean isClassRule)
-    {
-        this.ruleName = ruleName;
-        this.conditions.add(condition);
-        this.isClassRule = isClassRule;
-    }
-    
-    public Rule(String ruleName, String metric, int thresholdOperator, int thresholdValue, boolean isClassRule)
-    {
-        this.ruleName = ruleName;
-        this.conditions.add(new Condition(metric, thresholdOperator, thresholdValue));
-        this.isClassRule = isClassRule;
-    }
-    
     public Rule(String ruleName, LinkedList<Condition> conditions, LinkedList<Integer> logicOperators, boolean isClassRule)
     {
         if (logicOperators.size() != conditions.size() - 1)
@@ -43,20 +29,6 @@ public class Rule implements Serializable{
         this.conditions = conditions;
         this.logicOperators = logicOperators;
         this.isClassRule = isClassRule;
-    }
-    
-    public void addCondition(Condition condition, Integer logicOperator)
-    {
-        this.conditions.add(condition);
-        this.logicOperators.add(logicOperator);
-    }
-    
-    public void addConditions(List<Condition> conditions, List<Integer> logicOperators) throws IllegalArgumentException
-    {
-        if (logicOperators.size() != conditions.size() - 1)
-            throw new IllegalArgumentException();
-        this.conditions.addAll(conditions);
-        this.logicOperators.addAll(logicOperators);
     }
     
     public boolean evaluateRule(Line lineToEvaluate) {
