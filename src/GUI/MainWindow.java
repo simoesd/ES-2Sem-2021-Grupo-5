@@ -18,12 +18,10 @@ import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -41,18 +39,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
-import org.apache.poi.util.SystemOutLogger;
-
 import metricas.Maestro;
 import reader.ExcelReader;
 import reader.Line;
 import rules.Rule;
+import rules.RuleFileManager;
 
 public class MainWindow {
 
@@ -151,26 +147,19 @@ public class MainWindow {
 		panel_3.setBorder(fullPadding);
 		
 		
-		JButton saveData = new JButton("Save Rules");
+		JButton btnSaveRules = new JButton("Save Rules");
 		JPanel panel_4 = new JPanel();
-		panel_4.add(saveData);
+		btnSaveRules.setEnabled(false);
+		panel_4.add(btnSaveRules);
 		panel_3.add(panel_4, BorderLayout.EAST);
 
-		saveData.addActionListener(new ActionListener() {
+		btnSaveRules.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-                List<Rule> rulesToWrite = new LinkedList<>();
-                rulesGUI.forEach(x -> rulesToWrite.add(x.generateRule()));
-                RuleFileManager.writeEntry(rulesToWrite);
-                
-                Object[] popupOptions = { "Ok" };
-                int popupResult = JOptionPane.showOptionDialog(frame,
-                        "Rule set saved successfuly!", "Rule set saved!",
-                        JOptionPane.PLAIN_MESSAGE, JOptionPane.INFORMATION_MESSAGE, null, popupOptions,
-                        popupOptions[0]);
-                
+                saveRuleHistory(true);
             }
+			
 		});
 
 		title.setVisible(true);
@@ -238,25 +227,31 @@ public class MainWindow {
                 List<List<Rule>> rules = new LinkedList<>(ruleMap.values());
                 Set<String> timestamps = ruleMap.keySet();
                 
+                JButton clearHistoryButton = new JButton("Clear Rule History");
+                JButton importRulesButton = new JButton("Import Rule Set");
                 JComboBox<String> ruleHistory = new JComboBox<String>();
                 
                 if (timestamps.size() > 0)
                 {
                     timestamps.forEach(ruleHistory::addItem);
                     historyComboBoxPanel.add(ruleHistory);
+                    importRulesButton.setEnabled(true);
                 }
                 else
+                {
+                    importRulesButton.setEnabled(false);
                     historyComboBoxPanel.add(new JLabel("Your rule set history is empty!"));
+                }
                 ruleHistoryDialog.add(historyComboBoxPanel, BorderLayout.CENTER);
                 
                 JPanel historyButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-                JButton clearHistoryButton = new JButton("Clear Rule History");
+                
                 historyButtonPanel.add(clearHistoryButton);
                 clearHistoryButton.addActionListener(new ActionListener() {
                     
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        RuleFileManager.clearHistory(); //TODO not working
+                        RuleFileManager.clearHistory(); //TODO not working if you use it a second time
                         Object[] popupOptions = { "Ok" };
                         JOptionPane.showOptionDialog(frame,
                                 "Rule history cleared!", "Rule history cleared!",
@@ -266,7 +261,6 @@ public class MainWindow {
                     }
                 });
                 
-                JButton importRulesButton = new JButton("Import Rule Set");
                 historyButtonPanel.add(importRulesButton);
                 importRulesButton.addActionListener(new ActionListener() {
                     
@@ -312,6 +306,7 @@ public class MainWindow {
                 ruleHistoryDialog.pack();
                 ruleHistoryDialog.setLocationRelativeTo(frame);
                 ruleHistoryDialog.setVisible(true);
+			}
 				
 		});
 
@@ -505,7 +500,24 @@ public class MainWindow {
 
 	}
 
-	private int popupSaveClose() {
+	protected void saveRuleHistory(boolean showConfirmationPopUp) {
+	    List<Rule> rulesToWrite = new LinkedList<>();
+        rulesGUI.forEach(x -> rulesToWrite.add(x.generateRule()));
+        RuleFileManager.writeEntry(rulesToWrite);
+        
+        if (showConfirmationPopUp)
+        {
+            Object[] popupOptions = { "Ok" };
+            int popupResult = JOptionPane.showOptionDialog(frame,
+                    "Rule set saved successfuly!", "Rule set saved!",
+                    JOptionPane.PLAIN_MESSAGE, JOptionPane.INFORMATION_MESSAGE, null, popupOptions,
+                    popupOptions[0]);
+        }
+    }
+
+    private int popupSaveClose() {
+	    if (rulesGUI.isEmpty())
+	        return JFrame.EXIT_ON_CLOSE;
 		ImageIcon popupIcon = getPopupImageIcon("src/icons/question.png");
 		Object[] popupOptions = { "Sim", "Não" };
 
@@ -513,7 +525,7 @@ public class MainWindow {
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, popupIcon, popupOptions, popupOptions[0]);
 
 		if (popupResult == 0) {
-			// savedata();
+			saveRuleHistory(false);
 			return JFrame.EXIT_ON_CLOSE;
 
 		} else if (popupResult == 1) {
@@ -552,13 +564,13 @@ public class MainWindow {
 		JTable lineTable = new JTable(linesAsString.toArray(new String[0][0]), columnNames);
 		lineTable.setAutoResizeMode(0);
 
-		JScrollPane tableScrollPane = new JScrollPane(tempTable);
+		JScrollPane tableScrollPane = new JScrollPane(lineTable);
 		tableScrollPane.setBorder(new EmptyBorder(0, 20, 20, 0));
 		try {
 
 			if (analysisPathTextField.getText().contains("jasml_0.10")) {
 //				comparewithCodeSmellsFile(columnNames, linesAsString);
-			    temp(lines.get(0).getMetricNames(), lines);
+			    compareCodeSmells(lines.get(0).getMetricNames(), lines);
 
 			}
 		} catch (Exception e) {
@@ -686,13 +698,13 @@ public class MainWindow {
 	}
 
 	
-	public void temp(String[] columnNames, ArrayList<Line> linesAsString)
+	public void compareCodeSmells(String[] columnNames, ArrayList<Line> lines)
 	{
 	    ArrayList<Line> dataToEvaluateCodeSmells = ExcelReader.readExcelFile("Code_Smells.xlsx");
 	    JTable tempList = new JTable();
 	    DefaultTableModel tempListModel = (DefaultTableModel) tempList.getModel();
-	    tempListModel.addColumn(linesAsString.get(0).getColumnNames()[0]);
-	    for (int i  = 0; i < linesAsString.size(); i++)
+	    tempListModel.addColumn(lines.get(0).getColumnNames()[0]);
+	    for (int i  = 0; i < lines.size(); i++)
 	    {
 	        int j = 0;
 	        String[] resultTableEntry = new String[4]; //TODO count number of rules
@@ -703,15 +715,15 @@ public class MainWindow {
 	        Line correspondingLine = null;
 	        for (Line line: dataToEvaluateCodeSmells)
 	        {
-	            if (line.getPkg().toLowerCase().equals(linesAsString.get(i).getPkg().toLowerCase()) && line.getCls().toLowerCase().equals(linesAsString.get(i).getCls().toLowerCase()) &&  line.getMethé().toLowerCase().equals(linesAsString.get(i).getMethé().toLowerCase()))
+	            if (line.getPkg().toLowerCase().equals(lines.get(i).getPkg().toLowerCase()) && line.getCls().toLowerCase().equals(lines.get(i).getCls().toLowerCase()) &&  line.getMethé().toLowerCase().equals(lines.get(i).getMethé().toLowerCase()))
 	                correspondingLine = line;
 	        }
 	        if (correspondingLine != null)
 	        {
-    	        for (int u = 0; u < linesAsString.get(i).getMetrics().size(); u++)
+    	        for (int u = 0; u < lines.get(i).getMetrics().size(); u++)
     	        {
         	        try {
-                        boolean cellValue = customParseBoolean(linesAsString.get(i).metricsToArray()[u]);
+                        boolean cellValue = customParseBoolean(lines.get(i).metricsToArray()[u]);
                         String ruleName = columnNames[u];
                         if (i == 0)
                             tempListModel.addColumn(ruleName);
