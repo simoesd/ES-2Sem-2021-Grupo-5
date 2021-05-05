@@ -1,5 +1,6 @@
 package rules;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,6 +24,7 @@ public class RuleFileManager {
         HashMap<String, List<Rule>> readInfo = new HashMap<>();
         try
         {
+            ruleFile.createNewFile();
             readInfo = readRules();
             FileOutputStream fileWriter = new FileOutputStream(ruleFile);
             ObjectOutputStream oos = new ObjectOutputStream(fileWriter);
@@ -32,8 +34,8 @@ public class RuleFileManager {
             
             readInfo.put(dateFormat.format(date), rules);
             oos.writeObject(readInfo);
-            oos.close();
             fileWriter.close();
+            oos.close();
         } catch (IOException e) {
             
         } finally {
@@ -44,15 +46,20 @@ public class RuleFileManager {
     {
         File ruleFile = new File(HISTORY_FILE_PATH);
         HashMap<String, List<Rule>> readInfo = new HashMap<>();
-        InputStream fileReader = FileInputStream.nullInputStream();
         try
         {
             ruleFile.createNewFile();
-            fileReader = new FileInputStream(ruleFile);
-            ObjectInputStream ois = new ObjectInputStream(fileReader);
-            readInfo = (HashMap<String, List<Rule>>)ois.readObject();
-            ois.close();
-            fileReader.close();
+            InputStream fileReader = FileInputStream.nullInputStream();
+            try {
+                fileReader = new FileInputStream(ruleFile);
+                ObjectInputStream ois = new ObjectInputStream(fileReader);
+                readInfo = (HashMap<String, List<Rule>>)ois.readObject();
+                ois.close();
+            } catch (EOFException e1) {
+                
+            } finally { 
+                fileReader.close();
+            }
         } catch (IOException | ClassNotFoundException e) {
             
         } finally {
