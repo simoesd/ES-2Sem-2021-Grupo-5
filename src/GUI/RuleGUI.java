@@ -167,15 +167,15 @@ public class RuleGUI extends JPanel{
     {
     	conditionsGUI.clear();
     	logicOperators.clear();
-    	ruleTitle.setText(rule.ruleName);
-    	isClassRule = rule.isClassRule;
-    	for (Condition condition: rule.conditions)
+    	ruleTitle.setText(rule.getRuleName());
+    	isClassRule = rule.isClassRule();
+    	for (Condition condition: rule.getConditions())
     	{
     		ConditionGUI conditionGUI = new ConditionGUI(isClassRule);
     		conditionGUI.setupGUIFromCondition(condition);
     		addCondition(conditionGUI);
     	}
-    	for (int logicOp: rule.logicOperators)
+    	for (int logicOp: rule.getLogicOperators())
     		addNewLogicOperator(logicOp);
     	initializePanel();
     }

@@ -63,10 +63,10 @@ class RuleTest {
         Rule rule = new Rule(ruleName, conditions, logicOperators, isClassRule);
         
         assertAll("Rule atributes",
-                () -> {assertEquals(ruleName, rule.ruleName);},
-                () -> {assertEquals(conditions, rule.conditions);},
-                () -> {assertEquals(logicOperators, rule.logicOperators);},
-                () -> {assertEquals(isClassRule, rule.isClassRule);});
+                () -> {assertEquals(ruleName, rule.getRuleName());},
+                () -> {assertEquals(conditions, rule.getConditions());},
+                () -> {assertEquals(logicOperators, rule.getLogicOperators());},
+                () -> {assertEquals(isClassRule, rule.isClassRule());});
     }
     
     @Test

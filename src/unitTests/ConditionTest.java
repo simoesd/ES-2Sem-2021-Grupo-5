@@ -53,7 +53,7 @@ class ConditionTest {
             Arguments.of("abc", Condition.GREATER_THAN_EQUAL, 15, new String[] {"LOC_METHOD", "15"}, NumberFormatException.class),
             //operador inválido
             Arguments.of("LOC_METHOD", 4, 15, new String[] {"LOC_METHOD", "15"}, IllegalArgumentException.class),
-            //métrica da linha inválida
+            //valor da métrica da linha inválida
             Arguments.of("LOC_METHOD", Condition.GREATER_THAN_EQUAL, 15, new String[] {"LOC_METHOD", "not int"}, NumberFormatException.class)
         );
     }

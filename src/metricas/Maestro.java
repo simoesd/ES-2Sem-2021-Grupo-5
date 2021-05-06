@@ -142,7 +142,7 @@ public class Maestro {
 	    
 	    
 	    for(Rule rule: rules)
-	        header.add(rule.ruleName);
+	        header.add(rule.getRuleName());
 	    
         
         for (int i = 0; i < header.size(); i++) {

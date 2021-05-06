@@ -138,7 +138,7 @@ public class Line {
 	
 	public void calculateRule(Rule rule)
 	{
-	    addMetric(rule.ruleName, Boolean.toString(rule.evaluateRule(this)));
+	    addMetric(rule.getRuleName(), Boolean.toString(rule.evaluateRule(this)));
 	}
 	
 	public String getMethé()

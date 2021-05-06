@@ -10,11 +10,11 @@ public class Rule implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -76936614853441537L;
-	public String ruleName;
-    public boolean isClassRule;
+	private String ruleName;
+    private boolean isClassRule;
     
-    public LinkedList<Condition> conditions = new LinkedList<>();
-    public LinkedList<Integer> logicOperators = new LinkedList<>();
+    private LinkedList<Condition> conditions = new LinkedList<>();
+    private LinkedList<Integer> logicOperators = new LinkedList<>();
     
     public static final int AND = 0;
     public static final int OR = 1;
@@ -56,5 +56,23 @@ public class Rule implements Serializable{
         return result;
     }
     
+    public LinkedList<Condition> getConditions()
+    {
+        return conditions;
+    }
     
+    public LinkedList<Integer> getLogicOperators()
+    {
+        return logicOperators;
+    }
+    
+    public String getRuleName()
+    {
+        return ruleName;
+    }
+    
+    public boolean isClassRule()
+    {
+        return isClassRule;
+    }
 }
