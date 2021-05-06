@@ -1,5 +1,6 @@
 package metricas;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -11,7 +12,7 @@ import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 
-public class MetricRegistryToTest extends MetricRegistry {
+public class MetricRegistryToTest extends MetricRegistry {//TODO nomes
 
 	private ConcurrentMap<String, Counter> hello = new ConcurrentHashMap<String, Counter>();
 
@@ -52,6 +53,21 @@ public class MetricRegistryToTest extends MetricRegistry {
 		SortedMap<String, Counter> newMr = this.getCounters();
 
 		newMr.put(key, value);
+		setCounters(newMr);
+
+		return this;
+
+	}
+	
+	public MetricRegistry addCounterList(String[] key, int[] value) {
+		SortedMap<String, Counter> newMr = this.getCounters();
+
+		for (int i = 0; i < key.length; i++) {
+			Counter c = new Counter();
+			c.inc(value[i]);
+			newMr.put(key[i], c);
+		}
+		
 		setCounters(newMr);
 
 		return this;
