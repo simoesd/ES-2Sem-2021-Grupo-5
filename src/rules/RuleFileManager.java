@@ -16,7 +16,7 @@ import java.util.List;
 
 public class RuleFileManager {
     
-    public static final String HISTORY_FILE_PATH = "teste.txt";
+    public static final String HISTORY_FILE_PATH = "db.rul";
     
     public static void writeEntry(List<Rule> rules)
     {
