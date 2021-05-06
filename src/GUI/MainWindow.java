@@ -222,7 +222,7 @@ public class MainWindow {
 		    	ruleHistoryDialog.add(dialogTitlePanel, BorderLayout.NORTH);
 		    	
 		    	JPanel historyComboBoxPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-                HashMap<String, List<Rule>> ruleMap = RuleFileManager.readRules();
+                HashMap<String, List<Rule>> ruleMap = RuleFileManager.readRules(RuleFileManager.HISTORY_FILE_PATH);
                 List<List<Rule>> rules = new LinkedList<>(ruleMap.values());
                 Set<String> timestamps = ruleMap.keySet();
                 
@@ -250,7 +250,7 @@ public class MainWindow {
                     
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        RuleFileManager.clearHistory();
+                        RuleFileManager.clearHistory(RuleFileManager.HISTORY_FILE_PATH);
                         Object[] popupOptions = { "Ok" };
                         JOptionPane.showOptionDialog(frame,
                                 "Rule history cleared!", "Rule history cleared!",
@@ -503,7 +503,7 @@ public class MainWindow {
 	protected void saveRuleHistory(boolean showConfirmationPopUp) {
 	    List<Rule> rulesToWrite = new LinkedList<>();
         rulesGUI.forEach(x -> rulesToWrite.add(x.generateRule()));
-        RuleFileManager.writeEntry(rulesToWrite);
+        RuleFileManager.writeEntry(rulesToWrite, RuleFileManager.HISTORY_FILE_PATH);
         
         if (showConfirmationPopUp)
         {
