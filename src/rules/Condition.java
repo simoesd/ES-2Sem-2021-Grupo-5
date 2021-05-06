@@ -6,9 +6,7 @@ import reader.Line;
 
 public class Condition implements Serializable {
     
-    /**
-	 * 
-	 */
+   
 	private static final long serialVersionUID = 7122426817088652910L;
 	public String metricToEvaluate;
     public int thresholdOperator;
@@ -26,9 +24,9 @@ public class Condition implements Serializable {
         this.thresholdValue = thresholdValue;
     }
 
-    public boolean evaluateCondition(Line line) {
-        int metricValue = Integer.parseInt(line.getMetrics().get(metricToEvaluate.toUpperCase()));
+    public boolean evaluateCondition(Line line) throws IllegalArgumentException, NumberFormatException{
         boolean conditionValue = false;
+        int metricValue = Integer.parseInt(line.getCaseInsensitiveMetric(metricToEvaluate));
         switch (thresholdOperator) {
             case LESS_THAN:
                 conditionValue = metricValue < thresholdValue;
@@ -42,13 +40,10 @@ public class Condition implements Serializable {
             case GREATER_THAN_EQUAL:
                 conditionValue = metricValue >= thresholdValue;
                 break;
+            default:
+                throw new IllegalArgumentException();
         }
         return conditionValue;
     }
     
-    
-    public boolean isClassCondition()
-    {
-        return metricToEvaluate.toLowerCase().contains("class");
-    }
 }

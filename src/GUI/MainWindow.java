@@ -630,12 +630,6 @@ public class MainWindow {
 		mainPanel.updateUI();
 	}
 
-	public static String getFileName(String fullPath) {
-		while (fullPath.endsWith("\\"))
-			fullPath = fullPath.substring(0, fullPath.length() - 1);
-		return fullPath.substring(fullPath.lastIndexOf("\\") + 1);
-	}
-
 	public static int[] getProjectData(ArrayList<Line> lines) {
 		ArrayList<String> classNames = new ArrayList<>();
 		ArrayList<String> packageNames = new ArrayList<>();
@@ -722,9 +716,9 @@ public class MainWindow {
                         if (i == 0)
                             tempListModel.addColumn(ruleName);
                         try {
-                            if (correspondingLine.getMetrics().containsKey(ruleName))
+                            if (correspondingLine.getMetrics().containsKey(ruleName)) //TODO make insensitive
                             {
-                                boolean dataToEvaluateRuleValue = customParseBoolean(correspondingLine.getCaseInsensitiveMetric(ruleName)); //TODO currently not quite working
+                                boolean dataToEvaluateRuleValue = customParseBoolean(correspondingLine.getCaseInsensitiveMetric(ruleName));
                                 if (cellValue)
                                     if (dataToEvaluateRuleValue)
                                         ruleEvaluation = "VP";
