@@ -2,7 +2,6 @@ package rules;
 
 import java.io.Serializable;
 import java.util.LinkedList;
-import java.util.List;
 
 import reader.Line;
 
@@ -41,7 +40,7 @@ public class Rule implements Serializable{
         return result;
     }
     
-    public boolean compareConditions(boolean firstConditionValue, int logicOperator, boolean secondConditionValue)
+    public boolean compareConditions(boolean firstConditionValue, int logicOperator, boolean secondConditionValue) throws IllegalArgumentException
     {
         boolean result = false;
         switch (logicOperator) {
@@ -51,6 +50,8 @@ public class Rule implements Serializable{
             case OR:
                 result = firstConditionValue || secondConditionValue;
                 break;
+            default:
+                throw new IllegalArgumentException();
         }
         return result;
     }

@@ -32,6 +32,19 @@ class ConditionTest {
         );
     }
     
+    @ParameterizedTest
+    @MethodSource("testInfoNoError")
+    void testEvaluateConditionError(String conditionMetric, int conditionOperator, int conditionValue, String[] lineInfo, boolean expectedResult) {
+        Condition condition = new Condition(conditionMetric, conditionOperator, conditionValue);
+        LinkedHashMap<String, String> metrics = new LinkedHashMap<>();
+        metrics.put(lineInfo[0], lineInfo[1]);
+        Line line = new Line(0, "package", "class", "method", metrics);
+        assertEquals(expectedResult, condition.evaluateCondition(line));
+    }
+    
+    
+    
+    
     @Parameters
     public static Stream<Arguments> testInfoError() {
         return Stream.of(
@@ -44,20 +57,10 @@ class ConditionTest {
             Arguments.of("LOC_METHOD", Condition.GREATER_THAN_EQUAL, 15, new String[] {"LOC_METHOD", "not int"}, NumberFormatException.class)
         );
     }
-    
-    @ParameterizedTest
-    @MethodSource("testInfoNoError")
-    void parameterizedTestNoError(String conditionMetric, int conditionOperator, int conditionValue, String[] lineInfo, boolean expectedResult) {
-        Condition condition = new Condition(conditionMetric, conditionOperator, conditionValue);
-        LinkedHashMap<String, String> metrics = new LinkedHashMap<>();
-        metrics.put(lineInfo[0], lineInfo[1]);
-        Line line = new Line(0, "package", "class", "method", metrics);
-        assertEquals(expectedResult, condition.evaluateCondition(line));
-    }
-    
+
     @ParameterizedTest
     @MethodSource("testInfoError")
-    void parameterizedTestError(String conditionMetric, int conditionOperator, int conditionValue, String[] lineInfo, Class<Exception> expectedResult) {
+    void testEvaluateConditionError(String conditionMetric, int conditionOperator, int conditionValue, String[] lineInfo, Class<Exception> expectedResult) {
         Condition condition = new Condition(conditionMetric, conditionOperator, conditionValue);
         LinkedHashMap<String, String> metrics = new LinkedHashMap<>();
         metrics.put(lineInfo[0], lineInfo[1]);
