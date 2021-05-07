@@ -24,7 +24,6 @@ public class RuleFileManager {
         HashMap<String, List<Rule>> readInfo = new HashMap<>();
         try
         {
-//            ruleFile.createNewFile();
             readInfo = readRules(filePath);
             FileOutputStream fileWriter = new FileOutputStream(ruleFile);
             ObjectOutputStream oos = new ObjectOutputStream(fileWriter);

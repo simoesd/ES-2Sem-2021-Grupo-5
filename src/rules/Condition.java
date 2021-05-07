@@ -2,6 +2,7 @@ package rules;
 
 import java.io.Serializable;
 
+import helpers.HelperMethods;
 import reader.Line;
 
 public class Condition implements Serializable {
@@ -26,7 +27,7 @@ public class Condition implements Serializable {
 
     public boolean evaluateCondition(Line line) throws IllegalArgumentException, NumberFormatException{
         boolean conditionValue = false;
-        int metricValue = Integer.parseInt(line.getCaseInsensitiveMetric(metricToEvaluate));
+        int metricValue = Integer.parseInt(HelperMethods.getCaseInsensitive(line.getMetrics(), metricToEvaluate));
         switch (thresholdOperator) {
             case LESS_THAN:
                 conditionValue = metricValue < thresholdValue;

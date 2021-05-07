@@ -16,7 +16,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -44,6 +43,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
+import helpers.HelperMethods;
 import metricas.Maestro;
 import reader.ExcelReader;
 import reader.Line;
@@ -73,6 +73,7 @@ public class MainWindow {
 				try {
 					MainWindow window = new MainWindow();
 					window.frame.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -92,12 +93,12 @@ public class MainWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame("Code Smeller");
-
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		int width = gd.getDisplayMode().getWidth();
 		int height = gd.getDisplayMode().getHeight();
 
 		frame.setBounds(0, 0, width - 100, height - 100);
+		frame.setLocationRelativeTo(null);
 		// frame.setResizable(false);
 //		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -572,14 +573,13 @@ public class MainWindow {
 		try {
 			if (tabbedPane.getSelectedIndex() == 0 && analysisPathTextField.getText().contains("jasml_0.10")) {
 			    compareCodeSmells(lines);
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		JLabel fileTitle = new JLabel(fileToImport, SwingConstants.CENTER);
 
-		int[] projectData = getProjectData(lines);
+		int[] projectData = ExcelReader.getProjectData(lines);
 		JLabel numPackagesLabel = new JLabel("Number of packages: " + projectData[0], SwingConstants.CENTER);
 		JLabel numClassesLabel = new JLabel("Number of classes: " + projectData[1], SwingConstants.CENTER);
 		JLabel numMethodsLabel = new JLabel("Number of methods: " + projectData[2], SwingConstants.CENTER);
@@ -594,6 +594,7 @@ public class MainWindow {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+
 				Maestro tempMaestro = new Maestro();
 				tempMaestro.openFolder(analysisPathTextField.getText());
 				ArrayList<String> fileNameList = new ArrayList<>();
@@ -665,32 +666,6 @@ public class MainWindow {
 		return new ImageIcon(bi);
 	}
 
-
-    public static boolean customParseBoolean(String stringToParse) throws IllegalArgumentException { //TODO move somewhere else, possibly new static class for helper methods?
-        if (stringToParse.equalsIgnoreCase("true"))
-            return true;
-        if (stringToParse.equalsIgnoreCase("false"))
-            return false;
-        throw new IllegalArgumentException();
-    }
-	
-    public static int[] getProjectData(ArrayList<Line> lines) { //TODO move to ExcelReader
-        ArrayList<String> classNames = new ArrayList<>();
-        ArrayList<String> packageNames = new ArrayList<>();
-        int totalLinesOfCode = 0;
-
-        for (Line line : lines) {
-            if (!classNames.contains(line.getPkg() + ".." + line.getCls())) { //Double period used as a separator for being an invalid character combination in both package and class names
-                classNames.add(line.getPkg() + ".." + line.getCls());
-                totalLinesOfCode += Integer.parseInt(line.getCaseInsensitiveMetric("loc_class"));
-            }
-            if (!packageNames.contains(line.getPkg()))
-                packageNames.add(line.getPkg());
-        }
-
-        int[] projectData = { packageNames.size(), classNames.size(), lines.size(), totalLinesOfCode};
-        return projectData;
-    }
 	
 	public void compareCodeSmells(ArrayList<Line> lines) //TODO make static, move to ExcelReader. Need to change returned value and make it work without using any GUI objects
 	{
@@ -722,14 +697,14 @@ public class MainWindow {
     	        for (int u = 0; u < lines.get(i).getMetrics().size(); u++)
     	        {
         	        try {
-                        boolean cellValue = customParseBoolean(lines.get(i).metricsToArray()[u]);
+                        boolean cellValue = HelperMethods.customParseBoolean(lines.get(i).metricsToArray()[u]);
                         String ruleName = metricNames[u];
                         if (i == 0)
                             tempListModel.addColumn(ruleName);
                         try {
-                            if (correspondingLine.getMetrics().containsKey(ruleName)) //TODO make insensitive
+                            if (HelperMethods.containsKeyCaseInsensitive(correspondingLine.getMetrics(), ruleName)) //TODO make insensitive
                             {
-                                boolean dataToEvaluateRuleValue = customParseBoolean(correspondingLine.getCaseInsensitiveMetric(ruleName));
+                                boolean dataToEvaluateRuleValue = HelperMethods.customParseBoolean(HelperMethods.getCaseInsensitive(correspondingLine.getMetrics(), ruleName));
                                 if (cellValue)
                                     if (dataToEvaluateRuleValue)
                                         ruleEvaluation = "VP";

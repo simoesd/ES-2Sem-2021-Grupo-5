@@ -146,14 +146,4 @@ public class Line {
 	    return method;
 	}
 	
-	public String getCaseInsensitiveMetric(String key)
-	{
-	    for (Map.Entry<String, String> metricEntry: metrics.entrySet())
-	    {
-	        if (metricEntry.getKey().equalsIgnoreCase(key))
-	            return metricEntry.getValue();
-	    }
-	    return null;
-	}
-
 }

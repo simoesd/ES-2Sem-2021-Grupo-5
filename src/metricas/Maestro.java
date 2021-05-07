@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import helpers.HelperMethods;
 import reader.Line;
 import rules.Rule;
 
@@ -164,7 +165,7 @@ public class Maestro {
                 cell.setCellValue(cellValue);
             } catch (NumberFormatException e) {
                 try {
-                    boolean readBoolean = GUI.MainWindow.customParseBoolean(line[i]); //TODO not working correctly
+                    boolean readBoolean = HelperMethods.customParseBoolean(line[i]);
                     cell.setCellValue(readBoolean);
                 } catch (IllegalArgumentException e1){
                     cell.setCellValue(line[i]);
