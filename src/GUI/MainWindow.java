@@ -17,6 +17,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -571,8 +572,21 @@ public class MainWindow {
 		JScrollPane tableScrollPane = new JScrollPane(lineTable);
 		tableScrollPane.setBorder(new EmptyBorder(0, 20, 20, 0));
 		try {
-			if (tabbedPane.getSelectedIndex() == 0 && analysisPathTextField.getText().contains("jasml_0.10")) {
-			    compareCodeSmells(lines);
+			if (tabbedPane.getSelectedIndex() == 0 && analysisPathTextField.getText().contains("jasml_0.10") && rulesGUI.size() > 0) {
+			    
+			    JTable codeSmellEvaluationTable = new JTable();
+		        DefaultTableModel codeSmellEvaluationModel = (DefaultTableModel) codeSmellEvaluationTable.getModel();
+		        
+		        String[] ruleNames = lines.get(0).getRuleNames();
+		        codeSmellEvaluationModel.addColumn(lines.get(0).getColumnNames()[0]); //create first column, for MethodID
+		        Arrays.asList(ruleNames).forEach(codeSmellEvaluationModel::addColumn);
+		        
+			    String[][] codeSmellEvaluationContent = ExcelReader.compareCodeSmells(lines);
+			    Arrays.asList(codeSmellEvaluationContent).forEach(codeSmellEvaluationModel::addRow);
+
+		        JScrollPane tableScrollPane2 = new JScrollPane(codeSmellEvaluationTable);
+		        tableScrollPane2.setBorder(new EmptyBorder(0, 10, 20, 20));
+		        mainPanel.add(tableScrollPane2, BorderLayout.EAST);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -667,81 +681,5 @@ public class MainWindow {
 	}
 
 	
-	public void compareCodeSmells(ArrayList<Line> lines) //TODO make static, move to ExcelReader. Need to change returned value and make it work without using any GUI objects
-	{
-	    String[] metricNames = lines.get(0).getMetricNames();
-	    ArrayList<Line> dataToEvaluateCodeSmells = ExcelReader.readExcelFile("Code_Smells.xlsx");
-	    JTable tempList = new JTable();
-	    DefaultTableModel tempListModel = (DefaultTableModel) tempList.getModel();
-	    tempListModel.addColumn(lines.get(0).getColumnNames()[0]);
-	    for (int i  = 0; i < lines.size(); i++)
-	    {
-	        //get corresponding line from dataToEvaluateCodeSmells
-	        Line correspondingLine = null;
-	        for (Line line: dataToEvaluateCodeSmells)
-	        {
-	            if (line.getPkg().toLowerCase().equals(lines.get(i).getPkg().toLowerCase()) && line.getCls().toLowerCase().equals(lines.get(i).getCls().toLowerCase()) &&  line.getMethé().toLowerCase().equals(lines.get(i).getMethé().toLowerCase()))
-	            {
-	                correspondingLine = line;
-	                break;
-	            }
-	        }
-	        
-	        int j = 0;
-	        String[] resultTableEntry = new String[4]; //TODO count number of rules
-	        resultTableEntry[j++] = String.valueOf(i+1);
-	        String ruleEvaluation;
-	        
-	        if (correspondingLine != null)
-	        {
-    	        for (int u = 0; u < lines.get(i).getMetrics().size(); u++)
-    	        {
-        	        try {
-                        boolean cellValue = HelperMethods.customParseBoolean(lines.get(i).metricsToArray()[u]);
-                        String ruleName = metricNames[u];
-                        if (i == 0)
-                            tempListModel.addColumn(ruleName);
-                        try {
-                            if (HelperMethods.containsKeyCaseInsensitive(correspondingLine.getMetrics(), ruleName)) //TODO make insensitive
-                            {
-                                boolean dataToEvaluateRuleValue = HelperMethods.customParseBoolean(HelperMethods.getCaseInsensitive(correspondingLine.getMetrics(), ruleName));
-                                if (cellValue)
-                                    if (dataToEvaluateRuleValue)
-                                        ruleEvaluation = "VP";
-                                    else 
-                                        ruleEvaluation = "FP";
-                                else
-                                    if (dataToEvaluateRuleValue)
-                                        ruleEvaluation = "FN";
-                                    else
-                                        ruleEvaluation = "VN";
-                            }
-                            else 
-                            {
-                                ruleEvaluation = "NA";
-                            }
-                        } catch (IllegalArgumentException e) {
-                            ruleEvaluation = "NA";
-                        }
-                        resultTableEntry[j++] = ruleEvaluation; 
-                    } catch (IllegalArgumentException e) {
-                        
-                    }
-    	        }
-    	        tempListModel.addRow(resultTableEntry);
-	        }
-	        else 
-	        {
-	            for (; j < resultTableEntry.length; j++)
-	            {
-	                resultTableEntry[j] = "NA";
-	            }
-	            tempListModel.addRow(resultTableEntry);
-	        }
-	    }
-	    JScrollPane tableScrollPane2 = new JScrollPane(tempList);
-        tableScrollPane2.setBorder(new EmptyBorder(0, 10, 20, 20));
-        mainPanel.add(tableScrollPane2, BorderLayout.EAST);
-	}
 	
 }

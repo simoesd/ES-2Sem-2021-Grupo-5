@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class HelperMethods {
     
-    public static boolean customParseBoolean(String stringToParse) throws IllegalArgumentException { //TODO move somewhere else, possibly new static class for helper methods?
+    public static boolean customParseBoolean(String stringToParse) throws IllegalArgumentException {
         if (stringToParse.equalsIgnoreCase("true"))
             return true;
         if (stringToParse.equalsIgnoreCase("false"))

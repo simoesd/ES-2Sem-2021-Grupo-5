@@ -5,11 +5,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 
+import helpers.HelperMethods;
 import rules.Rule;
 
 public class Line {
@@ -146,4 +148,17 @@ public class Line {
 	    return method;
 	}
 	
+	public String[] getRuleNames()
+	{
+	    LinkedList<String> ruleNames = new LinkedList<>();
+	    for (Map.Entry<String, String> metric: metrics.entrySet())
+	    {
+	        try {
+	            HelperMethods.customParseBoolean(metric.getValue());
+	            ruleNames.add(metric.getKey());
+	        } catch (IllegalArgumentException e) {
+	        }
+	    }
+	    return ruleNames.toArray(new String[0]);
+	}
 }
