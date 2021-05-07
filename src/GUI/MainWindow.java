@@ -59,7 +59,8 @@ public class MainWindow {
 	private JPanel panel;
 	private JPanel panel_2;
 	private JPanel panel_3;
-	JScrollPane mainScrollPane;
+	private JScrollPane mainScrollPane;
+	private JTabbedPane tabbedPane;
 	private ArrayList<RuleGUI> rulesGUI = new ArrayList<>();
 	private int ruleNumber = 1;
 
@@ -108,7 +109,7 @@ public class MainWindow {
 
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		JPanel analysisPanel = new JPanel();
 		JPanel importPanel = new JPanel();
 
@@ -386,7 +387,9 @@ public class MainWindow {
 					analysisPathTextField.setText(analyzeFileChooser.getSelectedFile().getAbsolutePath());
 					Maestro tempMaestro = new Maestro();
 					tempMaestro.openFolder(analysisPathTextField.getText());
-					showFilesToAnalyze(tempMaestro.getFilesInDirectory());
+					ArrayList<String> fileNameList = new ArrayList<>();
+					tempMaestro.getFilesInDirectory().forEach(x -> fileNameList.add(x.getName()));
+					showFilesToAnalyze(fileNameList);
 				}
 			}
 		});
@@ -542,7 +545,7 @@ public class MainWindow {
 			try {
 				rg.getConditions().forEach(x -> Integer.parseInt(x.getValue()));
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(panel, "Certifique-se que inseriu corretamente os valores");
+				JOptionPane.showMessageDialog(panel, "Os valores das métricas a analisar teem que ser números inteiros.");
 				isValid = false;
 				return isValid;
 			}
@@ -567,10 +570,8 @@ public class MainWindow {
 		JScrollPane tableScrollPane = new JScrollPane(lineTable);
 		tableScrollPane.setBorder(new EmptyBorder(0, 20, 20, 0));
 		try {
-
-			if (analysisPathTextField.getText().contains("jasml_0.10")) {
-//				comparewithCodeSmellsFile(columnNames, linesAsString);
-			    compareCodeSmells(lines.get(0).getMetricNames(), lines);
+			if (tabbedPane.getSelectedIndex() == 0 && analysisPathTextField.getText().contains("jasml_0.10")) {
+			    compareCodeSmells(lines);
 
 			}
 		} catch (Exception e) {
@@ -595,7 +596,9 @@ public class MainWindow {
 			public void actionPerformed(ActionEvent e) {
 				Maestro tempMaestro = new Maestro();
 				tempMaestro.openFolder(analysisPathTextField.getText());
-				showFilesToAnalyze(tempMaestro.getFilesInDirectory());
+				ArrayList<String> fileNameList = new ArrayList<>();
+                tempMaestro.getFilesInDirectory().forEach(x -> fileNameList.add(x.getName()));
+				showFilesToAnalyze(fileNameList);
 
 			}
 		});
@@ -612,40 +615,17 @@ public class MainWindow {
 		mainPanel.updateUI();
 	}
 
-	private void showFilesToAnalyze(ArrayList<File> fileArray) {
+	private void showFilesToAnalyze(ArrayList<String> filenameList) {
 		mainPanel.removeAll();
 
-		ArrayList<String> filenameList = new ArrayList<>();
-		for (File f : fileArray) {
-			filenameList.add(f.getName());
-		}
-
-		JList<String> fileList = new JList(filenameList.toArray());
-		JScrollPane listScrollPane = new JScrollPane(fileList);
+		JList<String> fileJList = new JList<String>(filenameList.toArray(new String[0]));
+		JScrollPane listScrollPane = new JScrollPane(fileJList);
 
 		mainPanel.add(listScrollPane, BorderLayout.WEST);
 		mainPanel.add(mainScrollPane, BorderLayout.CENTER);
 		mainPanel.add(panel_2, BorderLayout.SOUTH);
 		mainPanel.add(panel_3, BorderLayout.NORTH);
 		mainPanel.updateUI();
-	}
-
-	public static int[] getProjectData(ArrayList<Line> lines) {
-		ArrayList<String> classNames = new ArrayList<>();
-		ArrayList<String> packageNames = new ArrayList<>();
-		int totalLinesOfCode = 0;
-
-		for (Line line : lines) {
-			if (!classNames.contains(line.getPkg() + ".." + line.getCls())) { //Double period used as a separator for being an invalid character combination in both package and class names
-				classNames.add(line.getPkg() + ".." + line.getCls());
-				totalLinesOfCode += Integer.parseInt(line.getCaseInsensitiveMetric("loc_class"));
-			}
-			if (!packageNames.contains(line.getPkg()))
-                packageNames.add(line.getPkg());
-		}
-
-		int[] result = { packageNames.size(), classNames.size(), lines.size(), totalLinesOfCode};
-		return result;
 	}
 
 	public static void enableDefaultValue(final JTextField tf, final String defaultValue) {
@@ -685,9 +665,36 @@ public class MainWindow {
 		return new ImageIcon(bi);
 	}
 
+
+    public static boolean customParseBoolean(String stringToParse) throws IllegalArgumentException {
+        if (stringToParse.equalsIgnoreCase("true"))
+            return true;
+        if (stringToParse.equalsIgnoreCase("false"))
+            return false;
+        throw new IllegalArgumentException();
+    }
 	
-	public void compareCodeSmells(String[] columnNames, ArrayList<Line> lines)
+    public static int[] getProjectData(ArrayList<Line> lines) {
+        ArrayList<String> classNames = new ArrayList<>();
+        ArrayList<String> packageNames = new ArrayList<>();
+        int totalLinesOfCode = 0;
+
+        for (Line line : lines) {
+            if (!classNames.contains(line.getPkg() + ".." + line.getCls())) { //Double period used as a separator for being an invalid character combination in both package and class names
+                classNames.add(line.getPkg() + ".." + line.getCls());
+                totalLinesOfCode += Integer.parseInt(line.getCaseInsensitiveMetric("loc_class"));
+            }
+            if (!packageNames.contains(line.getPkg()))
+                packageNames.add(line.getPkg());
+        }
+
+        int[] projectData = { packageNames.size(), classNames.size(), lines.size(), totalLinesOfCode};
+        return projectData;
+    }
+	
+	public void compareCodeSmells(ArrayList<Line> lines)
 	{
+	    String[] metricNames = lines.get(0).getMetricNames();
 	    ArrayList<Line> dataToEvaluateCodeSmells = ExcelReader.readExcelFile("Code_Smells.xlsx");
 	    JTable tempList = new JTable();
 	    DefaultTableModel tempListModel = (DefaultTableModel) tempList.getModel();
@@ -712,7 +719,7 @@ public class MainWindow {
     	        {
         	        try {
                         boolean cellValue = customParseBoolean(lines.get(i).metricsToArray()[u]);
-                        String ruleName = columnNames[u];
+                        String ruleName = metricNames[u];
                         if (i == 0)
                             tempListModel.addColumn(ruleName);
                         try {
@@ -758,11 +765,4 @@ public class MainWindow {
         mainPanel.add(tableScrollPane2, BorderLayout.EAST);
 	}
 	
-	public static boolean customParseBoolean(String stringToParse) throws IllegalArgumentException {
-	    if (stringToParse.equalsIgnoreCase("true"))
-	        return true;
-	    if (stringToParse.equalsIgnoreCase("false"))
-	        return false;
-        throw new IllegalArgumentException();
-	}
 }
