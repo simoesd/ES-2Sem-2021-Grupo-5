@@ -10,8 +10,13 @@ public class NOM_class extends Metrica {
 
 	private SortedMap<String, Counter> cycloSortedMap;
 
-	public NOM_class(Maestro metricas) {
-		super(metricas);
+	public NOM_class() {
+		metricName = "NOM_CLASS";
+		isClassMetric = true;
+	}
+	
+	public NOM_class(Maestro maestro) {
+		super(maestro);
 		metricName = "NOM_CLASS";
 		isClassMetric = true;
 	}

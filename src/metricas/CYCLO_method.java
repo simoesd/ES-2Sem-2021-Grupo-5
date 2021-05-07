@@ -9,8 +9,13 @@ public class CYCLO_method extends Metrica {
 
 	private final String filter = "for,if,while,case";
 
-	public CYCLO_method(Maestro metricas) {
-		super(metricas);
+	public CYCLO_method() {
+		metricName = "CYCLO_METHOD";
+		isClassMetric = false;
+	}
+	
+	public CYCLO_method(Maestro maestro) {
+		super(maestro);
 		metricName = "CYCLO_METHOD";
 		isClassMetric = false;
 	}

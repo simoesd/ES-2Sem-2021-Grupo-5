@@ -43,7 +43,6 @@ public class Line {
 	public void setValues(Iterator<Cell> columnNameIterator, Iterator<Cell> metricValueIterator) {
 		Cell valueCell = metricValueIterator.next();
 		Cell columnNameCell = columnNameIterator.next();
-		System.out.println("celltype: " + valueCell.getCellType());
 		switch (valueCell.getCellType()) {
 			case Cell.CELL_TYPE_BLANK:
 				break;
@@ -68,7 +67,6 @@ public class Line {
 	                {
 	                    case Cell.CELL_TYPE_BOOLEAN:
 	                        metricValue = String.valueOf(valueCell.getBooleanCellValue());
-	                        System.out.println("metricValue: " + metricValue);
 	                        break;
 	                    case Cell.CELL_TYPE_NUMERIC:
 	                        metricValue = String.valueOf((int)valueCell.getNumericCellValue());

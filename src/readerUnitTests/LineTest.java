@@ -47,7 +47,7 @@ class LineTest {
 	@Test
 	void setValuesTest() {
 		try {
-			File excel = new File("testeLine.xlsx"); 
+			File excel = new File("unitTestsUtilityFile\\testeLine.xlsx"); 
 	    	FileInputStream fis = new FileInputStream(excel); 
 	    	XSSFWorkbook excelWorkbook = new XSSFWorkbook(fis); 
 	    	XSSFSheet excelSheet = excelWorkbook.getSheetAt(0); 

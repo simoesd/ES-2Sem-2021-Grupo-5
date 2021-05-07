@@ -29,7 +29,6 @@ public class ExcelReader {
 	    	while (rowIterator.hasNext()) { 
 	    		Row row = rowIterator.next();
 	    		Iterator<Cell> cellIterator = row.cellIterator();
-	    		System.out.println("cell iterator: " + cellIterator.getClass());
 	    		Line line = new Line();
 	    		if (cellIterator.hasNext())
 	    			line.setValues(columnNames.listIterator(), cellIterator);   	
@@ -52,7 +51,6 @@ public class ExcelReader {
         for(int i = 0; i < columnNameRow.getPhysicalNumberOfCells(); i++)
         {
             columnNames.add(columnNameRow.getCell(i));
-            System.out.println("cellClass: " + columnNameRow.getCell(i).getClass());
         }
         return columnNames;
 	}

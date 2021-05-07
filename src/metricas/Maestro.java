@@ -68,25 +68,30 @@ public class Maestro {
             e.printStackTrace();
         }
 		
+		return createExcelFile();
+	}
+	
+	public String createExcelFile() {
 		try {
 			String projectDirectory = getProjectDirectory();
 			projectDirectory=projectDirectory.replace("\\", "/");
-			String b[]=projectDirectory.split("/");					
+			String splitProjectPath[] =projectDirectory.split("/");					
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet();
 			createHeaderExcel(sheet);
-			exportResults(sheet);			
-			FileOutputStream fos = new FileOutputStream(getProjectDirectory() + "\\" + b[b.length -1] + "_metricas" + ".xlsx");
+			exportResults(sheet);	
+			FileOutputStream fos = new FileOutputStream(getProjectDirectory() + "\\" + splitProjectPath[splitProjectPath.length -1] + "_metricas" + ".xlsx");
 			workbook.write(fos);		
 			fos.close();
 			workbook.close();			
 			incrementer = 1;
-			return getProjectDirectory() + "\\" + b[b.length -1] + "_metricas" + ".xlsx";
+			return getProjectDirectory() + "\\" + splitProjectPath[splitProjectPath.length -1] + "_metricas" + ".xlsx";
 		} catch (IOException e) {
 			e.printStackTrace();
-			return "";
 		}
+		return "";
 	}
+
 
 	private void exportResults(XSSFSheet sheet) {
 		
@@ -115,34 +120,25 @@ public class Maestro {
 					for (Rule rule: rules)
 					    line.calculateRule(rule);
 					
-					try {
+					writeExcel(sheet, line.toArray());
 
-						writeExcel(sheet, line.toArray());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
 				}
 			}
 		}
 	}
 
-	private void createHeaderExcel(XSSFSheet sheet) throws IOException {
+	public void createHeaderExcel(XSSFSheet sheet) throws IOException {
 	    Row firstRow = sheet.createRow(incrementer);
 	    LinkedList<String> header = new LinkedList<>(Arrays.asList("MethodID", "Package", "Class", "Method"));
-	    
 	    
 	    for(Metrica metric: metrics)
 	    {
             header.add(metric.getMetricName());
 	    }
 
-
-	    
-	    
 	    for(Rule rule: rules)
 	        header.add(rule.ruleName);
 	    
-        
         for (int i = 0; i < header.size(); i++) {
             Cell cell = firstRow.createCell(i);
             cell.setCellValue(header.get(i));
@@ -150,9 +146,8 @@ public class Maestro {
         incrementer++;
 	}
 
-	private void writeExcel(XSSFSheet sheet, String[] line) throws IOException {
+	public void writeExcel(XSSFSheet sheet, String[] line) {
 	    Row firstRow = sheet.createRow(incrementer);
-	    
 	    
         for (int i = 0; i < line.length; i++) {
 			
@@ -173,13 +168,13 @@ public class Maestro {
 
 	}
 
-	public void openFolder(String str) { // str -> diretorio do projeto
-		File folder = new File(str);
+	public void openFolder(String dirPath) { 
+		File folder = new File(dirPath);
 		listFilesForFolder(folder);
 	}
 
 	private void listFilesForFolder(File folder) {
-		if(folder.listFiles() != null) {
+		if(folder.listFiles().length != 0) {
 			for (File fileEntry : folder.listFiles()) {
 				if (fileEntry.isDirectory()) {
 					listFilesForFolder(fileEntry);
@@ -191,9 +186,8 @@ public class Maestro {
 			}
 		}
 	}
-
+	
 	public String cutAbsolutePath(String absolutePath) { // retorna package/class
-		System.out.println("absolutePath: " + absolutePath);
         String shortPath = getProjectDirectory() + getSourceCodeLocation();
         int stringLength = shortPath.length() + 1;
         shortPath = absolutePath.substring(stringLength);
@@ -202,7 +196,6 @@ public class Maestro {
         if(shortPath.split("\\.").length < 2)
             shortPath = "defaultPackage." +  shortPath;
         shortPath = shortPath.substring(0, shortPath.lastIndexOf(".")) + "/" + shortPath.substring(shortPath.lastIndexOf(".") + 1);
-        System.out.println("shortPath: " + shortPath);
         return shortPath;
 		
     }
@@ -247,6 +240,14 @@ public class Maestro {
 
 	public String getSourceCodeLocation() {
 		return SOURCE_CODE_LOCATION;
+	}
+	
+	public void addMetric(Metrica m) {
+		metrics.add(m);
+	}
+	
+	public void setProjectDirectory(String dir) {
+		projectDirectory = dir;
 	}
 
 }

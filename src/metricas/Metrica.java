@@ -26,9 +26,13 @@ public abstract class Metrica extends MetricRegistry {
 	protected String methodCode, line;
 	private Stack<String> betweenMethodsBuffer = new Stack<>();
 
-	public Metrica(Maestro metricas) {
+	public Metrica() {
 		super();
-		this.maestro = metricas;
+	}
+	
+	public Metrica(Maestro maestro) {
+		super();
+		this.maestro = maestro;
 		this.myThread = startExtracting();
 		myThread.start();
 	}
@@ -161,8 +165,9 @@ public abstract class Metrica extends MetricRegistry {
         String methodName = stack.pop();
         while(!methodName.contains("(")) {
             if(!stack.isEmpty()) { 
-                methodName = methodName + " " + stack.pop() ;
-                if(methodName.endsWith(";")) {
+            	String newLine = stack.pop();
+                methodName = newLine + " " + methodName;
+                if(newLine.endsWith(";")) {
                    return "";
                 }
             }else {
@@ -181,9 +186,9 @@ public abstract class Metrica extends MetricRegistry {
 	        List<String> paramWords = new ArrayList<>();
 	        Arrays.asList(paramPairs).forEach(x -> paramWords.add(x.trim().split(" ")[0]));	        
 	        for(int i = 0; i < paramWords.size(); i++) { // adding every other word from the parameters, to only get the dataTypes in the end
-	        	if(paramWords.get(i).contains("."))
-	        		dataTypes += paramWords.get(i).split(".")[paramWords.get(i).split(".").length -1] + ",";
-	        	else
+	        	if(paramWords.get(i).contains(".")) {
+	        		dataTypes += paramWords.get(i).split("\\.")[paramWords.get(i).split("\\.").length -1] + ",";
+	        	} else
 	        		dataTypes += paramWords.get(i) + ",";
 	        }
 	        if(!dataTypes.isEmpty()) {
@@ -219,5 +224,15 @@ public abstract class Metrica extends MetricRegistry {
 	{
 	    return isClassMetric;
 	}
+
+	public Counter getCounter() {
+		return counter;
+	}
+
+	public void setCounter(Counter counter) {
+		this.counter = counter;
+	}
+	
+	
 
 }
