@@ -16,20 +16,20 @@ public class Line {
 	private int methodID;
 	private String pkg, cls, method; //package, class and method names
 
-    private LinkedHashMap<String, String> metrics = new LinkedHashMap<>();
+	private LinkedHashMap<String, String> metrics = new LinkedHashMap<>();
     
     public Line()
     {
         
     }
     
-    public Line(int methodID, String pkg, String cls, String method)
-    {
-        this.methodID = methodID;
-        this.pkg = pkg;
-        this.cls = cls;
-        this.method = method;
-    }
+//    public Line(int methodID, String pkg, String cls, String method)
+//    {
+//        this.methodID = methodID;
+//        this.pkg = pkg;
+//        this.cls = cls;
+//        this.method = method;
+//    }
     
     public Line(int methodID, String pkg, String cls, String method, LinkedHashMap<String, String> metrics)
     {
@@ -43,6 +43,7 @@ public class Line {
 	public void setValues(Iterator<Cell> columnNameIterator, Iterator<Cell> metricValueIterator) {
 		Cell valueCell = metricValueIterator.next();
 		Cell columnNameCell = columnNameIterator.next();
+		System.out.println("celltype: " + valueCell.getCellType());
 		switch (valueCell.getCellType()) {
 			case Cell.CELL_TYPE_BLANK:
 				break;
@@ -60,23 +61,24 @@ public class Line {
     			
     			String metricValue;
     			
-			do {
-			    valueCell = metricValueIterator.next();
-			    columnNameCell = columnNameIterator.next();
-			    switch (valueCell.getCellType())
-                {
-                    case Cell.CELL_TYPE_BOOLEAN:
-                        metricValue = String.valueOf(valueCell.getBooleanCellValue());
-                        break;
-                    case Cell.CELL_TYPE_NUMERIC:
-                        metricValue = String.valueOf((int)valueCell.getNumericCellValue());
-                        break;
-                    default:
-                        metricValue = valueCell.getStringCellValue();
-                        break;
-                }
-                metrics.put(columnNameCell.getStringCellValue(), metricValue);
-			} while (metricValueIterator.hasNext() && columnNameIterator.hasNext());
+				do {
+				    valueCell = metricValueIterator.next();
+				    columnNameCell = columnNameIterator.next();
+				    switch (valueCell.getCellType())
+	                {
+	                    case Cell.CELL_TYPE_BOOLEAN:
+	                        metricValue = String.valueOf(valueCell.getBooleanCellValue());
+	                        System.out.println("metricValue: " + metricValue);
+	                        break;
+	                    case Cell.CELL_TYPE_NUMERIC:
+	                        metricValue = String.valueOf((int)valueCell.getNumericCellValue());
+	                        break;
+	                    default:
+	                        metricValue = valueCell.getStringCellValue();
+	                        break;
+	                }
+	                metrics.put(columnNameCell.getStringCellValue(), metricValue);
+				} while (metricValueIterator.hasNext() && columnNameIterator.hasNext());
 		}
 	}		
 
@@ -88,7 +90,7 @@ public class Line {
 		return cls;
 	}
 	
-	public HashMap<String, String> getMetrics()
+	public LinkedHashMap<String, String> getMetrics()
 	{
 	    return metrics;
 	}
@@ -144,6 +146,10 @@ public class Line {
 	public String getMethé()
 	{
 	    return method;
+	}
+	
+	public int getMethodID() {
+		return methodID;
 	}
 	
 	public String getCaseInsensitiveMetric(String key)
