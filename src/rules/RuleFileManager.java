@@ -37,7 +37,6 @@ public class RuleFileManager {
             oos.close();
         } catch (IOException e) {
             
-        } finally {
         }
     }
     

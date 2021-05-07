@@ -2,11 +2,10 @@ package unitTests;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -23,23 +22,13 @@ import rules.Rule;
 import rules.RuleFileManager;
 
 class RuleFileManagerTest {
-    
-    @BeforeEach
-    void setUp()
-    {
-        
-    }
-
-    @Test
-    void testWriteEntry() {
-        fail("Not yet implemented");
-    }
+   
     
     @Parameters
     public static Stream<Arguments> testReadRulesInfo() {
         HashMap<String, List<Rule>> readTestNoError = new HashMap<>();
         
-        String timestamp = "2021/05/06 19:47:59";
+        String timestamp = "2021/05/06 19:47:59"; //obtained whe generating the test file
         
         String ruleName = "is_God_Class";
         
@@ -89,6 +78,37 @@ class RuleFileManagerTest {
         File file = new File(filePath);
         RuleFileManager.clearHistory(filePath);
         assertEquals(false, file.exists());
+    }
+    
+    @Test
+    void testWriteEntry() {
+        String ruleName = "is_God_Class";
+        
+        LinkedList<Condition> conditions = new LinkedList<>();
+        conditions.add(new Condition("LOC_METHOD", Condition.GREATER_THAN, 10));
+        conditions.add(new Condition("CYCLO_METHOD", Condition.GREATER_THAN_EQUAL, 15));
+        
+        LinkedList<Integer> logicOperators = new LinkedList<>();
+        logicOperators.add(Rule.AND);
+        
+        boolean isClassRule = true;
+        
+        Rule rule = new Rule(ruleName, conditions, logicOperators, isClassRule);
+        
+        List<Rule> rules = new LinkedList<>();
+        rules.add(rule);
+        
+        String testFilePath = "testWriteEntry.rul";
+        
+        RuleFileManager.clearHistory(testFilePath);
+        RuleFileManager.writeEntry(rules, testFilePath);
+        HashMap<String, List<Rule>> receivedResults = RuleFileManager.readRules(testFilePath);
+        
+        assertAll(
+                () -> {assertEquals(rules.size(), receivedResults.size());},
+                //checks if each key in the expected map exists in the received map, and the value it corresponds to is the same
+                () -> {rules.forEach(x -> receivedResults.containsValue(x));}
+        );
     }
 
 }

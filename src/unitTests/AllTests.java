@@ -1,11 +1,14 @@
 package unitTests;
 
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.platform.suite.api.SelectClasses;
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
 
-@RunWith(Suite.class)
-@SuiteClasses({ConditionTest.class})
+@RunWith(JUnitPlatform.class)
+@SelectClasses({ConditionTest.class,
+    RuleTest.class,
+    RuleFileManagerTest.class})
+
 public class AllTests {
 
 }
