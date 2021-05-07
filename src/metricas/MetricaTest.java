@@ -16,6 +16,7 @@ class MetricaTest {
 	@BeforeEach
 	void setUp() throws Exception {
 		locClass = new LOC_class();
+		
 	}
 
 //	@Test
