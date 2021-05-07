@@ -666,7 +666,7 @@ public class MainWindow {
 	}
 
 
-    public static boolean customParseBoolean(String stringToParse) throws IllegalArgumentException {
+    public static boolean customParseBoolean(String stringToParse) throws IllegalArgumentException { //TODO move somewhere else, possibly new static class for helper methods?
         if (stringToParse.equalsIgnoreCase("true"))
             return true;
         if (stringToParse.equalsIgnoreCase("false"))
@@ -674,7 +674,7 @@ public class MainWindow {
         throw new IllegalArgumentException();
     }
 	
-    public static int[] getProjectData(ArrayList<Line> lines) {
+    public static int[] getProjectData(ArrayList<Line> lines) { //TODO move to ExcelReader
         ArrayList<String> classNames = new ArrayList<>();
         ArrayList<String> packageNames = new ArrayList<>();
         int totalLinesOfCode = 0;
@@ -692,7 +692,7 @@ public class MainWindow {
         return projectData;
     }
 	
-	public void compareCodeSmells(ArrayList<Line> lines)
+	public void compareCodeSmells(ArrayList<Line> lines) //TODO make static, move to ExcelReader. Need to change returned value and make it work without using any GUI objects
 	{
 	    String[] metricNames = lines.get(0).getMetricNames();
 	    ArrayList<Line> dataToEvaluateCodeSmells = ExcelReader.readExcelFile("Code_Smells.xlsx");
@@ -701,18 +701,22 @@ public class MainWindow {
 	    tempListModel.addColumn(lines.get(0).getColumnNames()[0]);
 	    for (int i  = 0; i < lines.size(); i++)
 	    {
-	        int j = 0;
-	        String[] resultTableEntry = new String[4]; //TODO count number of rules
-	        resultTableEntry[j++] = String.valueOf(i+1);
-	        String ruleEvaluation;
-	        
 	        //get corresponding line from dataToEvaluateCodeSmells
 	        Line correspondingLine = null;
 	        for (Line line: dataToEvaluateCodeSmells)
 	        {
 	            if (line.getPkg().toLowerCase().equals(lines.get(i).getPkg().toLowerCase()) && line.getCls().toLowerCase().equals(lines.get(i).getCls().toLowerCase()) &&  line.getMethé().toLowerCase().equals(lines.get(i).getMethé().toLowerCase()))
+	            {
 	                correspondingLine = line;
+	                break;
+	            }
 	        }
+	        
+	        int j = 0;
+	        String[] resultTableEntry = new String[4]; //TODO count number of rules
+	        resultTableEntry[j++] = String.valueOf(i+1);
+	        String ruleEvaluation;
+	        
 	        if (correspondingLine != null)
 	        {
     	        for (int u = 0; u < lines.get(i).getMetrics().size(); u++)
