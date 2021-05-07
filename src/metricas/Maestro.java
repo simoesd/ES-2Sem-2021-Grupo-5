@@ -37,8 +37,6 @@ public class Maestro {
 	}
 
 	public Maestro(String projectDirectory) {
-		metrics = new LinkedList<Metrica>();
-		filesInDirectory = new ArrayList<File>();
 		this.projectDirectory = projectDirectory;
 	}
 
@@ -195,7 +193,7 @@ public class Maestro {
 	}
 
 	public String cutAbsolutePath(String absolutePath) { // retorna package/class
-	
+		System.out.println("absolutePath: " + absolutePath);
         String shortPath = getProjectDirectory() + getSourceCodeLocation();
         int stringLength = shortPath.length() + 1;
         shortPath = absolutePath.substring(stringLength);
@@ -204,6 +202,7 @@ public class Maestro {
         if(shortPath.split("\\.").length < 2)
             shortPath = "defaultPackage." +  shortPath;
         shortPath = shortPath.substring(0, shortPath.lastIndexOf(".")) + "/" + shortPath.substring(shortPath.lastIndexOf(".") + 1);
+        System.out.println("shortPath: " + shortPath);
         return shortPath;
 		
     }

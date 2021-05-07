@@ -1,4 +1,4 @@
-package testes;
+package readerUnitTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -35,24 +35,6 @@ class LineTest {
 		
 		line = new Line(1, "GUI", "MainWindow", "MainWindow()", metrics);
 	}
-//	@Parameters
-//    public static Stream<Arguments> testInfoNoError() {
-//        
-//		return Stream.of(
-//        //testes sem erros
-//            Arguments.of("LOC_METHOD", Condition.GREATER_THAN, 15, new String[] {"LOC_METHOD", "15"}, false),
-//            Arguments.of("LOC_METHOD", Condition.GREATER_THAN, 15, new String[] {"LOC_METHOD", "16"}, true),
-//            Arguments.of("LOC_METHOD", Condition.GREATER_THAN_EQUAL, 15, new String[] {"LOC_METHOD", "14"}, false),
-//            Arguments.of("LOC_METHOD", Condition.GREATER_THAN_EQUAL, 15, new String[] {"LOC_METHOD", "15"}, true),
-//            Arguments.of("LOC_METHOD", Condition.LESS_THAN, 15, new String[] {"LOC_METHOD", "15"}, false),
-//            Arguments.of("LOC_METHOD", Condition.LESS_THAN, 15, new String[] {"LOC_METHOD", "14"}, true),
-//            Arguments.of("LOC_METHOD", Condition.LESS_THAN_EQUAL, 15, new String[] {"LOC_METHOD", "15"}, true),
-//            Arguments.of("LOC_METHOD", Condition.LESS_THAN_EQUAL, 15, new String[] {"LOC_METHOD", "16"}, false)
-//        );
-//    }
-//    
-//    @ParameterizedTest
-//    @MethodSource("testInfoNoError")
 	
 	@Test
 	void toArrayTest() {
@@ -85,13 +67,11 @@ class LineTest {
 			
 			Row row = rowIterator.next();
 			Iterator<Cell> cellIterator = row.cellIterator();
-//			Line sLine1 = new Line(1, "GUI", "MainWindow", "MainWindow()", metrics);
 			Line line1 = new Line();
 			line1.setValues(columnIterator, cellIterator);
 			
 			Row row2 = rowIterator.next();
 			Iterator<Cell> cellIterator2 = row2.cellIterator();
-//			Line sLine2 = new Line(1, "", "MainWindow", "MainWindow()", metrics);
 			Line line2 = new Line();
 			System.out.println("bla");
 			Iterator<Cell> columnIterator2 = columns.cellIterator();

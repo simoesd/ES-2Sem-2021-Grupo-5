@@ -1,4 +1,4 @@
-package testes;
+package readerUnitTests;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,8 +25,6 @@ class ExcelReaderTest {
     	metrics.put("is_God_Class", "TRUE");
     	metrics.put("Random", "pois");
 		
-//    	list.add(new Line(1, "GUI", "MainWindow", "MainWindow()", metrics));
-//    	list.add(new Line(2, "GUI", "MainWindow", "MainWindow()", metrics));
     	
     	ArrayList<Line> list = ExcelReader.readExcelFile("testeLine.xlsx");
     	
