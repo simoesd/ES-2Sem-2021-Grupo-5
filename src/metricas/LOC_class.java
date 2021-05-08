@@ -11,7 +11,7 @@ public class LOC_class extends Metrica {
 		metricName = "LOC_CLASS";
 		isClassMetric = true;
 	}
-	
+
 	public LOC_class(Maestro maestro) {
 		super(maestro);
 		metricName = "LOC_CLASS";
@@ -28,28 +28,27 @@ public class LOC_class extends Metrica {
 			filterCode(file);
 		}
 	}
-	
+
 	@Override
-	protected void applyMetricFilter(String methodCode) { 
+	public void applyMetricFilter(String methodCode) {
 		methodCode = methodCode.replaceAll("\t", "");
-		if(methodCode != "" && !(methodCode.startsWith("package") || methodCode.startsWith("import")))
+		if (methodCode != "" && !(methodCode.startsWith("package") || methodCode.startsWith("import")))
 			counter.inc();
 	}
-	
+
 	@Override
-	protected void filterCode(File file) {
-        try {
-            Scanner sc = new Scanner(file);
-            while (sc.hasNextLine()) {
-                line = sc.nextLine();
+	public void filterCode(File file) {
+		try {
+			Scanner sc = new Scanner(file);
+			while (sc.hasNextLine()) {
+				line = sc.nextLine();
 				filterOutJunk();
-                if(!isMultiLineComment)
-                	applyMetricFilter(line);
-            }
-            sc.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-	
+				if (!isMultiLineComment)
+					applyMetricFilter(line);
+			}
+			sc.close();
+		} catch (FileNotFoundException e) {
+		}
+	}
+
 }

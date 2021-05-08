@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class LOC_method extends Metrica {
+	
+	public LOC_method() {
+		metricName = "LOC_METHOD";
+		isClassMetric = false;
+	}
 
 	public LOC_method() {
 		metricName = "LOC_METHOD";
@@ -28,7 +33,7 @@ public class LOC_method extends Metrica {
 	}	
 	
 	@Override
-	protected void applyMetricFilter(String methodCode) {
+	public void applyMetricFilter(String methodCode) {
 		Scanner scanner = new Scanner(methodCode);
 		while (scanner.hasNextLine()) {
 			scanner.nextLine();

@@ -20,16 +20,16 @@ public abstract class Metrica extends MetricRegistry {
 	public String metricName;
 	private Thread myThread;
 	public boolean isClassMetric;
-	protected Counter counter;
-	protected boolean addLine, isNonMethodBlock = false, isMultiLineComment= false;
+	public Counter counter;
+	protected boolean addLine, isNonMethodBlock = false, isMultiLineComment = false;
 	protected int incr;
 	protected String methodCode, line;
 	private Stack<String> betweenMethodsBuffer = new Stack<>();
 
 	public Metrica() {
-		super();
+
 	}
-	
+
 	public Metrica(Maestro maestro) {
 		super();
 		this.maestro = maestro;
@@ -58,27 +58,26 @@ public abstract class Metrica extends MetricRegistry {
 			methodCode = "";
 			while (sc.hasNextLine()) {
 				addLine = false;
-				line = sc.nextLine();				
-				filterOutJunk();	
-				
+				line = sc.nextLine();
+				filterOutJunk();
 
 				char[] charLine = line.toCharArray();
-				for(int i = 0; i != charLine.length; i++) {
-					if(!isMultiLineComment && charLine[i] == '{') {
+				for (int i = 0; i != charLine.length; i++) {
+					if (!isMultiLineComment && charLine[i] == '{') {
 						handleOpenBracket();
-					}else if(!isMultiLineComment && charLine[i] == '}') {
+					} else if (!isMultiLineComment && charLine[i] == '}') {
 						handleCloseBracket();
-					}else{
-						if(incr > 0 && !isNonMethodBlock) //Linha dentro de um método
+					} else {
+						if (incr > 0 && !isNonMethodBlock) // Linha dentro de um método
 							addLine = true;
-						if(incr == 0) { //Linha fora de método
+						if (incr == 0) { // Linha fora de método
 							betweenMethodsBuffer.push(line);
 						}
 					}
 				}
-				
-				if(!isMultiLineComment && addLine) {
-					if(methodCode.isEmpty())
+
+				if (!isMultiLineComment && addLine) {
+					if (methodCode.isEmpty())
 						methodCode = methodCode + line;
 					else
 						methodCode = methodCode + "\n" + line;
@@ -89,38 +88,39 @@ public abstract class Metrica extends MetricRegistry {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void filterOutJunk() {
-		Pattern[] patterns = {Pattern.compile("\'(.*?)\'"), //Pattern para reconhecer e retirar elementos entre ' '
-				  Pattern.compile("\"(.*?)\""), //Pattern para reconhecer e retirar elementos entre " "
-				  Pattern.compile("//.*|/\\*((.|\\n)(?!=*/))+\\*/") }; 	//Pattern para reconhecer e retirar elementos entre // \n || /* */
-		for(Pattern p: patterns) {
+		Pattern[] patterns = { Pattern.compile("\'(.*?)\'"), // Pattern para reconhecer e retirar elementos entre ' '
+				Pattern.compile("\"(.*?)\""), // Pattern para reconhecer e retirar elementos entre " "
+				Pattern.compile("//.*|/\\*((.|\\n)(?!=*/))+\\*/") }; // Pattern para reconhecer e retirar elementos
+																		// entre // \n || /* */
+		for (Pattern p : patterns) {
 			Matcher matcher = p.matcher(line);
 			while (matcher.find()) {
-			    line = line.replace(matcher.group(), "");
+				line = line.replace(matcher.group(), "");
 			}
 		}
-		if(line.contains("/*") ) { // É o ínicio de um MultiLineComment "/*"
-              line = line.split("/*")[0];
-              isMultiLineComment = true;
-		}else if(line.contains("*/") ) { // É o final de um MultiLineComment "*/"
-              if(line.length() < 2)
-            	  line = line.split("*/", 1)[1];
-              else 
-            	  line = "";
-              isMultiLineComment = false;
+		if (line.contains("/*")) { // É o ínicio de um MultiLineComment "/*"
+			line = line.split("/*")[0];
+			isMultiLineComment = true;
+		} else if (line.contains("*/")) { // É o final de um MultiLineComment "*/"
+			if (line.length() < 2)
+				line = line.split("*/", 1)[1];
+			else
+				line = "";
+			isMultiLineComment = false;
 		}
 	}
-	
+
 	public void handleOpenBracket() {
-		switch(incr) { 
+		switch (incr) {
 		case -1: // Começou a class
 			incr++;
 			break;
-		case 0: //Começou o método
+		case 0: // Começou o método
 			incr++;
 			String methodName;
-			if(!(methodName = getMethodName(betweenMethodsBuffer)).equals("")) {
+			if (!(methodName = getMethodName(betweenMethodsBuffer)).equals("")) {
 				isNonMethodBlock = false;
 				addLine = true;
 				counter = counter(getPackageClassName() + methodName);
@@ -129,38 +129,38 @@ public abstract class Metrica extends MetricRegistry {
 				isNonMethodBlock = true;
 			}
 			break;
-		default: //Adicionar linha ao methodCode
+		default: // Adicionar linha ao methodCode
 			incr++;
-			if(!isNonMethodBlock)
+			if (!isNonMethodBlock)
 				addLine = true;
 			break;
 		}
 	}
-	
+
 	public void handleCloseBracket() {
-		switch(incr) {
+		switch (incr) {
 		case 0: // Acabou a class
 			incr--;
 			break;
-		case 1: //Acabou o método
+		case 1: // Acabou o método
 			incr--;
-			if(isNonMethodBlock) {
+			if (isNonMethodBlock) {
 				isNonMethodBlock = false;
-			}else {
+			} else {
 				addLine = false;
 				methodCode = methodCode + "\n" + line;
 				applyMetricFilter(methodCode);
 				methodCode = new String("");
 			}
 			break;
-		default: //Adicionar linha ao methodCode
+		default: // Adicionar linha ao methodCode
 			incr--;
-			if(!isNonMethodBlock)
+			if (!isNonMethodBlock)
 				addLine = true;
-			break;					
+			break;
 		}
 	}
-	
+
 	public String getMethodName(Stack<String> stack) {
         String methodName = stack.pop();
         while(!methodName.contains("(")) {
@@ -214,15 +214,13 @@ public abstract class Metrica extends MetricRegistry {
 	protected void setPackageClassName(String packageClassName) {
 		this.packageClassName = packageClassName;
 	}
-	
-	public String getMetricName()
-	{
-	    return metricName;
+
+	public String getMetricName() {
+		return metricName;
 	}
-	
-	public boolean isClassMetric()
-	{
-	    return isClassMetric;
+
+	public boolean isClassMetric() {
+		return isClassMetric;
 	}
 
 	public Counter getCounter() {

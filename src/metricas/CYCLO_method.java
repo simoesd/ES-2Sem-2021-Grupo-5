@@ -8,6 +8,10 @@ import java.util.Scanner;
 public class CYCLO_method extends Metrica {
 
 	private final String filter = "for,if,while,case";
+	
+	public CYCLO_method() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public CYCLO_method() {
 		metricName = "CYCLO_METHOD";
@@ -32,7 +36,7 @@ public class CYCLO_method extends Metrica {
 	
 	
 	@Override
-	protected void applyMetricFilter(String methodCode) {  
+	public void applyMetricFilter(String methodCode) {  
 		Scanner scanner = new Scanner(methodCode);
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();
