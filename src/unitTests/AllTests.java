@@ -15,7 +15,9 @@ import org.junit.runner.RunWith;
     CYCLO_methodTest.class,
     LOC_classTest.class,
     LOC_methodTest.class,
-    MetricaTest.class})
+    MetricaTest.class,
+    WMC_classTest.class,
+    NOM_classTest.class})
 
 public class AllTests {
 

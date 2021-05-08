@@ -36,6 +36,12 @@ public abstract class Metrica extends MetricRegistry {
 		this.myThread = startExtracting();
 		myThread.start();
 	}
+	
+	public Metrica(Maestro maestro, String unitTest){ //Unit Tests
+		
+		this.maestro = maestro;
+		
+	}
 
 	protected abstract void extractMetrics();
 

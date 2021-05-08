@@ -13,7 +13,11 @@ public class CYCLO_method extends Metrica {
 		metricName = "CYCLO_METHOD";
 		isClassMetric = false;
 	}
-	
+	public CYCLO_method(Maestro maestro, String unitTest) { //Unit test
+		super(maestro, unitTest);
+		metricName = "CYCLO_METHOD";
+		isClassMetric = false;
+	}
 	public CYCLO_method(Maestro maestro) {
 		super(maestro);
 		metricName = "CYCLO_METHOD";
@@ -21,7 +25,7 @@ public class CYCLO_method extends Metrica {
 	}
 
 	@Override
-	protected void extractMetrics() {		
+	public void extractMetrics() {		
 		ArrayList<File> filesInDirectory = getMaestro().getFilesInDirectory();
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();

@@ -10,6 +10,12 @@ public class LOC_method extends Metrica {
 		metricName = "LOC_METHOD";
 		isClassMetric = false;
 	}
+	public LOC_method (Maestro maestro, String unitTest) {
+		super(maestro, unitTest);
+		metricName = "LOC_CLASS";
+		isClassMetric = true;
+		
+	}
 	
 	public LOC_method(Maestro maestro) {
 		super(maestro);
@@ -18,7 +24,7 @@ public class LOC_method extends Metrica {
 	}
 
 	@Override
-	protected void extractMetrics() {
+	public void extractMetrics() {
 		ArrayList<File> filesInDirectory = getMaestro().getFilesInDirectory();
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();

@@ -14,6 +14,12 @@ public class NOM_class extends Metrica {
 		metricName = "NOM_CLASS";
 		isClassMetric = true;
 	}
+	public NOM_class (Maestro maestro, String unitTest) {
+		super(maestro, unitTest);
+		metricName = "LOC_CLASS";
+		isClassMetric = true;
+		
+	}
 	
 	public NOM_class(Maestro maestro) {
 		super(maestro);
@@ -22,7 +28,7 @@ public class NOM_class extends Metrica {
 	}
 
 	@Override
-	protected void extractMetrics() {
+	public void extractMetrics() {
 		cycloSortedMap = getMaestro().getCYCLO_method().getCounters();
 		ArrayList<File> filesInDirectory = getMaestro().getFilesInDirectory();
 		for (File file : filesInDirectory) {		

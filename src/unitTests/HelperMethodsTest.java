@@ -8,9 +8,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.codahale.metrics.Counter;
+
 import helpers.HelperMethods;
+import metricas.CYCLO_method;
 
 class HelperMethodsTest {
 
@@ -60,5 +64,36 @@ class HelperMethodsTest {
                 () -> {assertFalse(HelperMethods.containsKeyCaseInsensitive(map, key3));}
         );
     }
+@Test
+	
+	void testCompareSortedMap(){
+		CYCLO_method cyclo_method_expected = new CYCLO_method();
+		Counter counter1 = cyclo_method_expected.counter("metricsUnitTests/LOC_class/LOC_class()");
+		counter1.inc(0);
+		Counter counter2 = cyclo_method_expected.counter("metricsUnitTests/LOC_class/LOC_class(Maestro)");
+		counter2.inc(0);
+		Counter counter3 = cyclo_method_expected.counter("metricsUnitTests/LOC_class/extractMetrics()");
+		counter3.inc(1);
+		Counter counter4 = cyclo_method_expected.counter("metricsUnitTests/LOC_class/applyMetricFilter(String)");
+		counter4.inc(1);
+		Counter counter5 = cyclo_method_expected.counter("metricsUnitTests/LOC_class/filterCode(File)");
+		counter5.inc(2);
+		
+		CYCLO_method cyclo_method = new CYCLO_method();
+		Counter counter6 = cyclo_method.counter("metricsUnitTests/LOC_class/LOC_class()");
+		counter6.inc(0);
+		Counter counter7 = cyclo_method.counter("metricsUnitTests/LOC_class/LOC_class(Maestro)");
+		counter7.inc(0);
+		Counter counter8 = cyclo_method.counter("metricsUnitTests/LOC_class/extractMetrics()");
+		counter8.inc(1);
+		Counter counter9 = cyclo_method.counter("metricsUnitTests/LOC_class/applyMetricFilter(String)");
+		counter9.inc(1);
+		Counter counter10 = cyclo_method.counter("metricsUnitTests/LOC_class/filterCode(File)");
+		counter10.inc(2);
+		
+		Assertions.assertTrue(helpers.HelperMethods.compareSortedMapCounters(cyclo_method_expected.getCounters(), cyclo_method.getCounters()));
+		counter10.inc(90);
+		Assertions.assertFalse(helpers.HelperMethods.compareSortedMapCounters(cyclo_method_expected.getCounters(), cyclo_method.getCounters()));
+	}
 
 }

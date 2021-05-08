@@ -14,6 +14,12 @@ public class WMC_class extends Metrica {
 		metricName = "WMC_CLASS";
 		isClassMetric = true;
 	}
+	public WMC_class (Maestro maestro, String unitTest) {
+		super(maestro, unitTest);
+		metricName = "LOC_CLASS";
+		isClassMetric = true;
+		
+	}
 	
 	public WMC_class(Maestro maestro) {
 		super(maestro);	
@@ -22,7 +28,7 @@ public class WMC_class extends Metrica {
 	}
 
 	@Override
-	protected void extractMetrics() {
+	public void extractMetrics() {
 		
 		cycloSortedMap = getMaestro().getCYCLO_method().getCounters();
 		ArrayList<File> filesInDirectory = getMaestro().getFilesInDirectory();
