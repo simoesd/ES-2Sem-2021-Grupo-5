@@ -25,7 +25,7 @@ public class Maestro {
 	private ArrayList<Rule> rules = new ArrayList<Rule>();
 
 	private String projectDirectory;
-	private static String SOURCE_CODE_LOCATION = "\\src";
+	private static String SOURCE_CODE_LOCATION = File.separator + "src";
 
 	private ArrayList<File> filesInDirectory = new ArrayList<File>();
 
@@ -75,18 +75,18 @@ public class Maestro {
 	public String createExcelFile() {
 		try {
 			String projectDirectory = getProjectDirectory();
-			projectDirectory=projectDirectory.replace("\\", "/");
+			projectDirectory=projectDirectory.replace(File.separator, "/");
 			String splitProjectPath[] =projectDirectory.split("/");					
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet();
 			createHeaderExcel(sheet);
 			exportResults(sheet);	
-			FileOutputStream fos = new FileOutputStream(getProjectDirectory() + "\\" + splitProjectPath[splitProjectPath.length -1] + "_metricas" + ".xlsx");
+			FileOutputStream fos = new FileOutputStream(getProjectDirectory() + File.separator + splitProjectPath[splitProjectPath.length -1] + "_metricas" + ".xlsx");
 			workbook.write(fos);		
 			fos.close();
 			workbook.close();			
 			incrementer = 1;
-			return getProjectDirectory() + "\\" + splitProjectPath[splitProjectPath.length -1] + "_metricas" + ".xlsx";
+			return getProjectDirectory() + File.separator + splitProjectPath[splitProjectPath.length -1] + "_metricas" + ".xlsx";
 		} catch (IOException e) {
 		}
 		return "";
@@ -191,7 +191,7 @@ public class Maestro {
         String shortPath = getProjectDirectory() + getSourceCodeLocation();
         int stringLength = shortPath.length() + 1;
         shortPath = absolutePath.substring(stringLength);
-        shortPath = shortPath.replace("\\", ".");
+        shortPath = shortPath.replace(File.separator, ".");
         shortPath = shortPath.replace(".java", "");
         if(shortPath.split("\\.").length < 2)
             shortPath = "defaultPackage." +  shortPath;

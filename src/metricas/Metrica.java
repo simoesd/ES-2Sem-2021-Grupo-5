@@ -60,7 +60,9 @@ public abstract class Metrica extends MetricRegistry {
 				addLine = false;
 				line = sc.nextLine();
 				filterOutJunk();
-
+				if (incr == 0) { // Linha fora de método
+					betweenMethodsBuffer.push(line);
+				}
 				char[] charLine = line.toCharArray();
 				for (int i = 0; i != charLine.length; i++) {
 					if (!isMultiLineComment && charLine[i] == '{') {
@@ -70,9 +72,6 @@ public abstract class Metrica extends MetricRegistry {
 					} else {
 						if (incr > 0 && !isNonMethodBlock) // Linha dentro de um método
 							addLine = true;
-						if (incr == 0) { // Linha fora de método
-							betweenMethodsBuffer.push(line);
-						}
 					}
 				}
 
