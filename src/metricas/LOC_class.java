@@ -7,9 +7,13 @@ import java.util.Scanner;
 
 public class LOC_class extends Metrica {
 
+	public LOC_class() {
+		metricName = "LOC_CLASS";
+		isClassMetric = true;
+	}
 	
-	public LOC_class(Maestro metricas) {
-		super(metricas);
+	public LOC_class(Maestro maestro) {
+		super(maestro);
 		metricName = "LOC_CLASS";
 		isClassMetric = true;
 	}

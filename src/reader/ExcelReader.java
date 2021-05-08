@@ -34,16 +34,15 @@ public class ExcelReader {
 	    		Row row = rowIterator.next();
 	    		Iterator<Cell> cellIterator = row.cellIterator();
 	    		Line line = new Line();
-	    		if (cellIterator.hasNext())line.setValues(columnNames.listIterator(), cellIterator);   	
-	    		else break;
+	    		if (cellIterator.hasNext())
+	    			line.setValues(columnNames.listIterator(), cellIterator);   	
+	    		else
+	    			break;
 	    		lineList.add(line);
 	    	}
 	    	
 	    	excelWorkbook.close();
 	    	return lineList;
-    	} catch (FileNotFoundException fe) { 
-    		fe.printStackTrace(); 
-    		return null;
     	} catch (IOException ie) { 
     		ie.printStackTrace(); 
     		return null;

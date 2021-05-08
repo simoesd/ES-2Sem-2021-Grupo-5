@@ -10,8 +10,13 @@ public class WMC_class extends Metrica {
 	
 	private SortedMap<String, Counter> cycloSortedMap;
 
-	public WMC_class(Maestro metricas) {
-		super(metricas);	
+	public WMC_class() {
+		metricName = "WMC_CLASS";
+		isClassMetric = true;
+	}
+	
+	public WMC_class(Maestro maestro) {
+		super(maestro);	
 		metricName = "WMC_CLASS";
 		isClassMetric = true;
 	}
