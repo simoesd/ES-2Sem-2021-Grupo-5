@@ -1,4 +1,4 @@
-package metricasUnitTests;
+package unitTests;
 
 import java.io.File;
 
@@ -34,7 +34,7 @@ class LOC_classTest {
 	void testFilterCode() {
 		loc_class.filterCode(new File(System.getProperty("user.dir") + "//src//metricas//LOC_class.java"));
 
-		Assertions.assertEquals((long) 42, loc_class.counter.getCount());
+		Assertions.assertEquals((long) 41, loc_class.counter.getCount());
 	}
 	
 }

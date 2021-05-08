@@ -5,11 +5,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class LOC_method extends Metrica {
-	
-	public LOC_method() {
-		metricName = "LOC_METHOD";
-		isClassMetric = false;
-	}
 
 	public LOC_method() {
 		metricName = "LOC_METHOD";

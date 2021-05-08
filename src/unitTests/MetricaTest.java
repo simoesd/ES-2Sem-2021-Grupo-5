@@ -1,4 +1,4 @@
-package metricasUnitTests;
+package unitTests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
