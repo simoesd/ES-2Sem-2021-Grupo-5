@@ -75,4 +75,14 @@ public class Rule implements Serializable{
     {
         return isClassRule;
     }
+    
+    @Override
+    public boolean equals(Object obj) { //implemented for unit tests
+        boolean equals = false;
+        if (obj instanceof Rule) {
+            Rule rule = (Rule) obj;
+            equals = (ruleName.equals(rule.ruleName)) && (isClassRule == rule.isClassRule) && (conditions.equals(rule.conditions) && (logicOperators.equals(rule.logicOperators)));
+        }
+        return equals;
+    }
 }

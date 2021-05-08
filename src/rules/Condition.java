@@ -7,8 +7,8 @@ import reader.Line;
 
 public class Condition implements Serializable {
     
-   
-	private static final long serialVersionUID = 7122426817088652910L;
+
+    private static final long serialVersionUID = 7122426817088652910L;
 	public String metricToEvaluate;
     public int thresholdOperator;
     public int thresholdValue; 
@@ -47,4 +47,14 @@ public class Condition implements Serializable {
         return conditionValue;
     }
     
+    
+    @Override
+    public boolean equals(Object obj) { //implemented for unit tests
+        boolean equals = false;
+        if (obj instanceof Condition) {
+            Condition condition = (Condition) obj;
+            equals = (metricToEvaluate.equals(condition.metricToEvaluate)) && (thresholdOperator == condition.thresholdOperator) && (thresholdValue == condition.thresholdValue);
+        }
+        return equals;
+    }
 }

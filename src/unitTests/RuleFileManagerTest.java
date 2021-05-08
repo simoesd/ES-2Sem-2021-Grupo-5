@@ -2,15 +2,15 @@ package unitTests;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -63,12 +63,13 @@ class RuleFileManagerTest {
     @MethodSource("testReadRulesInfo")
     void testReadRulesNoException(String filePath, HashMap<String, List<Rule>> expectedResult) {
         HashMap<String, List<Rule>> receivedResult = RuleFileManager.readRules(filePath);
+        
         assertAll("Read Rules Result:",
                 //checks if expected and received maps have the same size
                 () -> {assertEquals(expectedResult.size(), receivedResult.size());},
                 //checks if each key in the expected map exists in the received map, and the value it corresponds to is the same
-                () -> {expectedResult.forEach((x,y) -> receivedResult.get(x).equals(y));}
-                );
+                () -> {assertTrue(expectedResult.entrySet().stream().allMatch(e -> e.getValue().equals(receivedResult.get(e.getKey()))));}
+        );
     }
     
 
@@ -102,12 +103,12 @@ class RuleFileManagerTest {
         
         RuleFileManager.clearHistory(testFilePath);
         RuleFileManager.writeEntry(rules, testFilePath);
-        HashMap<String, List<Rule>> receivedResults = RuleFileManager.readRules(testFilePath);
+        HashMap<String, List<Rule>> receivedResult = RuleFileManager.readRules(testFilePath);
         
         assertAll(
-                () -> {assertEquals(rules.size(), receivedResults.size());},
+                () -> {assertEquals(rules.size(), receivedResult.size());},
                 //checks if each key in the expected map exists in the received map, and the value it corresponds to is the same
-                () -> {rules.forEach(x -> receivedResults.containsValue(x));}
+                () -> {assertTrue(receivedResult.entrySet().stream().allMatch(e -> e.getValue().equals(rules)));}//TODO not working with assert
         );
     }
 
