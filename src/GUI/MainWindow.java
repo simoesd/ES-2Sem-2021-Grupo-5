@@ -3,6 +3,8 @@ package GUI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dialog;
+import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -134,8 +136,6 @@ public class MainWindow {
 		GridLayout gridLayout = new GridLayout(6, 1, 0, 10);
 
 		panel.setLayout(gridLayout);
-
-		// panel.setBorder(new EmptyBorder(10,10,10,10));
 
 		panel_2 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_2.getLayout();
@@ -574,22 +574,83 @@ public class MainWindow {
 		JScrollPane tableScrollPane = new JScrollPane(lineTable);
 		tableScrollPane.setBorder(new EmptyBorder(0, 20, 20, 0));
 		try {
-			if (tabbedPane.getSelectedIndex() == 0 && analysisPathTextField.getText().contains("jasml_0.10") && rulesGUI.size() > 0) {
-			    
-			    JTable codeSmellEvaluationTable = new JTable();
-		        DefaultTableModel codeSmellEvaluationModel = (DefaultTableModel) codeSmellEvaluationTable.getModel();
-		        
-		        String[] ruleNames = lines.get(0).getRuleNames();
-		        codeSmellEvaluationModel.addColumn(lines.get(0).getColumnNames()[0]); //create first column, for MethodID
-		        Arrays.asList(ruleNames).forEach(codeSmellEvaluationModel::addColumn);
-		        
-			    String[][] codeSmellEvaluationContent = ExcelReader.compareCodeSmells(lines, "Code_Smells.xlsx");
-			    Arrays.asList(codeSmellEvaluationContent).forEach(codeSmellEvaluationModel::addRow);
-
-		        JScrollPane tableScrollPane2 = new JScrollPane(codeSmellEvaluationTable);
-		        tableScrollPane2.setBorder(new EmptyBorder(0, 10, 20, 20));
-		        mainPanel.add(tableScrollPane2, BorderLayout.EAST);
-			}
+		    if (rulesGUI.size() > 0)
+		    {
+    		    JDialog codeSmellDialog = new JDialog(frame, "Code Smell Comparison", Dialog.ModalityType.DOCUMENT_MODAL);
+                codeSmellDialog.setLayout(new BorderLayout());
+                codeSmellDialog.setResizable(false);
+                
+                JPanel dialogTitlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                
+                JLabel ruleHistoryTitle = new JLabel("Do you want to compare the extracted code smells with another file?", SwingConstants.CENTER);
+                dialogTitlePanel.add(ruleHistoryTitle);
+                codeSmellDialog.add(dialogTitlePanel, BorderLayout.NORTH);
+                
+                JPanel codeSmellFileBrowserPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                JTextField codeSmellFileTextField = new JTextField();
+                codeSmellFileTextField.setToolTipText("Browse...");
+                codeSmellFileTextField.setPreferredSize(new Dimension(200, 26));
+                JButton codeSmellFileBrowserButton = new JButton("Browse...");
+                
+                codeSmellFileBrowserButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        JFileChooser codeSmellFileChooser = new JFileChooser();
+                        FileNameExtensionFilter xlsxFilter = new FileNameExtensionFilter(".xlsx", "xlsx");
+                        codeSmellFileChooser.setFileFilter(xlsxFilter);
+                        int codeSmellBrowserOutput = codeSmellFileChooser.showOpenDialog(null);
+                        if (codeSmellBrowserOutput == JFileChooser.APPROVE_OPTION) {
+                            codeSmellFileTextField.setText(codeSmellFileChooser.getSelectedFile().getAbsolutePath());
+                        }
+                    }
+                });
+                
+                codeSmellFileBrowserPanel.add(codeSmellFileTextField);
+                codeSmellFileBrowserPanel.add(codeSmellFileBrowserButton);
+                codeSmellDialog.add(codeSmellFileBrowserPanel, BorderLayout.CENTER);
+                
+                
+                JPanel codeSmellComparisonButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                JButton noComparisonButton = new JButton("No");
+                JButton compareButton = new JButton("Yes");
+                
+                noComparisonButton.addActionListener(new ActionListener() {
+                    
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        codeSmellDialog.setVisible(false);
+                    }
+                });
+                
+                compareButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        JTable codeSmellEvaluationTable = new JTable();
+                        DefaultTableModel codeSmellEvaluationModel = (DefaultTableModel) codeSmellEvaluationTable.getModel();
+                        
+                        String[] ruleNames = lines.get(0).getRuleNames();
+                        codeSmellEvaluationModel.addColumn(lines.get(0).getColumnNames()[0]); //create first column, for MethodID
+                        Arrays.asList(ruleNames).forEach(codeSmellEvaluationModel::addColumn);
+                        
+                        String[][] codeSmellEvaluationContent = ExcelReader.compareCodeSmells(lines, codeSmellFileTextField.getText());
+                        Arrays.asList(codeSmellEvaluationContent).forEach(codeSmellEvaluationModel::addRow);
+    
+                        JScrollPane tableScrollPane2 = new JScrollPane(codeSmellEvaluationTable);
+                        tableScrollPane2.setBorder(new EmptyBorder(0, 10, 20, 20));
+                        mainPanel.add(tableScrollPane2, BorderLayout.EAST);
+                        mainPanel.updateUI();
+                        codeSmellDialog.setVisible(false);
+                    }
+                });
+                
+                codeSmellComparisonButtonPanel.add(noComparisonButton);
+                codeSmellComparisonButtonPanel.add(Box.createRigidArea(new Dimension(30, 15)));
+                codeSmellComparisonButtonPanel.add(compareButton);
+                codeSmellDialog.add(codeSmellComparisonButtonPanel, BorderLayout.SOUTH);
+                
+                codeSmellDialog.pack();
+                codeSmellDialog.setLocationRelativeTo(frame);
+                codeSmellDialog.setVisible(true);
+		    }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
