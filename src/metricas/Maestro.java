@@ -88,7 +88,6 @@ public class Maestro {
 			incrementer = 1;
 			return getProjectDirectory() + "\\" + splitProjectPath[splitProjectPath.length -1] + "_metricas" + ".xlsx";
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		return "";
 	}

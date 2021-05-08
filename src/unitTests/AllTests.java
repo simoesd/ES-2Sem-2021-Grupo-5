@@ -9,7 +9,9 @@ import org.junit.runner.RunWith;
     RuleTest.class,
     RuleFileManagerTest.class,
     HelperMethodsTest.class,
-    ExcelReaderTest.class})
+    ExcelReaderTest.class,
+    LineTest.class,
+    MaestroTest.class})
 
 public class AllTests {
 

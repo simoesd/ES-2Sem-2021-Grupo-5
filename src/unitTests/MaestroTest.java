@@ -1,4 +1,4 @@
-package metricasUnitTests;
+package unitTests;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -95,7 +95,7 @@ class MaestroTest {
 	void createExcelFileTest() {
 		assertAll("createExcelFileTest",
 				() -> {assertEquals(projectDir + "\\ES-2Sem-2021-Grupo-5_metricas.xlsx", maestro.createExcelFile());},
-				() -> {maestro.setProjectDirectory("haha"); assertEquals("", maestro.createExcelFile());});
+				() -> {maestro.setProjectDirectory("non-existent-directory"); assertEquals("", maestro.createExcelFile());});
 	}
 	
 	@Test
