@@ -91,7 +91,7 @@ public class ExcelReader {
 			for (Line line: dataToEvaluateCodeSmells)
 			{
 				
-				if (line.getPkg().toLowerCase().equals(lines.get(i).getPkg().toLowerCase()) && line.getCls().toLowerCase().equals(lines.get(i).getCls().toLowerCase()) &&  line.getMethé().toLowerCase().equals(lines.get(i).getMethé().toLowerCase()))
+				if (line.getPkg().toLowerCase().equals(lines.get(i).getPkg().toLowerCase()) && line.getCls().toLowerCase().equals(lines.get(i).getCls().toLowerCase()) &&  line.getMethod().toLowerCase().equals(lines.get(i).getMethod().toLowerCase()))
 				{
 					correspondingLine = line;
 					break;

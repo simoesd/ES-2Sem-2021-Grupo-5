@@ -2,6 +2,7 @@ package GUI;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -44,7 +45,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
-import helpers.HelperMethods;
 import metricas.Maestro;
 import reader.ExcelReader;
 import reader.Line;
@@ -421,9 +421,9 @@ public class MainWindow {
 
 						rulesGUI.forEach(x -> rules.add(x.generateRule()));
 						maestro.addRules(rules);
-
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 						String resultsFilePath = maestro.startMetricCounters();
-
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 						ImageIcon popupIcon = getPopupImageIcon("src/icons/excel.png");
 
 						Object[] popupOptions = { "Sim", "Não" };
@@ -493,7 +493,9 @@ public class MainWindow {
 		importProjectButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!importPathTextField.getText().isEmpty()) {
+				    frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					showImportedData(importPathTextField.getText());
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				} else {
 					JOptionPane.showMessageDialog(importProjectButton, "Preencha o path do ficheiro");
 				}

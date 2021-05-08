@@ -143,7 +143,7 @@ public class Line {
 	    addMetric(rule.getRuleName(), Boolean.toString(rule.evaluateRule(this)));
 	}
 	
-	public String getMethé()
+	public String getMethod()
 	{
 	    return method;
 	}

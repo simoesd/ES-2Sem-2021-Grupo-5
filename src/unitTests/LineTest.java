@@ -86,7 +86,7 @@ class LineTest {
 	                    () -> {assertEquals(1, line1.getMethodID());},
 	                    () -> {assertEquals("GUI", line1.getPkg());},
 	                    () -> {assertEquals("MainWindow", line1.getCls());},
-	                    () -> {assertEquals("MainWindow()", line1.getMethé());},
+	                    () -> {assertEquals("MainWindow()", line1.getMethod());},
 	                    () -> {assertEquals("583", line1.getMetrics().get("LOC_CLASS"));},
 	                    () -> {assertEquals("3", line1.getMetrics().get("LOC_METHOD"));},
 	                    () -> {assertEquals("0", line1.getMetrics().get("CYCLO_METHOD"));},
