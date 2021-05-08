@@ -7,7 +7,8 @@ import org.junit.runner.RunWith;
 @RunWith(JUnitPlatform.class)
 @SelectClasses({ConditionTest.class,
     RuleTest.class,
-    RuleFileManagerTest.class})
+    RuleFileManagerTest.class,
+    HelperMethodsTest.class})
 
 public class AllTests {
 

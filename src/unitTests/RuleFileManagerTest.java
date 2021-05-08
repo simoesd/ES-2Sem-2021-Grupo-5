@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,6 @@ import rules.RuleFileManager;
 
 class RuleFileManagerTest {
    
-    
     @Parameters
     public static Stream<Arguments> testReadRulesInfo() {
         HashMap<String, List<Rule>> readTestNoError = new HashMap<>();
