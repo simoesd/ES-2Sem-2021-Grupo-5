@@ -8,7 +8,8 @@ import org.junit.runner.RunWith;
 @SelectClasses({ConditionTest.class,
     RuleTest.class,
     RuleFileManagerTest.class,
-    HelperMethodsTest.class})
+    HelperMethodsTest.class,
+    ExcelReaderTest.class})
 
 public class AllTests {
 

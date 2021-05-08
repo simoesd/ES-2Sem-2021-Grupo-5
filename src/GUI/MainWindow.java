@@ -581,7 +581,7 @@ public class MainWindow {
 		        codeSmellEvaluationModel.addColumn(lines.get(0).getColumnNames()[0]); //create first column, for MethodID
 		        Arrays.asList(ruleNames).forEach(codeSmellEvaluationModel::addColumn);
 		        
-			    String[][] codeSmellEvaluationContent = ExcelReader.compareCodeSmells(lines);
+			    String[][] codeSmellEvaluationContent = ExcelReader.compareCodeSmells(lines, "Code_Smells.xlsx");
 			    Arrays.asList(codeSmellEvaluationContent).forEach(codeSmellEvaluationModel::addRow);
 
 		        JScrollPane tableScrollPane2 = new JScrollPane(codeSmellEvaluationTable);
@@ -593,7 +593,7 @@ public class MainWindow {
 		}
 		JLabel fileTitle = new JLabel(fileToImport, SwingConstants.CENTER);
 
-		int[] projectData = ExcelReader.getProjectData(lines);
+		int[] projectData = ExcelReader.getProjectStats(lines);
 		JLabel numPackagesLabel = new JLabel("Number of packages: " + projectData[0], SwingConstants.CENTER);
 		JLabel numClassesLabel = new JLabel("Number of classes: " + projectData[1], SwingConstants.CENTER);
 		JLabel numMethodsLabel = new JLabel("Number of methods: " + projectData[2], SwingConstants.CENTER);
