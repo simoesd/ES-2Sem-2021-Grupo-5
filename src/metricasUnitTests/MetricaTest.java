@@ -1,4 +1,4 @@
-package metricas;
+package metricasUnitTests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,6 +8,8 @@ import java.util.Stack;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import metricas.LOC_class;
 
 class MetricaTest {
 	

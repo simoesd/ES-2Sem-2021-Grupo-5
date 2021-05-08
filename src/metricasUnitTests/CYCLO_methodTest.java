@@ -1,10 +1,12 @@
-package metricas;
+package metricasUnitTests;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.codahale.metrics.Counter;
+
+import metricas.CYCLO_method;
 
 class CYCLO_methodTest {
 	
