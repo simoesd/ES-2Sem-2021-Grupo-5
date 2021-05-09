@@ -37,6 +37,10 @@ public class Maestro {
 	private ArrayList<Rule> rules = new ArrayList<Rule>();
 
 	private String projectDirectory;
+	
+	/**
+	 * Constant correspondent to: File.seperator + "src"
+	 */
 	private static String SOURCE_CODE_LOCATION = File.separator + "src";
 
 	private ArrayList<File> filesInDirectory = new ArrayList<File>();
