@@ -72,6 +72,7 @@ public class Condition implements Serializable {
      * Compares the specified object with this condition. Returns {@code true} if the specified object is a condition with the same attributes as this condition.
      * Compares {@code metricToEvaluate}, {@code thresholdOperator} and {@code thresholdValue}
      * 
+     * @param obj object to be compared for equality with this condition
      * @return {@code true} if the specified object is a condition with the same attributes as this condition.
      * @see Object#equals(Object)
      */

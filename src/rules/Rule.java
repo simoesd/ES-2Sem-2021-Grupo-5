@@ -24,6 +24,10 @@ public class Rule implements Serializable{
     /**
      * Creates rule with the specified {@code ruleName}, {@code conditions}, {@code logicOperators} and {@code isClassRule}.
      * 
+     * @param ruleName String name of the rule to be created
+     * @param conditions list of conditions that will make up the rule
+     * @param logicOperators list of logicOperators that will be used to compare the specified conditions
+     * @param isClassRule boolean with whether or not the rule to be created evaluates class metrics or not.
      * @throws IllegalArgumentException if the conditions and logic operators provided make up an invalid Rule. A valid rule with
      * n conditions must have n-1 logic operators.
      */
@@ -42,6 +46,7 @@ public class Rule implements Serializable{
      * Evaluates the whole logic value of this rule, based on the values of the specified line. 
      * This value is obtained by alternating conditions and logic operators in {@code conditions} and {@code logicOperators}
      * 
+     * @param lineToEvaluate the line that will be used to evaluate the value of each condition
      * @return {@code true} if the logic value of the rule is true.
      * 
      * @see Condition#evaluateCondition(Line)
@@ -59,6 +64,10 @@ public class Rule implements Serializable{
     
     /**
      * Compares the logic value of the specified condition values using the specified {@code logicOperator}
+     * 
+     * @param firstConditionValue first value to be used in the comparison. Will stand to the left of the specified operator
+     * @param logicOperator integer that will be associated to a logic operator, which will be used to compare the two specified booleans
+     * @param secondConditionValue second value to be used in the comparison. Will stand to the right of the specified operator
      * 
      * @throws IllegalArgumentException if the specified logic operator isn't valid i.e. not part of the accepted operators
      * @return {@code true} if the provided expression evaluates to true
@@ -123,6 +132,7 @@ public class Rule implements Serializable{
      * Compares the specified object with this rule. Returns {@code true} if the specified object is a rule with the same attributes as this rule.
      * Compares {@code ruleName}, {@code isClassRule}, {@code conditions} and {@code logicOperators}
      * 
+     * @param obj object to be compared for equality with this rule
      * @return {@code true} if the specified object is a rule with the same attributes as this rule.
      * @see Object#equals(Object)
      * @see Condition#equals(Object)
