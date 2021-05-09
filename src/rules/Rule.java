@@ -5,12 +5,12 @@ import java.util.LinkedList;
 
 import reader.Line;
 
+/**
+ * Represents a compound logic expression, composed of conditions and logic operators.
+ * 
+ * @see Condition
+ */
 public class Rule implements Serializable{
-    /**
-	 * Represents a compound logic expression, composed of conditions and logic operators.
-	 * 
-	 * @see Condition
-	 */
 	private static final long serialVersionUID = -76936614853441537L;
 	private String ruleName;
     private boolean isClassRule;
