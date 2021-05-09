@@ -17,8 +17,8 @@ class NOM_classTest {
 
 	@Test
 	void testExtractMetrics() {
-		Maestro maestro = new Maestro(System.getProperty("user.dir") + "/metricsUnitTestsUtilityFolder");
-		maestro.openFolder(System.getProperty("user.dir") + "/metricsUnitTestsUtilityFolder");
+		Maestro maestro = new Maestro(System.getProperty("user.dir") + "/unitTestFiles/metrics");
+		maestro.openFolder(System.getProperty("user.dir") + "/unitTestFiles/metrics");
 		nom_class = new NOM_class(maestro, "unitTest");
 		maestro.addMetric(new LOC_class());
 		maestro.addMetric(new LOC_method());
@@ -33,7 +33,7 @@ class NOM_classTest {
 		counter1.inc(5);
 		
 		Assertions.assertArrayEquals(nom_class_expected.getCounters().keySet().toArray(), nom_class.getCounters().keySet().toArray());
-		Assertions.assertTrue(helpers.HelperMethods.compareSortedMapCounters(nom_class_expected.getCounters(), nom_class.getCounters()));
+		Assertions.assertTrue(helpers.HelperMethods.compareMapCounters(nom_class_expected.getCounters(), nom_class.getCounters()));
 		
 		
 	}

@@ -37,8 +37,8 @@ class LOC_methodTest {
 	
 	@Test
 	void testExtractMetrics() {
-		Maestro maestro = new Maestro(System.getProperty("user.dir") + "/metricsUnitTestsUtilityFolder");
-		maestro.openFolder(System.getProperty("user.dir") + "/metricsUnitTestsUtilityFolder");
+		Maestro maestro = new Maestro(System.getProperty("user.dir") + "/unitTestFiles/metrics");
+		maestro.openFolder(System.getProperty("user.dir") + "/unitTestFiles/metrics");
 		maestro.addMetric(new LOC_class());
 		loc_method = new LOC_method(maestro, "unitTest");
 		maestro.addMetric(loc_method);
@@ -56,7 +56,7 @@ class LOC_methodTest {
 		counter5.inc(13);
 		
 		Assertions.assertArrayEquals(loc_method_expected.getCounters().keySet().toArray(), loc_method.getCounters().keySet().toArray());
-		Assertions.assertTrue(helpers.HelperMethods.compareSortedMapCounters(loc_method_expected.getCounters(), loc_method.getCounters()));
+		Assertions.assertTrue(helpers.HelperMethods.compareMapCounters(loc_method_expected.getCounters(), loc_method.getCounters()));
 	
 		
 	}

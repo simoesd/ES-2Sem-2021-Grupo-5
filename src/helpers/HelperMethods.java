@@ -70,10 +70,25 @@ public class HelperMethods {
         }
         return false;
     }
-	
-	public static boolean compareSortedMapCounters(SortedMap<String, Counter> objects,SortedMap<String, Counter> objects2){
-		for(String s: objects.keySet()){
-			if (objects.get(s).getCount()!=objects2.get(s).getCount()) {
+    
+    
+	/**
+	 * Compares the count for each entry in two specified maps, with {@code #Counter} as values.
+	 * 
+	 * @param map1 first map to be used in the comparison
+	 * @param map2 second map to be used in the comparison
+	 * @return {@code true} if both maps have the same size and each key corresponds to
+	 * the same count in both maps.
+	 * 
+	 * @see #Counter
+	 * @see Map#equals(Object)
+	 */
+    
+	public static <K> boolean compareMapCounters(Map<K, Counter> map1, Map<K, Counter> map2){
+	    if (map1.size() != map2.size())
+	        return false;
+		for(K s: map1.keySet()){
+			if (map1.get(s).getCount() != map2.get(s).getCount()) {
 				return false;
 			}
 		}

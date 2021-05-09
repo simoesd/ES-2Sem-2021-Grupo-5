@@ -91,9 +91,9 @@ class HelperMethodsTest {
 		Counter counter10 = cyclo_method.counter("metricsUnitTests/LOC_class/filterCode(File)");
 		counter10.inc(2);
 		
-		Assertions.assertTrue(helpers.HelperMethods.compareSortedMapCounters(cyclo_method_expected.getCounters(), cyclo_method.getCounters()));
+		Assertions.assertTrue(helpers.HelperMethods.compareMapCounters(cyclo_method_expected.getCounters(), cyclo_method.getCounters()));
 		counter10.inc(90);
-		Assertions.assertFalse(helpers.HelperMethods.compareSortedMapCounters(cyclo_method_expected.getCounters(), cyclo_method.getCounters()));
+		Assertions.assertFalse(helpers.HelperMethods.compareMapCounters(cyclo_method_expected.getCounters(), cyclo_method.getCounters()));
 	}
 
 }

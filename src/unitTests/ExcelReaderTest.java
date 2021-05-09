@@ -35,7 +35,7 @@ class ExcelReaderTest {
     @Test
     void readExcelFileTest() {
         
-        ArrayList<Line> lines = ExcelReader.readExcelFile("unitTestsUtilityFolder\\testeLine.xlsx");
+        ArrayList<Line> lines = ExcelReader.readExcelFile("unitTestFiles\\testeLine.xlsx");
         
         Assertions.assertAll("Line1 atributes",
             () -> {assertEquals(1, lines.get(0).getMethodID());},

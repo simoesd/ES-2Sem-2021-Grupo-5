@@ -38,7 +38,7 @@ class MaestroTest {
 	void setup() {
 		projectDir = System.getProperty("user.dir");
 		maestro = new Maestro(projectDir);
-		dir = projectDir + "\\unitTestsUtilityFolder";
+		dir = projectDir + "\\unitTestFiles";
 		ArrayList<Metrica> metrics = new ArrayList<>();
 		metrics.add(new LOC_class());
 		metrics.add(new LOC_method());

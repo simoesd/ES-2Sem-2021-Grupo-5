@@ -50,9 +50,9 @@ class RuleFileManagerTest {
         
         return Stream.of(
             //file with no errors
-            Arguments.of("readTestNoError.rul", readTestNoError),
+            Arguments.of("unitTestFiles/readTestNoError.rul", readTestNoError),
             //empty file
-            Arguments.of("readTestEmpty.rul", new HashMap<String, List<Rule>>())
+            Arguments.of("unitTestFiles/readTestEmpty.rul", new HashMap<String, List<Rule>>())
         );
     }
     
@@ -73,7 +73,7 @@ class RuleFileManagerTest {
 
     @Test
     void testClearHistory() {
-        String filePath = "deleteTest.rul";
+        String filePath = "unitTestFiles/deleteTest.rul";
         File file = new File(filePath);
         RuleFileManager.clearHistory(filePath);
         assertEquals(false, file.exists());
@@ -97,7 +97,7 @@ class RuleFileManagerTest {
         List<Rule> rules = new LinkedList<>();
         rules.add(rule);
         
-        String testFilePath = "testWriteEntry.rul";
+        String testFilePath = "unitTestFiles/testWriteEntry.rul";
         
         RuleFileManager.clearHistory(testFilePath);
         RuleFileManager.writeEntry(rules, testFilePath);

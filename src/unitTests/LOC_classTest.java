@@ -35,15 +35,15 @@ class LOC_classTest {
 
 	@Test
 	void testFilterCode() {
-		loc_class.filterCode(new File(System.getProperty("user.dir") + "//metricsUnitTestsUtilityFolder//src//metricsUnitTests//LOC_class.java"));
+		loc_class.filterCode(new File(System.getProperty("user.dir") + "//unitTestFiles//metrics//src//metricsUnitTests//LOC_class.java"));
 
 		Assertions.assertEquals((long) 41, loc_class.counter.getCount());
 	}
 	
 	@Test
 	void testExtractMetrics() {
-		Maestro maestro = new Maestro(System.getProperty("user.dir") + "/metricsUnitTestsUtilityFolder");
-		maestro.openFolder(System.getProperty("user.dir") + "/metricsUnitTestsUtilityFolder");
+		Maestro maestro = new Maestro(System.getProperty("user.dir") + "/unitTestFiles/metrics");
+		maestro.openFolder(System.getProperty("user.dir") + "/unitTestFiles/metrics");
 		loc_class = new LOC_class(maestro, "unitTest");
 		maestro.addMetric(loc_class);
 		loc_class.extractMetrics();
@@ -52,7 +52,7 @@ class LOC_classTest {
 		counter1.inc(41);
 		
 		Assertions.assertArrayEquals(loc_class_expected.getCounters().keySet().toArray(), loc_class.getCounters().keySet().toArray());
-		Assertions.assertTrue(helpers.HelperMethods.compareSortedMapCounters(loc_class_expected.getCounters(), loc_class.getCounters()));
+		Assertions.assertTrue(helpers.HelperMethods.compareMapCounters(loc_class_expected.getCounters(), loc_class.getCounters()));
 		
 		
 	}

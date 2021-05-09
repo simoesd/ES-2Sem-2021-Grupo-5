@@ -55,8 +55,8 @@ class CYCLO_methodTest {
 
 	@Test
 	void testExtractMetrics() {
-		Maestro maestro = new Maestro(System.getProperty("user.dir") + "/metricsUnitTestsUtilityFolder");
-		maestro.openFolder(System.getProperty("user.dir") + "/metricsUnitTestsUtilityFolder");
+		Maestro maestro = new Maestro(System.getProperty("user.dir") + "/unitTestFiles/metrics");
+		maestro.openFolder(System.getProperty("user.dir") + "/unitTestFiles/metrics");
 		maestro.addMetric(new LOC_class());
 		maestro.addMetric(new LOC_method());
 		cyclo_method = new CYCLO_method(maestro, "unitTest");
@@ -75,7 +75,7 @@ class CYCLO_methodTest {
 		counter5.inc(2);
 		
 		Assertions.assertArrayEquals(cyclo_method_expected.getCounters().keySet().toArray(), cyclo_method.getCounters().keySet().toArray());
-		Assertions.assertTrue(helpers.HelperMethods.compareSortedMapCounters(cyclo_method_expected.getCounters(), cyclo_method.getCounters()));
+		Assertions.assertTrue(helpers.HelperMethods.compareMapCounters(cyclo_method_expected.getCounters(), cyclo_method.getCounters()));
 		
 		
 	}

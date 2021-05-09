@@ -16,8 +16,8 @@ class WMC_classTest {
 
 	@Test
 	void testExtractMetrics() {
-		Maestro maestro = new Maestro(System.getProperty("user.dir") + "/metricsUnitTestsUtilityFolder");
-		maestro.openFolder(System.getProperty("user.dir") + "/metricsUnitTestsUtilityFolder");
+		Maestro maestro = new Maestro(System.getProperty("user.dir") + "/unitTestFiles/metrics");
+		maestro.openFolder(System.getProperty("user.dir") + "/unitTestFiles/metrics");
 		maestro.addMetric(new LOC_class());
 		maestro.addMetric(new LOC_method());
 		CYCLO_method cyclo_method = new CYCLO_method(maestro, "unitTest");
@@ -31,7 +31,7 @@ class WMC_classTest {
 		counter1.inc(4);
 		
 		Assertions.assertArrayEquals(wmc_class_expected.getCounters().keySet().toArray(), wmc_class.getCounters().keySet().toArray());
-		Assertions.assertTrue(helpers.HelperMethods.compareSortedMapCounters(wmc_class_expected.getCounters(), wmc_class.getCounters()));
+		Assertions.assertTrue(helpers.HelperMethods.compareMapCounters(wmc_class_expected.getCounters(), wmc_class.getCounters()));
 		
 		
 	}
