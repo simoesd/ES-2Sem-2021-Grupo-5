@@ -586,6 +586,7 @@ public class MainWindow {
 
 		JTable lineTable = new JTable(linesAsString.toArray(new String[0][0]), columnNames);
 //		lineTable.setAutoResizeMode(0);
+		lineTable.setEnabled(false);
 		
 		JPanel infoContainerPanel = new JPanel();
 		infoContainerPanel.setBackground(Color.DARK_GRAY);
