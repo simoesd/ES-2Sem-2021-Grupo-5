@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dialog;
-import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -42,8 +41,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ScrollPaneLayout;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
@@ -72,6 +72,11 @@ public class MainWindow {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                | UnsupportedLookAndFeelException e1) {
+        }
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -580,7 +585,7 @@ public class MainWindow {
 		}
 
 		JTable lineTable = new JTable(linesAsString.toArray(new String[0][0]), columnNames);
-		lineTable.setAutoResizeMode(0);
+//		lineTable.setAutoResizeMode(0);
 		
 		JPanel infoContainerPanel = new JPanel();
 		infoContainerPanel.setBackground(Color.DARK_GRAY);
@@ -655,6 +660,7 @@ public class MainWindow {
                         Arrays.asList(codeSmellEvaluationContent).forEach(codeSmellEvaluationModel::addRow);
     
                         JScrollPane tableScrollPane2 = new JScrollPane(codeSmellEvaluationTable);
+                        tableScrollPane2.setBackground(Color.DARK_GRAY);
                         tableScrollPane2.setBorder(new EmptyBorder(0, 10, 20, 20));
                         mainPanel.add(tableScrollPane2, BorderLayout.EAST);
                         mainPanel.updateUI();

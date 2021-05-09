@@ -1,5 +1,6 @@
 package GUI;
 
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JComboBox;
@@ -30,6 +31,7 @@ public class ConditionGUI extends JPanel {
         this.thresholdValue = new JTextField();
         thresholdValue.setPreferredSize(new Dimension(30, 26));
         MainWindow.enableDefaultValue(this.thresholdValue, "0");
+        this.setBackground(Color.DARK_GRAY);
         initializePanel();
         
     }
@@ -39,6 +41,7 @@ public class ConditionGUI extends JPanel {
         this.metric = metric;
         this.thresholdOperator = thresholdOperator;
         this.thresholdValue = thresholdValue;
+        this.setBackground(Color.DARK_GRAY);
         initializePanel();
     }
     

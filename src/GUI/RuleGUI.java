@@ -1,5 +1,6 @@
 package GUI;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,7 +45,9 @@ public class RuleGUI extends JPanel{
         super();
         
         this.setLayout(new WrapLayout());
+        this.setBackground(Color.DARK_GRAY);
         this.toRemoveCheckbox = new JCheckBox();
+        this.toRemoveCheckbox.setBackground(Color.DARK_GRAY);
         this.ruleTitle = new JTextField(); 
         ruleTitle.setHorizontalAlignment(SwingConstants.CENTER);
         ruleTitle.setPreferredSize(new Dimension(83, 26));

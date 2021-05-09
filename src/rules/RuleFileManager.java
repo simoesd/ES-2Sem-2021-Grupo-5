@@ -25,14 +25,12 @@ public class RuleFileManager {
     public static final String HISTORY_FILE_PATH = "db.rul";
     
     /**
-     *  Writes the specified rule list as a new entry in the specified file.
-     *  Technically overwrites the entries already saved in the file, so it starts
-     *  by reading the already saved info and appends the new data onto it before writing it.
-     *  Every entry is composed by a list of rules and a time stamp. The time stamp is generated
-     *  in runtime based on the system time when the writing is executed.
-     *  
-     *  @param rules list of rules to write into the specified file
-     *  @param filePath path to the file where the new data should be written
+     * Save the specified rule list in the history file.
+     * This method will read the history file by calling the {@link RuleFileManager#readRules(String)} method, 
+     * and add a new entry to the read HashMap with the current date as a key and the list of rules as a value.
+     * Finally, it writes the new HashMap to the file.
+     * @param rules List of rules to write to history file.
+     * @param filePath to Rule history file.
      */
     public static void writeEntry(List<Rule> rules, String filePath)
     {
@@ -58,9 +56,8 @@ public class RuleFileManager {
     /**
      * Reads the first object in the specified file and returns it as a {@code HashMap<String, List<Rule>>}
      * 
-     * @param filePath path to the file whose data should be read
-     * @return a map with the info in the file. The keys are the time stamps of each
-     * entry (at the time of writing) and the values are the corresponding list of rules
+     * @param filePath to Rule history file.
+     * HashMap containing all saved rules. Each entry is composed by a key with the date the rule was saved and a value with a list of rules.
      * 
      */
     public static HashMap<String, List<Rule>> readRules(String filePath)
@@ -94,7 +91,7 @@ public class RuleFileManager {
     /**
      * Deletes the specified file.
      * 
-     * @param filePath path to the file whose data should be read
+     *@param filePath to Rule history file.
      * 
      */
     public static void clearHistory(String filePath)
