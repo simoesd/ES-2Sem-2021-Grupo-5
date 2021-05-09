@@ -12,13 +12,32 @@ import reader.Line;
  */
 public class Rule implements Serializable{
 	private static final long serialVersionUID = -76936614853441537L;
+	/**
+     * What name should be used for this rule in the GUI and evaluation
+     */
 	private String ruleName;
+	/**
+     * Specifies whether or not this rule handles class or method metrics
+     */
     private boolean isClassRule;
     
+    /**
+     * List of conditions that will make up the rule
+     */
     private LinkedList<Condition> conditions = new LinkedList<>();
+    
+    /**
+     * List of logicOperators that will be used to compare the specified conditions
+     */
     private LinkedList<Integer> logicOperators = new LinkedList<>();
     
+    /**
+     * Constant to be used as the "and" logic operator
+     */
     public static final int AND = 0;
+    /**
+     * Constant to be used as the "or" logic operator
+     */
     public static final int OR = 1;
 
     /**

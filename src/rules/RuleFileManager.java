@@ -12,6 +12,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
     /**
@@ -35,7 +36,7 @@ public class RuleFileManager {
     public static void writeEntry(List<Rule> rules, String filePath)
     {
         File ruleFile = new File(filePath);
-        HashMap<String, List<Rule>> readInfo = new HashMap<>();
+        LinkedHashMap<String, List<Rule>> readInfo = new LinkedHashMap<>();
         try
         {
             readInfo = readRules(filePath);
@@ -44,6 +45,7 @@ public class RuleFileManager {
 
             Date date = new Date(System.currentTimeMillis());
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            
             readInfo.put(dateFormat.format(date), rules);
             oos.writeObject(readInfo);
             fileWriter.close();
@@ -54,16 +56,16 @@ public class RuleFileManager {
     }
     
     /**
-     * Reads the first object in the specified file and returns it as a {@code HashMap<String, List<Rule>>}
+     * Reads the first object in the specified file and returns it as a {@code LinkedHashMap<String, List<Rule>>}
      * 
      * @param filePath to Rule history file.
-     * HashMap containing all saved rules. Each entry is composed by a key with the date the rule was saved and a value with a list of rules.
+     * @return LinkedHashMap containing all saved rules. Each entry is composed by a key with the date the rule was saved and a value with a list of rules.
      * 
      */
-    public static HashMap<String, List<Rule>> readRules(String filePath)
+    public static LinkedHashMap<String, List<Rule>> readRules(String filePath)
     {
         File ruleFile = new File(filePath);
-        HashMap<String, List<Rule>> readInfo = new HashMap<>();
+        LinkedHashMap<String, List<Rule>> readInfo = new LinkedHashMap<>();
         try
         {
             if (!ruleFile.createNewFile()) {
@@ -72,7 +74,7 @@ public class RuleFileManager {
                     fileReader = new FileInputStream(ruleFile);
                     ObjectInputStream ois = new ObjectInputStream(fileReader);
                     Object obj = ois.readObject();
-                    readInfo = (HashMap<String, List<Rule>>) obj;
+                    readInfo = (LinkedHashMap<String, List<Rule>>) obj;
                     ois.close();
                 } catch (EOFException e1) {
                     

@@ -14,24 +14,33 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 
 /**
- * {@code Metrica} is an object that represents and processes a certain code smell metric.
+ * {@code Metric} is an object that represents and processes a certain code smell metric.
  * It extends the class {@code MetricRegistry} to make use of {@code Counter}.
  * 
  * @see MetricRegistry
- * @see Maestro
+ * @see MetricHandler
  * @see CYCLO_method
  * @see LOC_class
  * @see LOC_method
  * @see NOM_class
  * @see WMC_class
  */
-public abstract class Metrica extends MetricRegistry {
+public abstract class Metric extends MetricRegistry {
 
-	private Maestro maestro;
+	private MetricHandler metricHandler;
 	private String packageClassName;
+	/**
+	 * What name should be used for this metric in the GUI
+	 */
 	public String metricName;
 	private Thread myThread;
+	/**
+	 * Specifies whether or not this metric handles class info or method info
+	 */
 	public boolean isClassMetric;
+	/**
+	 * Counter that will store the value for each line, in accordance to this metric
+	 */
 	public Counter counter;
 	protected boolean addLine, isNonMethodBlock = false, isMultiLineComment = false;
 	protected int incr;
@@ -40,26 +49,32 @@ public abstract class Metrica extends MetricRegistry {
 	
 	
 	/**
-	 * Constructs a {@code Metrica} object without initializing anything.
+	 * Constructs a {@code Metric} object without initializing anything.
 	 */
-	public Metrica() {}
+	public Metric() {}
 	
 	/**
-	 * Constructs and initializes a {@code Metrica} object. 
-	 * Upon calling this constructor, the method {@code startExtracting()} will be called and a thread will start processing the code smell this{@code Metrica} represents.
+	 * Constructs and initializes a {@code Metric} object. 
+	 * Upon calling this constructor, the method {@code startExtracting()} will be called and a thread will start processing the code smell this{@code Metric} represents.
 	 * 
-	 * @param {@code Maestro} object that contains this metric and that calls this constructor.
+	 * @param metricHandler {@code MetricHandler} that contains this metric and that calls this constructor.
 	 */
-	public Metrica(Maestro maestro) {
+	public Metric(MetricHandler metricHandler) {
 		super();
-		this.maestro = maestro;
+		this.metricHandler = metricHandler;
 		this.myThread = startExtracting();
 		myThread.start();
 	}
 	
-	public Metrica(Maestro maestro, String unitTest){ //Unit Tests
+	/**
+     * Only used for unit tests. Constructs and initializes a {@code Metric} object. 
+     * 
+     * @param metricHandler {@code MetricHandler} that contains this metric and that calls this constructor.
+     * @param unitTest doesn't do anything except differentiate this constructor from the regular one
+     */
+	public Metric(MetricHandler metricHandler, String unitTest){ //Unit Tests
 		
-		this.maestro = maestro;
+		this.metricHandler = metricHandler;
 		
 	}
 
@@ -72,7 +87,7 @@ public abstract class Metrica extends MetricRegistry {
 	 * Starts a new {@code Thread} that will run the method {@code extractMetrics()}
 	 * 
 	 * @return the created thread
-	 * @see Metrica#extractMetrics()
+	 * @see Metric#extractMetrics()
 	 */
 	protected Thread startExtracting() {
 		Thread t = new Thread(new Runnable() {
@@ -96,10 +111,10 @@ public abstract class Metrica extends MetricRegistry {
 	 * Then it checks the file line by line and then character by character where methods start and end.
 	 * When it finds brackets, it calls {@code handleOpenBracket()} and {@code handleCloseBracket()}.
 	 * 
-	 * @param file file to evaluate the code smell this {@code Metrica} represents
-	 * @see Metrica#handleOpenBracket()
-	 * @see Metrica#handleCloseBracket()
-	 * @see Metrica#filterOutJunk()
+	 * @param file file to evaluate the code smell this {@code Metric} represents
+	 * @see Metric#handleOpenBracket()
+	 * @see Metric#handleCloseBracket()
+	 * @see Metric#filterOutJunk()
 	 */
 	protected void filterCode(File file) {
 		try {
@@ -178,8 +193,8 @@ public abstract class Metrica extends MetricRegistry {
 	 * 
 	 * If incr > 0, the code is inside a method and found an unimportant bracket to handle.
 	 * 
-	 * @see Metrica#handleCloseBracket()
-	 * @see Metrica#getMethodName(Stack)
+	 * @see Metric#handleCloseBracket()
+	 * @see Metric#getMethodName(Stack)
 	 * @see MetricRegistry#counter(String)
 	 */
 	public void handleOpenBracket() {
@@ -221,8 +236,8 @@ public abstract class Metrica extends MetricRegistry {
 	 * 
 	 * If incr > 1, the code is inside a method and found an unimportant bracket to handle.
 	 * 
-	 * @see Metrica#handleOpenBracket()
-	 * @see Metrica#applyMetricFilter(String)
+	 * @see Metric#handleOpenBracket()
+	 * @see Metric#applyMetricFilter(String)
 	 */
 	public void handleCloseBracket() {
 		switch (incr) {
@@ -304,12 +319,12 @@ public abstract class Metrica extends MetricRegistry {
 	}
 
 	/**
-	 * Returns the global variable {@code Maestro} maestro that launched this {@code Metrica}
+	 * Returns the global variable {@code MetricHandler} metricHandler that launched this {@code Metric}
 	 * 
-	 * @return the global variable {@code Maestro} maestro
+	 * @return the global variable {@code MetricHandler} metricHandler
 	 */
-	protected Maestro getMaestro() {
-		return maestro;
+	protected MetricHandler getMetricHandler() {
+		return metricHandler;
 	}
 
 	/**

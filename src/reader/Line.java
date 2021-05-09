@@ -214,8 +214,8 @@ public class Line {
 	
 	/**
 	 * Appends the specified element to the linkedHashMap metrics.
-	 * @param methodID		a String standing for a metric name
-	 * @param methodID		a String standing for a metric value
+	 * @param metricName a String standing for a metric name
+	 * @param metric a String standing for a metric value
      */
 	public void addMetric(String metricName, String metric)
 	{
@@ -224,7 +224,7 @@ public class Line {
 	
 	/**
 	 * Appends all the elements of the given hashMap to the linkedHashMap metrics.
-	 * @param methodID		a HashMape of Strings standing for a list of metrics
+	 * @param metrics a HashMap of Strings standing for a list of metrics
 	 * @see HashMap
      */
 	public void addMetrics(HashMap<String, String> metrics)
@@ -234,7 +234,7 @@ public class Line {
 	
 	/**
 	 * Appends a Rule element to the linkedHashMap metrics.
-	 * @param methodID		a Rule
+	 * @param rule rule to be added to the line
 	 * @see Rule
      */
 	public void calculateRule(Rule rule)

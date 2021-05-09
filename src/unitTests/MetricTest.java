@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import metricas.LOC_class;
 
-class MetricaTest {
+class MetricTest {
 	
 	LOC_class locClass;
 
@@ -23,7 +23,7 @@ class MetricaTest {
 
 //	@Test
 //	void testFilterCode() {
-//		File file = new File(System.getProperty("user.dir") + "//src//metricas//Metrica.java");
+//		File file = new File(System.getProperty("user.dir") + "//src//metricas//Metric.java");
 //	}
 
 	
@@ -42,7 +42,7 @@ class MetricaTest {
 		
 		Stack<String> stack2 = new Stack<String> (); 
 		stack2.push("abstract void extractMetrics();");
-		stack2.push("public String getMethodName(Metrica.LOC_class locClassTest, int i){"); 
+		stack2.push("public String getMethodName(Metric.LOC_class locClassTest, int i){"); 
 	
 		//Action	
 		Assertions.assertAll("Nome Método",

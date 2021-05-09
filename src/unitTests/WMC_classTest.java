@@ -8,7 +8,7 @@ import com.codahale.metrics.Counter;
 import metricas.CYCLO_method;
 import metricas.LOC_class;
 import metricas.LOC_method;
-import metricas.Maestro;
+import metricas.MetricHandler;
 import metricas.WMC_class;
 
 class WMC_classTest {
@@ -16,14 +16,14 @@ class WMC_classTest {
 
 	@Test
 	void testExtractMetrics() {
-		Maestro maestro = new Maestro(System.getProperty("user.dir") + "/unitTestFiles/metrics");
-		maestro.openFolder(System.getProperty("user.dir") + "/unitTestFiles/metrics");
-		maestro.addMetric(new LOC_class());
-		maestro.addMetric(new LOC_method());
-		CYCLO_method cyclo_method = new CYCLO_method(maestro, "unitTest");
-		maestro.addMetric(cyclo_method);
-		wmc_class = new WMC_class(maestro, "unitTest");
-		maestro.addMetric(wmc_class);
+		MetricHandler metricHandler = new MetricHandler(System.getProperty("user.dir") + "/unitTestFiles/metrics");
+		metricHandler.openFolder(System.getProperty("user.dir") + "/unitTestFiles/metrics");
+		metricHandler.addMetric(new LOC_class());
+		metricHandler.addMetric(new LOC_method());
+		CYCLO_method cyclo_method = new CYCLO_method(metricHandler, "unitTest");
+		metricHandler.addMetric(cyclo_method);
+		wmc_class = new WMC_class(metricHandler, "unitTest");
+		metricHandler.addMetric(wmc_class);
 		cyclo_method.extractMetrics();
 		wmc_class.extractMetrics();
 		WMC_class wmc_class_expected = new WMC_class();

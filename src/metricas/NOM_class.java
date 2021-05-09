@@ -7,13 +7,13 @@ import java.util.SortedMap;
 import com.codahale.metrics.Counter;
 
 /** 
- * NOM_class is a type of {@code Metrica} that counts the number of methods of a class
- * @see Metrica
- * @see Maestro
+ * NOM_class is a type of {@code Metric} that counts the number of methods of a class
+ * @see Metric
+ * @see MetricHandler
  * @since 1.0
  */
 
-public class NOM_class extends Metrica {
+public class NOM_class extends Metric {
 	
 	/** 
 	 * SortedMap representing the CYCLO_Method counters
@@ -30,26 +30,26 @@ public class NOM_class extends Metrica {
 	}
 	
 	/** 
-	 * Constructs and initializes a {@code NOM_class}, given an object {@code Maestro} and a String. 
+	 * Constructs and initializes a {@code NOM_class}, given an object {@code MetricHandler} and a String. 
 	 * This constructor is used only for Unit Testing
-	 * @param maestro the maestro that will manipulate all the metrics
+	 * @param metricHandler the metricHandler that will manipulate all the metrics
 	 * @param unitTest the string used for unit testing
 	 */
 	
-	public NOM_class (Maestro maestro, String unitTest) {
-		super(maestro, unitTest);
+	public NOM_class (MetricHandler metricHandler, String unitTest) {
+		super(metricHandler, unitTest);
 		metricName = "LOC_CLASS";
 		isClassMetric = true;
 		
 	}
 	
 	/** 
-	 * Constructs and initializes a {@code NOM_class}, given an object {@code Maestro}.
-	 * @param maestro the maestro that will manipulate all the metrics
+	 * Constructs and initializes a {@code NOM_class}, given an object {@code MetricHandler}.
+	 * @param metricHandler the metricHandler that will manipulate all the metrics
 	 */
 	
-	public NOM_class(Maestro maestro) {
-		super(maestro);
+	public NOM_class(MetricHandler metricHandler) {
+		super(metricHandler);
 		metricName = "NOM_CLASS";
 		isClassMetric = true;
 	}
@@ -61,11 +61,11 @@ public class NOM_class extends Metrica {
      */
 	@Override
 	public void extractMetrics() {
-		cycloSortedMap = getMaestro().getCYCLO_method().getCounters();
-		ArrayList<File> filesInDirectory = getMaestro().getFilesInDirectory();
+		cycloSortedMap = getMetricHandler().getCYCLO_method().getCounters();
+		ArrayList<File> filesInDirectory = getMetricHandler().getFilesInDirectory();
 		for (File file : filesInDirectory) {		
 			String absolutePath = file.getAbsolutePath();
-			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
+			setPackageClassName(getMetricHandler().cutAbsolutePath(absolutePath));
 			counter=this.counter(getPackageClassName());
 			for (String counterName : cycloSortedMap.keySet()) {
 				if (counterName.contains(getPackageClassName())) {

@@ -11,11 +11,11 @@ import org.junit.runner.RunWith;
     HelperMethodsTest.class,
     ExcelReaderTest.class,
     LineTest.class,
-    MaestroTest.class,
+    MetricHandlerTest.class,
     CYCLO_methodTest.class,
     LOC_classTest.class,
     LOC_methodTest.class,
-    MetricaTest.class,
+    MetricTest.class,
     WMC_classTest.class,
     NOM_classTest.class})
 

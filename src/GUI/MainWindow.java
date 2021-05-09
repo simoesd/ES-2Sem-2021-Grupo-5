@@ -13,6 +13,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -48,7 +49,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
-import metricas.Maestro;
+import metricas.MetricHandler;
 import reader.ExcelReader;
 import reader.Line;
 import rules.Rule;
@@ -101,7 +102,7 @@ public class MainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame("Code Smeller");
+		frame = new JFrame("Code Quality Assessor");
 		frame.getContentPane().setBackground(Color.DARK_GRAY);
 
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -154,7 +155,7 @@ public class MainWindow {
 
 		panel_3 = new JPanel(new BorderLayout());
 		panel_3.setBackground(Color.DARK_GRAY);
-		JLabel title = new JLabel("CODE SMELLER");
+		JLabel title = new JLabel("CODE QUALITY ASSESSOR");
 		title.setForeground(Color.WHITE);
 		title.setHorizontalAlignment(SwingConstants.CENTER);
 		title.setFont(new Font("Tahoma", Font.PLAIN, 40));
@@ -183,6 +184,7 @@ public class MainWindow {
 
 		JLabel ruleTitle = new JLabel("RULES");
 		ruleTitle.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		ruleTitle.setForeground(Color.white);
 		ruleTitle.setVisible(false);
 		ruleTitle.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(ruleTitle);
@@ -286,6 +288,7 @@ public class MainWindow {
                         rulesGUI.clear();
                         panel.removeAll();
                         panel.add(ruleTitle);
+                        ruleTitle.setVisible(true);
                         for(Rule rule: rules.get(ruleHistory.getSelectedIndex()))
                         {
                             RuleGUI importedRuleGUI = new RuleGUI(panel, true);
@@ -376,7 +379,7 @@ public class MainWindow {
                         ruleNumber++;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(panel, "Atingiu o limite de 5 regras");
+                    JOptionPane.showMessageDialog(panel, "You can only have 5 rules at a time!");
                 }
             }
         });
@@ -402,7 +405,7 @@ public class MainWindow {
 				int analyzeBrowserOutput = analyzeFileChooser.showOpenDialog(null);
 				if (analyzeBrowserOutput == JFileChooser.APPROVE_OPTION) {
 					analysisPathTextField.setText(analyzeFileChooser.getSelectedFile().getAbsolutePath());
-					Maestro tempMaestro = new Maestro();
+					MetricHandler tempMaestro = new MetricHandler();
 					tempMaestro.openFolder(analysisPathTextField.getText());
 					ArrayList<String> fileNameList = new ArrayList<>();
 					tempMaestro.getFilesInDirectory().forEach(x -> fileNameList.add(x.getName()));
@@ -422,28 +425,28 @@ public class MainWindow {
 				try {
 					directoryPath = analysisPathTextField.getText();
 					if (directoryPath.isEmpty()) {
-						throw new Exception("Tem que ter um projeto selecionado antes de analisar");
+						throw new Exception("You must select a project to analyse.");
 					}
 
 					if (replicatedTitledRules()) {
-						throw new Exception("As regras têm de ter nomes diferentes");
+						throw new Exception("Every rule must have a different name.");
 					}
 
-					Maestro maestro = new Maestro(directoryPath);
+					MetricHandler metricHandler = new MetricHandler(directoryPath);
 
-					if (checkValidRule()) {
+					if (checkValidRules()) {
 						List<Rule> rules = new ArrayList<>();
 
 						rulesGUI.forEach(x -> rules.add(x.generateRule()));
-						maestro.addRules(rules);
+						metricHandler.addRules(rules);
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-						String resultsFilePath = maestro.startMetricCounters();
+						String resultsFilePath = metricHandler.startMetricCounters();
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 						ImageIcon popupIcon = getPopupImageIcon("src/icons/excel.png");
 
-						Object[] popupOptions = { "Sim", "Não" };
+						Object[] popupOptions = { "Yes", "No" };
 						int popupResult = JOptionPane.showOptionDialog(frame,
-								"Análise completa com sucesso! Deseja visualizar os resultados?", "Análise completa!",
+								"Analysis successfully completed! Would you like to see the results?", "Analysis completed!",
 								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, popupIcon, popupOptions,
 								popupOptions[0]);
 
@@ -458,19 +461,6 @@ public class MainWindow {
 				}
 			}
 
-			private boolean replicatedTitledRules() {
-				boolean sameTitle = false;
-				for (int i = 0; i < rulesGUI.size(); i++) {
-					for (int j = i + 1; j < rulesGUI.size(); j++) {
-						if (rulesGUI.get(i).getRuleTitleAsString().equals(rulesGUI.get(j).getRuleTitleAsString())) {
-							sameTitle = true;
-							return sameTitle;
-						}
-					}
-				}
-				return sameTitle;
-			}
-
 		});
 		analysisPanel.add(startAnalysisButton);
 		analysisPanel.add(Box.createRigidArea(hMargin));
@@ -481,6 +471,7 @@ public class MainWindow {
 		tabbedPane.addTab("Import Project Data", importPanel);
 		importPanel.setLayout(new BoxLayout(importPanel, BoxLayout.X_AXIS));
 		importPanel.setBorder(fullPadding);
+
 
 		importPathTextField = new JTextField();
 		importPathTextField.setColumns(10);
@@ -523,33 +514,46 @@ public class MainWindow {
 
 	}
 
-	protected void saveRuleHistory(boolean showConfirmationPopUp) {
+	protected boolean saveRuleHistory(boolean showConfirmationPopUp) {
 	    List<Rule> rulesToWrite = new LinkedList<>();
-        rulesGUI.forEach(x -> rulesToWrite.add(x.generateRule()));
-        RuleFileManager.writeEntry(rulesToWrite, RuleFileManager.HISTORY_FILE_PATH);
-        
-        if (showConfirmationPopUp)
+        if (replicatedTitledRules()) 
         {
-            Object[] popupOptions = { "Ok" };
-            JOptionPane.showOptionDialog(frame,
-                    "Rule set saved successfuly!", "Rule set saved!",
-                    JOptionPane.PLAIN_MESSAGE, JOptionPane.INFORMATION_MESSAGE, null, popupOptions,
-                    popupOptions[0]);
+            JOptionPane.showMessageDialog(panel, "Every rule must have a different name.");
         }
+        else {
+            if (checkValidRules()) {
+                rulesGUI.forEach(x -> rulesToWrite.add(x.generateRule()));
+                RuleFileManager.writeEntry(rulesToWrite, RuleFileManager.HISTORY_FILE_PATH);
+                
+                if (showConfirmationPopUp)
+                {
+                    Object[] popupOptions = { "Ok" };
+                    JOptionPane.showOptionDialog(frame,
+                            "Rule set saved successfuly!", "Rule set saved!",
+                            JOptionPane.PLAIN_MESSAGE, JOptionPane.INFORMATION_MESSAGE, null, popupOptions,
+                            popupOptions[0]);
+                }
+                return true;
+            }
+                
+        }
+        return false;
     }
 
     private int popupSaveClose() {
 	    if (rulesGUI.isEmpty())
 	        return JFrame.EXIT_ON_CLOSE;
 		ImageIcon popupIcon = getPopupImageIcon("src/icons/question.png");
-		Object[] popupOptions = { "Sim", "Não" };
+		Object[] popupOptions = { "Yes", "No" };
 
-		int popupResult = JOptionPane.showOptionDialog(frame, "Deseja guardar o seu histórico?", "Salvar Regras",
+		int popupResult = JOptionPane.showOptionDialog(frame, "Would you like to save your rule set?", "Save rules?",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, popupIcon, popupOptions, popupOptions[0]);
 
 		if (popupResult == 0) {
-			saveRuleHistory(false);
-			return JFrame.EXIT_ON_CLOSE;
+			
+			if (saveRuleHistory(false))
+			    return JFrame.EXIT_ON_CLOSE;
+			return JFrame.DO_NOTHING_ON_CLOSE;
 
 		} else if (popupResult == 1) {
 			return JFrame.EXIT_ON_CLOSE;
@@ -558,14 +562,28 @@ public class MainWindow {
 		return JFrame.DO_NOTHING_ON_CLOSE;
 
 	}
+    
 
-	private boolean checkValidRule() {
+    private boolean replicatedTitledRules() {
+        boolean sameTitle = false;
+        for (int i = 0; i < rulesGUI.size(); i++) {
+            for (int j = i + 1; j < rulesGUI.size(); j++) {
+                if (rulesGUI.get(i).getRuleTitleAsString().equals(rulesGUI.get(j).getRuleTitleAsString())) {
+                    sameTitle = true;
+                    return sameTitle;
+                }
+            }
+        }
+        return sameTitle;
+    }
+
+	private boolean checkValidRules() {
 		boolean isValid = true;
 		for (RuleGUI rg : rulesGUI) {
 			try {
 				rg.getConditions().forEach(x -> Integer.parseInt(x.getValue()));
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(panel, "Os valores das métricas a analisar teem que ser números inteiros.");
+				JOptionPane.showMessageDialog(panel, "The values for the metrics must be integers.");
 				isValid = false;
 				return isValid;
 			}
@@ -581,11 +599,10 @@ public class MainWindow {
 		ArrayList<String[]> linesAsString = new ArrayList<>();
 
 		for (int i = 0; i < lines.size(); i++) {
-			linesAsString.add(lines.get(i).toArray()); // colocar uma linha em cada vetor do array
+			linesAsString.add(lines.get(i).toArray());
 		}
 
 		JTable lineTable = new JTable(linesAsString.toArray(new String[0][0]), columnNames);
-//		lineTable.setAutoResizeMode(0);
 		lineTable.setEnabled(false);
 		
 		JPanel infoContainerPanel = new JPanel();
@@ -615,7 +632,7 @@ public class MainWindow {
                 JPanel codeSmellFileBrowserPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
                 JTextField codeSmellFileTextField = new JTextField();
                 codeSmellFileTextField.setToolTipText("Browse...");
-                codeSmellFileTextField.setPreferredSize(new Dimension(200, 26));
+                codeSmellFileTextField.setPreferredSize(new Dimension(200, 21));
                 JButton codeSmellFileBrowserButton = new JButton("Browse...");
                 
                 codeSmellFileBrowserButton.addActionListener(new ActionListener() {
@@ -660,6 +677,7 @@ public class MainWindow {
                         String[][] codeSmellEvaluationContent = ExcelReader.compareCodeSmells(lines, codeSmellFileTextField.getText());
                         Arrays.asList(codeSmellEvaluationContent).forEach(codeSmellEvaluationModel::addRow);
     
+                        codeSmellEvaluationTable.setEnabled(false);
                         JScrollPane tableScrollPane2 = new JScrollPane(codeSmellEvaluationTable);
                         tableScrollPane2.setBackground(Color.DARK_GRAY);
                         tableScrollPane2.setBorder(new EmptyBorder(0, 10, 20, 20));
@@ -669,9 +687,8 @@ public class MainWindow {
                     }
                 });
                 
-                codeSmellComparisonButtonPanel.add(noComparisonButton);
-                codeSmellComparisonButtonPanel.add(Box.createRigidArea(new Dimension(30, 15)));
                 codeSmellComparisonButtonPanel.add(compareButton);
+                codeSmellComparisonButtonPanel.add(noComparisonButton);
                 codeSmellDialog.add(codeSmellComparisonButtonPanel, BorderLayout.SOUTH);
                 
                 codeSmellDialog.pack();
@@ -705,7 +722,7 @@ public class MainWindow {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				Maestro tempMaestro = new Maestro();
+				MetricHandler tempMaestro = new MetricHandler();
 				tempMaestro.openFolder(analysisPathTextField.getText());
 				ArrayList<String> fileNameList = new ArrayList<>();
                 tempMaestro.getFilesInDirectory().forEach(x -> fileNameList.add(x.getName()));

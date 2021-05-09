@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -24,9 +25,9 @@ class RuleFileManagerTest {
    
     @Parameters
     public static Stream<Arguments> testReadRulesInfo() {
-        HashMap<String, List<Rule>> readTestNoError = new HashMap<>();
+        LinkedHashMap<String, List<Rule>> readTestNoError = new LinkedHashMap<>();
         
-        String timestamp = "2021/05/06 19:47:59"; //obtained whe generating the test file
+        String timestamp = "2021/05/09 18:39:42"; //obtained when generating the test file
         
         String ruleName = "is_God_Class";
         
@@ -42,25 +43,25 @@ class RuleFileManagerTest {
         Rule rule = new Rule(ruleName, conditions, logicOperators, isClassRule);
         
         List<Rule> rules = new LinkedList<>();
+        
         rules.add(rule);
         
         readTestNoError.put(timestamp, rules);
         
-//        RuleFileManager.writeEntry(rules, "readTestNoError.rul");
         
         return Stream.of(
             //file with no errors
             Arguments.of("unitTestFiles/readTestNoError.rul", readTestNoError),
             //empty file
-            Arguments.of("unitTestFiles/readTestEmpty.rul", new HashMap<String, List<Rule>>())
+            Arguments.of("unitTestFiles/readTestEmpty.rul", new LinkedHashMap<String, List<Rule>>())
         );
     }
     
 
     @ParameterizedTest
     @MethodSource("testReadRulesInfo")
-    void testReadRulesNoException(String filePath, HashMap<String, List<Rule>> expectedResult) {
-        HashMap<String, List<Rule>> receivedResult = RuleFileManager.readRules(filePath);
+    void testReadRulesNoException(String filePath, LinkedHashMap<String, List<Rule>> expectedResult) {
+        LinkedHashMap<String, List<Rule>> receivedResult = RuleFileManager.readRules(filePath);
         
         assertAll("Read Rules Result:",
                 //checks if expected and received maps have the same size
@@ -101,7 +102,7 @@ class RuleFileManagerTest {
         
         RuleFileManager.clearHistory(testFilePath);
         RuleFileManager.writeEntry(rules, testFilePath);
-        HashMap<String, List<Rule>> receivedResult = RuleFileManager.readRules(testFilePath);
+        LinkedHashMap<String, List<Rule>> receivedResult = RuleFileManager.readRules(testFilePath);
         
         assertAll(
                 () -> {assertEquals(rules.size(), receivedResult.size());},

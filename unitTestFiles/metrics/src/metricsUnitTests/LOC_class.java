@@ -12,18 +12,18 @@ public class LOC_class extends Metrica {
 		isClassMetric = true;
 	}
 
-	public LOC_class(Maestro maestro) {
-		super(maestro);
+	public LOC_class(MetricHandler metricHandler) {
+		super(metricHandler);
 		metricName = "LOC_CLASS";
 		isClassMetric = true;
 	}
 
 	@Override
 	protected void extractMetrics() {
-		ArrayList<File> filesInDirectory = getMaestro().getFilesInDirectory();
+		ArrayList<File> filesInDirectory = getMetricHandler().getFilesInDirectory();
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
-			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
+			setPackageClassName(getMetricHandler().cutAbsolutePath(absolutePath));
 			counter = this.counter(getPackageClassName());
 			filterCode(file);
 		}

@@ -21,32 +21,32 @@ import org.junit.jupiter.api.Test;
 import metricas.CYCLO_method;
 import metricas.LOC_class;
 import metricas.LOC_method;
-import metricas.Maestro;
-import metricas.Metrica;
+import metricas.MetricHandler;
+import metricas.Metric;
 import metricas.NOM_class;
 import metricas.WMC_class;
 import rules.Condition;
 import rules.Rule;
 
-class MaestroTest {
+class MetricHandlerTest {
 
 	String projectDir;
-	Maestro maestro;
+	MetricHandler metricHandler;
 	String dir;
 	
 	@BeforeEach
 	void setup() {
 		projectDir = System.getProperty("user.dir");
-		maestro = new Maestro(projectDir);
+		metricHandler = new MetricHandler(projectDir);
 		dir = projectDir + "\\unitTestFiles";
-		ArrayList<Metrica> metrics = new ArrayList<>();
+		ArrayList<Metric> metrics = new ArrayList<>();
 		metrics.add(new LOC_class());
 		metrics.add(new LOC_method());
 		metrics.add(new CYCLO_method());
 		metrics.add(new WMC_class());
 		metrics.add(new NOM_class());
 		
-		for(Metrica m: metrics) {
+		for(Metric m: metrics) {
 			if(m.isClassMetric)
 				m.setCounter(m.counter("teste/file/"));
 			else
@@ -57,7 +57,7 @@ class MaestroTest {
 			}
 		}
 		
-		metrics.forEach(m -> maestro.addMetric(m));
+		metrics.forEach(m -> metricHandler.addMetric(m));
 		
 		String ruleName = "is_God_Class";
 
@@ -76,8 +76,8 @@ class MaestroTest {
         rules.add(new Rule("cenas", conditions, logicOperators, isClassRule));
         rules.add(new Rule("coisas", conditions, logicOperators, isClassRule));
 		
-		maestro.addRule(rule);
-		maestro.addRules(rules);
+		metricHandler.addRule(rule);
+		metricHandler.addRules(rules);
 	}
 	
 	
@@ -94,8 +94,8 @@ class MaestroTest {
 	@Test
 	void createExcelFileTest() {
 		assertAll("createExcelFileTest",
-				() -> {assertEquals(projectDir + "\\ES-2Sem-2021-Grupo-5_metricas.xlsx", maestro.createExcelFile());},
-				() -> {maestro.setProjectDirectory("non-existent-directory"); assertEquals("", maestro.createExcelFile());});
+				() -> {assertEquals(projectDir + "\\ES-2Sem-2021-Grupo-5_metricas.xlsx", metricHandler.createExcelFile());},
+				() -> {metricHandler.setProjectDirectory("non-existent-directory"); assertEquals("", metricHandler.createExcelFile());});
 	}
 	
 	@Test
@@ -104,7 +104,7 @@ class MaestroTest {
 		XSSFSheet sheet = workbook.createSheet();
 		
 		try {
-			maestro.createHeaderExcel(sheet);
+			metricHandler.createHeaderExcel(sheet);
 			Iterator<Row> rowIterator = sheet.iterator();
 			Row row = rowIterator.next();
 			Iterator<Cell> cellIterator = row.iterator();
@@ -130,7 +130,7 @@ class MaestroTest {
 		String[] line = {"GUI", "TRUE", "4"};
 		
 		try {
-			maestro.writeExcel(sheet, line);
+			metricHandler.writeExcel(sheet, line);
 			Iterator<Row> rowIterator = sheet.iterator();
 			Row row = rowIterator.next();
 			Iterator<Cell> cellIterator = row.iterator();
@@ -149,8 +149,8 @@ class MaestroTest {
 	
 	@Test
 	void openFolderTest() {
-		maestro.openFolder(dir);
-		assertEquals(dir + "\\file.java", maestro.getFilesInDirectory().get(0).getAbsolutePath());
+		metricHandler.openFolder(dir);
+		assertEquals(dir + "\\file.java", metricHandler.getFilesInDirectory().get(0).getAbsolutePath());
 	}
 	
 	
@@ -158,9 +158,9 @@ class MaestroTest {
 	void testCutAbsolutePath() {
 		String path1 = projectDir + "\\src\\teste\\com\\cenas\\metricas"; // these paths don't actually exist but that's ok
 		String path2 = projectDir + "\\src\\metricas";
-		assertAll("Maestro tests",
-				() -> {assertEquals("teste.com.cenas/metricas", maestro.cutAbsolutePath(path1));},
-				() -> {assertEquals("defaultPackage/metricas", maestro.cutAbsolutePath(path2));});
+		assertAll("MetricHandler tests",
+				() -> {assertEquals("teste.com.cenas/metricas", metricHandler.cutAbsolutePath(path1));},
+				() -> {assertEquals("defaultPackage/metricas", metricHandler.cutAbsolutePath(path2));});
 	}
 	
 

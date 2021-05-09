@@ -11,7 +11,7 @@ import com.codahale.metrics.Counter;
 import metricas.CYCLO_method;
 import metricas.LOC_class;
 import metricas.LOC_method;
-import metricas.Maestro;
+import metricas.MetricHandler;
 
 class LOC_classTest {
 	LOC_class loc_class;
@@ -42,10 +42,10 @@ class LOC_classTest {
 	
 	@Test
 	void testExtractMetrics() {
-		Maestro maestro = new Maestro(System.getProperty("user.dir") + "/unitTestFiles/metrics");
-		maestro.openFolder(System.getProperty("user.dir") + "/unitTestFiles/metrics");
-		loc_class = new LOC_class(maestro, "unitTest");
-		maestro.addMetric(loc_class);
+		MetricHandler metricHandler = new MetricHandler(System.getProperty("user.dir") + "/unitTestFiles/metrics");
+		metricHandler.openFolder(System.getProperty("user.dir") + "/unitTestFiles/metrics");
+		loc_class = new LOC_class(metricHandler, "unitTest");
+		metricHandler.addMetric(loc_class);
 		loc_class.extractMetrics();
 		LOC_class loc_class_expected = new LOC_class();
 		Counter counter1 = loc_class_expected.counter("metricsUnitTests/LOC_class/");

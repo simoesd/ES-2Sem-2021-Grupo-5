@@ -20,10 +20,10 @@ import reader.Line;
 import rules.Rule;
 
 /**
- * {@code Maestro} is an object that will initialize all the processing related to code smelling.
- * It will initialize the different {@code Metrica} extended objects that exist and create the xlsx file that will contain all the stats gathered.
+ * {@code MetricHandler} is an object that will initialize all the processing related to code smelling.
+ * It will initialize the different {@code Metric} extended objects that exist and create the xlsx file that will contain all the stats gathered.
  *
- * @see Metrica
+ * @see Metric
  * @see CYCLO_method
  * @see LOC_class
  * @see LOC_method
@@ -31,9 +31,9 @@ import rules.Rule;
  * @see WMC_class
  * @since 1.0
  */
-public class Maestro {
+public class MetricHandler {
 
-	private LinkedList<Metrica> metrics = new LinkedList<Metrica>();
+	private LinkedList<Metric> metrics = new LinkedList<Metric>();
 	private ArrayList<Rule> rules = new ArrayList<Rule>();
 
 	private String projectDirectory;
@@ -48,19 +48,19 @@ public class Maestro {
 	private int incrementer = 0;
 
 	/**
-	 * Constructs a {@code Maestro} object that hasn't been initialized.
+	 * Constructs a {@code MetricHandler} object that hasn't been initialized.
 	 */
-	public Maestro() {
-//		metrics = new ArrayList<Metrica>();
+	public MetricHandler() {
+//		metrics = new ArrayList<Metric>();
 //		rules = new ArrayList<Rule>();
 //		filesInDirectory = new ArrayList<File>();
 	}
 
 	/**
-	 * Constructs and initializes a {@code Maestro} object with a pointer to the directory of the project to be analyzed.
+	 * Constructs and initializes a {@code MetricHandler} object with a pointer to the directory of the project to be analyzed.
 	 * @param projectDirectory path to the directory of the project to be analyzed
 	 */
-	public Maestro(String projectDirectory) {
+	public MetricHandler(String projectDirectory) {
 		this.projectDirectory = projectDirectory;
 	}
 
@@ -69,8 +69,8 @@ public class Maestro {
 	 * The it calls the {@code result()} method that returns a {@code String} containing the path to the xlsx file created with all the code smell metric analysis.
 	 * 
 	 * @return a {@code String} containing the path to the xlsx file created
-	 * @see Maestro#openFolder(String)
-	 * @see Maestro#result()
+	 * @see MetricHandler#openFolder(String)
+	 * @see MetricHandler#result()
 	 */
 	public String startMetricCounters() {
 		openFolder(projectDirectory);
@@ -78,11 +78,11 @@ public class Maestro {
 	}
 
 	/**
-	 * Initializes all the {@code Metrica} extended classes and waits for them to finish.
+	 * Initializes all the {@code Metric} extended classes and waits for them to finish.
 	 * Then calls the {@code createExcelFile()} method and returns its result (which will be a {@code String} containing the path to the xlsx file created).
 	 * 
 	 * @return a {@code String} containing the path to the xlsx file created
-	 * @see Maestro#createExcelFile()
+	 * @see MetricHandler#createExcelFile()
 	 */
 	private String result() {
         metrics.add(new LOC_class(this));
@@ -115,8 +115,8 @@ public class Maestro {
 	 * Then proceeds to save the new xlsx file and returns a {@code String} containing the path to the xlsx file created.
 	 * 
 	 * @return a {@code String} containing the path to the xlsx file created
-	 * @see Maestro#createHeaderExcel(XSSFSheet)
-	 * @see Maestro#exportResults(XSSFSheet)
+	 * @see MetricHandler#createHeaderExcel(XSSFSheet)
+	 * @see MetricHandler#exportResults(XSSFSheet)
 	 * @see XSSFWorkbook
 	 * @see XSSFSheet
 	 */
@@ -141,11 +141,11 @@ public class Maestro {
 	}
 
 	/**
-	 * This method uses the counters generated in each {@code Metrica} extended class and uses the names of the {@code Counter} objects to know which stat corresponds to which class or method, then calls the method {@code writeExcel(XSSFSheet sheet, String[] line)} for each line to insert in the sheet.
+	 * This method uses the counters generated in each {@code Metric} extended class and uses the names of the {@code Counter} objects to know which stat corresponds to which class or method, then calls the method {@code writeExcel(XSSFSheet sheet, String[] line)} for each line to insert in the sheet.
 	 * 
 	 * @param sheet {@code XSSFSheet} object that will be filled with the metrics stats
-	 * @see Maestro#writeExcel(XSSFSheet, String[])
-	 * @see Metrica
+	 * @see MetricHandler#writeExcel(XSSFSheet, String[])
+	 * @see Metric
 	 * @see XSSFWorkbook
 	 * @see XSSFSheet
 	 */
@@ -163,7 +163,7 @@ public class Maestro {
 					String nameMtd = split2[split2.length-1];
 					LinkedHashMap<String, String> lineMetrics = new LinkedHashMap<>();
 					lineMetrics.putAll(classMetrics);
-					for (Metrica metric: metrics)
+					for (Metric metric: metrics)
 		            {
 		                if (metric.isClassMetric())
 		                    lineMetrics.put(metric.getMetricName(), String.valueOf(metric.getCounters().get(packageClassName).getCount()));
@@ -194,7 +194,7 @@ public class Maestro {
 	    Row firstRow = sheet.createRow(incrementer);
 	    LinkedList<String> header = new LinkedList<>(Arrays.asList("MethodID", "Package", "Class", "Method"));
 	    
-	    for(Metrica metric: metrics)
+	    for(Metric metric: metrics)
 	    {
             header.add(metric.getMetricName());
 	    }
@@ -244,7 +244,7 @@ public class Maestro {
 	 * This is done so the method {@code listFilesForFolder(File folder)} can be recursive.
 	 * 
 	 * @param dirPath {@code String} with the path to the directory containing the project to analyze
-	 * @see Maestro#listFilesForFolder(File)
+	 * @see MetricHandler#listFilesForFolder(File)
 	 */
 	public void openFolder(String dirPath) { 
 		File folder = new File(dirPath);
@@ -321,45 +321,45 @@ public class Maestro {
 	}
 
 	/**
-	 * Returns the {@code LOC_class} object inside the global variable {@code LinkedList<Metrica>} metrics
+	 * Returns the {@code LOC_class} object inside the global variable {@code LinkedList<Metric>} metrics
 	 * 
-	 * @return the {@code LOC_class} object inside the global variable {@code LinkedList<Metrica>} metrics
+	 * @return the {@code LOC_class} object inside the global variable {@code LinkedList<Metric>} metrics
 	 */
 	public LOC_class getLOC_class() {
 		return (LOC_class) metrics.get(0);
 	}
 
 	/**
-	 * Returns the {@code LOC_method} object inside the global variable {@code LinkedList<Metrica>} metrics
+	 * Returns the {@code LOC_method} object inside the global variable {@code LinkedList<Metric>} metrics
 	 * 
-	 * @return the {@code LOC_method} object inside the global variable {@code LinkedList<Metrica>} metrics
+	 * @return the {@code LOC_method} object inside the global variable {@code LinkedList<Metric>} metrics
 	 */
 	public LOC_method getLOC_method() {
 		return (LOC_method) metrics.get(1);
 	}
 
 	/**
-	 * Returns the {@code CYCLO_method} object inside the global variable {@code LinkedList<Metrica>} metrics
+	 * Returns the {@code CYCLO_method} object inside the global variable {@code LinkedList<Metric>} metrics
 	 * 
-	 * @return the {@code CYCLO_method} object inside the global variable {@code LinkedList<Metrica>} metrics
+	 * @return the {@code CYCLO_method} object inside the global variable {@code LinkedList<Metric>} metrics
 	 */
 	public CYCLO_method getCYCLO_method() {
 		return (CYCLO_method) metrics.get(2);
 	}
 
 	/**
-	 * Returns the {@code WMC_class} object inside the global variable {@code LinkedList<Metrica>} metrics
+	 * Returns the {@code WMC_class} object inside the global variable {@code LinkedList<Metric>} metrics
 	 * 
-	 * @return the {@code WMC_class} object inside the global variable {@code LinkedList<Metrica>} metrics
+	 * @return the {@code WMC_class} object inside the global variable {@code LinkedList<Metric>} metrics
 	 */
 	public WMC_class getWMC_class() {
 		return (WMC_class) metrics.get(3);
 	}
 
 	/**
-	 * Returns the {@code NOM_class} object inside the global variable {@code LinkedList<Metrica>} metrics
+	 * Returns the {@code NOM_class} object inside the global variable {@code LinkedList<Metric>} metrics
 	 * 
-	 * @return the {@code NOM_class} object inside the global variable {@code LinkedList<Metrica>} metrics
+	 * @return the {@code NOM_class} object inside the global variable {@code LinkedList<Metric>} metrics
 	 */
 	public NOM_class getNOM_class() {
 		return (NOM_class) metrics.get(4);
@@ -375,11 +375,11 @@ public class Maestro {
 	}
 
 	/**
-	 * Adds a new {@code Metrica} object to the global variable {@code LinkedList<Metrica>} metrics
+	 * Adds a new {@code Metric} object to the global variable {@code LinkedList<Metric>} metrics
 	 * 
-	 * @param m new {@code Metrica} object to add to the global variable {@code LinkedList<Metrica>} metrics
+	 * @param m new {@code Metric} object to add to the global variable {@code LinkedList<Metric>} metrics
 	 */
-	public void addMetric(Metrica m) {
+	public void addMetric(Metric m) {
 		metrics.add(m);
 	}
 	

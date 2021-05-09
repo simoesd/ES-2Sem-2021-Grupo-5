@@ -14,7 +14,7 @@ import com.codahale.metrics.Counter;
 import metricas.CYCLO_method;
 import metricas.LOC_class;
 import metricas.LOC_method;
-import metricas.Maestro;
+import metricas.MetricHandler;
 
 class CYCLO_methodTest {
 
@@ -23,7 +23,7 @@ class CYCLO_methodTest {
 	@BeforeEach
 	void setUp() throws Exception {
 
-//		maestro.setProjectDirectory("//metricsUnitTestsUtilityFolder//");
+//		metricHandler.setProjectDirectory("//metricsUnitTestsUtilityFolder//");
 		cyclo_method = new CYCLO_method();
 		cyclo_method.counter = new Counter();
 		cyclo_method.counter("DiretorioTeste");
@@ -44,28 +44,28 @@ class CYCLO_methodTest {
 //	@Test
 //	void testExtractMetrics(){
 //		
-//		cyclo_method = new CYCLO_method(maestro);
-//		System.out.println(maestro.getFilesInDirectory());
+//		cyclo_method = new CYCLO_method(metricHandler);
+//		System.out.println(metricHandler.getFilesInDirectory());
 
-//		maestro.addMetric(cyclo_method);
-//		maestro.start();
+//		metricHandler.addMetric(cyclo_method);
+//		metricHandler.start();
 //		System.out.println(cyclo_method.getCounters());
 //		Assertions.assertEquals(cyclo_method_expected.getCounters(), cyclo_method.getCounters());
 //	}
 
 	@Test
 	void testExtractMetrics() {
-		Maestro maestro = new Maestro(System.getProperty("user.dir") + "/unitTestFiles/metrics");
-		maestro.openFolder(System.getProperty("user.dir") + "/unitTestFiles/metrics");
-		maestro.addMetric(new LOC_class());
-		maestro.addMetric(new LOC_method());
-		cyclo_method = new CYCLO_method(maestro, "unitTest");
-		maestro.addMetric(cyclo_method);
+		MetricHandler metricHandler = new MetricHandler(System.getProperty("user.dir") + "/unitTestFiles/metrics");
+		metricHandler.openFolder(System.getProperty("user.dir") + "/unitTestFiles/metrics");
+		metricHandler.addMetric(new LOC_class());
+		metricHandler.addMetric(new LOC_method());
+		cyclo_method = new CYCLO_method(metricHandler, "unitTest");
+		metricHandler.addMetric(cyclo_method);
 		cyclo_method.extractMetrics();
 		CYCLO_method cyclo_method_expected = new CYCLO_method();
 		Counter counter1 = cyclo_method_expected.counter("metricsUnitTests/LOC_class/LOC_class()");
 		counter1.inc(0);
-		Counter counter2 = cyclo_method_expected.counter("metricsUnitTests/LOC_class/LOC_class(Maestro)");
+		Counter counter2 = cyclo_method_expected.counter("metricsUnitTests/LOC_class/LOC_class(MetricHandler)");
 		counter2.inc(0);
 		Counter counter3 = cyclo_method_expected.counter("metricsUnitTests/LOC_class/extractMetrics()");
 		counter3.inc(1);

@@ -122,7 +122,7 @@ public class ExcelReader {
 	 * @param comparisonFilePath		a String standing for an excel file path
 	 * @return a String matrix
 	 * @see Line
-	 * @see Rule
+	 * @see rules.Rule
 	 * @see ArrayList
 	 * @see LinkedList
 	 * @see HelperMethods

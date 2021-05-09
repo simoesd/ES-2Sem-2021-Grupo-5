@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /** 
- * LOC_method is a type of {@code Metrica} that counts the number of lines of a method
- * @see Metrica
- * @see Maestro
+ * LOC_method is a type of {@code Metric} that counts the number of lines of a method
+ * @see Metric
+ * @see MetricHandler
  * @since 1.0
  */
-public class LOC_method extends Metrica {
+public class LOC_method extends Metric {
 	
 	/** 
 	 * Constructs and initializes a {@code LOC_method}
@@ -21,26 +21,26 @@ public class LOC_method extends Metrica {
 	}
 	
 	/** 
-	 * Constructs and initializes a {@code LOC_method}, given an object {@code Maestro} and a String. 
+	 * Constructs and initializes a {@code LOC_method}, given an object {@code MetricHandler} and a String. 
 	 * This constructor is used only for Unit Testing
-	 * @param maestro the maestro that will manipulate all the metrics
+	 * @param metricHandler the metricHandler that will manipulate all the metrics
 	 * @param unitTest the string used for unit testing
 	 */ 
 	
-	public LOC_method (Maestro maestro, String unitTest) {
-		super(maestro, unitTest);
+	public LOC_method (MetricHandler metricHandler, String unitTest) {
+		super(metricHandler, unitTest);
 		metricName = "LOC_CLASS";
 		isClassMetric = true;
 		
 	}
 	
 	/** 
-	 * Constructs and initializes a {@code LOC_method}, given an object {@code Maestro}.
-	 * @param maestro the maestro that will manipulate all the metrics
+	 * Constructs and initializes a {@code LOC_method}, given an object {@code MetricHandler}.
+	 * @param metricHandler the metricHandler that will manipulate all the metrics
 	 */
 	
-	public LOC_method(Maestro maestro) {
-		super(maestro);
+	public LOC_method(MetricHandler metricHandler) {
+		super(metricHandler);
 		metricName = "LOC_METHOD";
 		isClassMetric = false;
 	}
@@ -51,10 +51,10 @@ public class LOC_method extends Metrica {
 	
 	@Override
 	public void extractMetrics() {
-		ArrayList<File> filesInDirectory = getMaestro().getFilesInDirectory();
+		ArrayList<File> filesInDirectory = getMetricHandler().getFilesInDirectory();
 		for (File file : filesInDirectory) {
 			String absolutePath = file.getAbsolutePath();
-			setPackageClassName(getMaestro().cutAbsolutePath(absolutePath));
+			setPackageClassName(getMetricHandler().cutAbsolutePath(absolutePath));
 			filterCode(file);
 		}
 	}	

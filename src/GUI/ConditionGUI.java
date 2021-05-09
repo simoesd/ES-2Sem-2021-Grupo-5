@@ -29,7 +29,7 @@ public class ConditionGUI extends JPanel {
         this.metric = isClassRule ? new JComboBox<String>(classMetrics) : new JComboBox<String>(methodMetrics);
         this.thresholdOperator = new JComboBox<String>(thresholdOpDefault);
         this.thresholdValue = new JTextField();
-        thresholdValue.setPreferredSize(new Dimension(30, 26));
+        thresholdValue.setPreferredSize(new Dimension(30, 20));
         MainWindow.enableDefaultValue(this.thresholdValue, "0");
         this.setBackground(Color.DARK_GRAY);
         initializePanel();

@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import rules.Condition;
 import rules.Rule;
@@ -50,7 +51,7 @@ public class RuleGUI extends JPanel{
         this.toRemoveCheckbox.setBackground(Color.DARK_GRAY);
         this.ruleTitle = new JTextField(); 
         ruleTitle.setHorizontalAlignment(SwingConstants.CENTER);
-        ruleTitle.setPreferredSize(new Dimension(83, 26));
+        ruleTitle.setPreferredSize(new Dimension(83, 20));
         this.setBorder(new EmptyBorder(-10,30,-5,30));
         this.isClassRule = isClassRule;
         MainWindow.enableDefaultValue(ruleTitle, "Custom_Rule");
@@ -63,7 +64,7 @@ public class RuleGUI extends JPanel{
             public void actionPerformed(ActionEvent e)
             {
                 if (conditionsGUI.size() >= 8)
-                    JOptionPane.showMessageDialog(parentPanel , "Não é possível adicionar mais condições à regra");
+                    JOptionPane.showMessageDialog(parentPanel , "You can only have 8 conditions in each rule!");
                 else {
                     addNewLogicOperator(0);
                     addNewConditionComboBox();
@@ -82,6 +83,9 @@ public class RuleGUI extends JPanel{
             }
             
         });
+        
+        addConditionButton.setBorder(new EmptyBorder(3, 10, 3, 10));
+        removeConditionButton.setBorder(new EmptyBorder(3, 10, 3, 10));
         
         initializePanel();
     }

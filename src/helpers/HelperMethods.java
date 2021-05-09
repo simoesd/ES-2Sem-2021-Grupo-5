@@ -38,6 +38,7 @@ public class HelperMethods {
      * 
      * @param map map whose content will be checked
      * @param key key which will be searched for in the map, to find the corresponding value. This search is case insensitive.
+     * @param <V> generic type for the values in the specified map
      * @return the first value whose key corresponds to the specified key. There may exist multiple in the map (with keys with differing capitalizations). {@code null} if there isn't a matching key in the specified map.
      * 
      * @see Map#get(Object)
@@ -58,6 +59,7 @@ public class HelperMethods {
      *
      * @param map map whose content will be checked
      * @param key key whose presence in this list is to be tested
+     * @param <V> generic type for the values in the specified map
      * @return {@code true} if this map contains a mapping for the specified key. This check is case insensitive.
      * 
      */
@@ -77,10 +79,11 @@ public class HelperMethods {
 	 * 
 	 * @param map1 first map to be used in the comparison
 	 * @param map2 second map to be used in the comparison
+     * @param <K> generic type for the keys in the specified map
 	 * @return {@code true} if both maps have the same size and each key corresponds to
 	 * the same count in both maps.
 	 * 
-	 * @see #Counter
+	 * @see Counter
 	 * @see Map#equals(Object)
 	 */
     

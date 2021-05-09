@@ -70,7 +70,7 @@ class HelperMethodsTest {
 		CYCLO_method cyclo_method_expected = new CYCLO_method();
 		Counter counter1 = cyclo_method_expected.counter("metricsUnitTests/LOC_class/LOC_class()");
 		counter1.inc(0);
-		Counter counter2 = cyclo_method_expected.counter("metricsUnitTests/LOC_class/LOC_class(Maestro)");
+		Counter counter2 = cyclo_method_expected.counter("metricsUnitTests/LOC_class/LOC_class(MetricHandler)");
 		counter2.inc(0);
 		Counter counter3 = cyclo_method_expected.counter("metricsUnitTests/LOC_class/extractMetrics()");
 		counter3.inc(1);
@@ -82,7 +82,7 @@ class HelperMethodsTest {
 		CYCLO_method cyclo_method = new CYCLO_method();
 		Counter counter6 = cyclo_method.counter("metricsUnitTests/LOC_class/LOC_class()");
 		counter6.inc(0);
-		Counter counter7 = cyclo_method.counter("metricsUnitTests/LOC_class/LOC_class(Maestro)");
+		Counter counter7 = cyclo_method.counter("metricsUnitTests/LOC_class/LOC_class(MetricHandler)");
 		counter7.inc(0);
 		Counter counter8 = cyclo_method.counter("metricsUnitTests/LOC_class/extractMetrics()");
 		counter8.inc(1);

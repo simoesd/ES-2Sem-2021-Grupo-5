@@ -8,7 +8,7 @@ import com.codahale.metrics.Counter;
 
 import metricas.LOC_class;
 import metricas.LOC_method;
-import metricas.Maestro;
+import metricas.MetricHandler;
 
 class LOC_methodTest {
 
@@ -37,16 +37,16 @@ class LOC_methodTest {
 	
 	@Test
 	void testExtractMetrics() {
-		Maestro maestro = new Maestro(System.getProperty("user.dir") + "/unitTestFiles/metrics");
-		maestro.openFolder(System.getProperty("user.dir") + "/unitTestFiles/metrics");
-		maestro.addMetric(new LOC_class());
-		loc_method = new LOC_method(maestro, "unitTest");
-		maestro.addMetric(loc_method);
+		MetricHandler metricHandler = new MetricHandler(System.getProperty("user.dir") + "/unitTestFiles/metrics");
+		metricHandler.openFolder(System.getProperty("user.dir") + "/unitTestFiles/metrics");
+		metricHandler.addMetric(new LOC_class());
+		loc_method = new LOC_method(metricHandler, "unitTest");
+		metricHandler.addMetric(loc_method);
 		loc_method.extractMetrics();
 		LOC_method loc_method_expected = new LOC_method();
 		Counter counter1 = loc_method_expected.counter("metricsUnitTests/LOC_class/LOC_class()");
 		counter1.inc(4);
-		Counter counter2 = loc_method_expected.counter("metricsUnitTests/LOC_class/LOC_class(Maestro)");
+		Counter counter2 = loc_method_expected.counter("metricsUnitTests/LOC_class/LOC_class(MetricHandler)");
 		counter2.inc(5);
 		Counter counter3 = loc_method_expected.counter("metricsUnitTests/LOC_class/extractMetrics()");
 		counter3.inc(9);
