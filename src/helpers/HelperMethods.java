@@ -1,9 +1,13 @@
 package helpers;
 
 import java.util.Map;
+import java.util.SortedMap;
+import com.codahale.metrics.Counter;
+
 /**
  * Class that contains utility methods. Does not need instantiation as every method is static.
  */
+ 
 public class HelperMethods {
     
     
@@ -66,5 +70,13 @@ public class HelperMethods {
         }
         return false;
     }
-    
+	
+	public static boolean compareSortedMapCounters(SortedMap<String, Counter> objects,SortedMap<String, Counter> objects2){
+		for(String s: objects.keySet()){
+			if (objects.get(s).getCount()!=objects2.get(s).getCount()) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

@@ -56,6 +56,12 @@ public abstract class Metrica extends MetricRegistry {
 		this.myThread = startExtracting();
 		myThread.start();
 	}
+	
+	public Metrica(Maestro maestro, String unitTest){ //Unit Tests
+		
+		this.maestro = maestro;
+		
+	}
 
 	/**
 	 * Prepares the names of the files that will be evaluated and calls {@code filterCode()} for each of the files
