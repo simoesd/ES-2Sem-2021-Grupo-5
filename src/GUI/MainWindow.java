@@ -42,6 +42,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneLayout;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -96,6 +97,8 @@ public class MainWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame("Code Smeller");
+		frame.getContentPane().setBackground(Color.DARK_GRAY);
+
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		int width = gd.getDisplayMode().getWidth();
 		int height = gd.getDisplayMode().getHeight();
@@ -121,15 +124,16 @@ public class MainWindow {
 		EmptyBorder fullPadding = new EmptyBorder(10, 10, 10, 10);
 
 		mainPanel = new JPanel();
+		mainPanel.setBackground(Color.DARK_GRAY);
 		mainPanel.setLayout(new BorderLayout(0, 0));
 		frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
 
 		// Rules Panel
 
 		panel = new JPanel();
-
+		panel.setBackground(Color.DARK_GRAY);
 		mainScrollPane = new JScrollPane(panel);
-
+		
 		mainScrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 
 		mainPanel.add(mainScrollPane, BorderLayout.CENTER);
@@ -138,20 +142,25 @@ public class MainWindow {
 		panel.setLayout(gridLayout);
 
 		panel_2 = new JPanel();
+		panel_2.setBackground(Color.DARK_GRAY);
 		FlowLayout flowLayout = (FlowLayout) panel_2.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		mainPanel.add(panel_2, BorderLayout.SOUTH);
 
 		panel_3 = new JPanel(new BorderLayout());
+		panel_3.setBackground(Color.DARK_GRAY);
 		JLabel title = new JLabel("CODE SMELLER");
+		title.setForeground(Color.WHITE);
 		title.setHorizontalAlignment(SwingConstants.CENTER);
 		title.setFont(new Font("Tahoma", Font.PLAIN, 40));
 		panel_3.add(title, BorderLayout.CENTER);
 		panel_3.setBorder(fullPadding);
 		
 		
+		
 		JButton btnSaveRules = new JButton("Save Rules");
 		JPanel panel_4 = new JPanel();
+		panel_4.setBackground(Color.DARK_GRAY);
 		btnSaveRules.setEnabled(false);
 		panel_4.add(btnSaveRules);
 		panel_3.add(panel_4, BorderLayout.EAST);
@@ -369,6 +378,7 @@ public class MainWindow {
 
 		// Analysis Panel
 
+		analysisPanel.setBackground(Color.DARK_GRAY);
 		tabbedPane.addTab("Analyze Directory", analysisPanel);
 		analysisPanel.setLayout(new BoxLayout(analysisPanel, BoxLayout.X_AXIS));
 		analysisPanel.setBorder(fullPadding);
@@ -462,6 +472,7 @@ public class MainWindow {
 
 		// Import Project Data Panel
 
+		importPanel.setBackground(Color.DARK_GRAY);
 		tabbedPane.addTab("Import Project Data", importPanel);
 		importPanel.setLayout(new BoxLayout(importPanel, BoxLayout.X_AXIS));
 		importPanel.setBorder(fullPadding);
@@ -570,9 +581,18 @@ public class MainWindow {
 
 		JTable lineTable = new JTable(linesAsString.toArray(new String[0][0]), columnNames);
 		lineTable.setAutoResizeMode(0);
+		
+		JPanel infoContainerPanel = new JPanel();
+		infoContainerPanel.setBackground(Color.DARK_GRAY);
 
 		JScrollPane tableScrollPane = new JScrollPane(lineTable);
+		tableScrollPane.getViewport().setBackground(Color.DARK_GRAY);
+		tableScrollPane.setBackground(Color.DARK_GRAY);
 		tableScrollPane.setBorder(new EmptyBorder(0, 20, 20, 0));
+
+		infoContainerPanel.add(tableScrollPane);
+		
+		
 		try {
 		    if (rulesGUI.size() > 0)
 		    {
@@ -655,17 +675,23 @@ public class MainWindow {
 			e.printStackTrace();
 		}
 		JLabel fileTitle = new JLabel(fileToImport, SwingConstants.CENTER);
+		fileTitle.setForeground(Color.WHITE);
 
 		int[] projectData = ExcelReader.getProjectStats(lines);
 		JLabel numPackagesLabel = new JLabel("Number of packages: " + projectData[0], SwingConstants.CENTER);
 		JLabel numClassesLabel = new JLabel("Number of classes: " + projectData[1], SwingConstants.CENTER);
 		JLabel numMethodsLabel = new JLabel("Number of methods: " + projectData[2], SwingConstants.CENTER);
 		JLabel numLinesLabel = new JLabel("Number of lines: " + projectData[3], SwingConstants.CENTER);
-
+		numPackagesLabel.setForeground(Color.WHITE);
+		numClassesLabel.setForeground(Color.WHITE);
+		numMethodsLabel.setForeground(Color.WHITE);
+		numLinesLabel.setForeground(Color.WHITE);
+		
 		JPanel northPanel = new JPanel(new BorderLayout());
+		northPanel.setBackground(Color.DARK_GRAY);
 		northPanel.setBorder(new EmptyBorder(10, 10, 20, 10));
 		JPanel metricPanel = new JPanel(new GridLayout(2, 2));
-
+		metricPanel.setBackground(Color.DARK_GRAY);
 		JButton backButton = new JButton("Go back");
 		backButton.addActionListener(new ActionListener() {
 
