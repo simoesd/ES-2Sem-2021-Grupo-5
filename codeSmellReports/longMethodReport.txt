@@ -1,0 +1,103 @@
+metricas.Metric	protected void filterCode(java.io.File) 	betweenMethodsBuffer	B2	0/19
+metricas.MetricHandler	private void exportResults(org.apache.poi.xssf.usermodel.XSSFSheet) 	sheet	B2	0/18
+metricas.MetricHandler	private void exportResults(org.apache.poi.xssf.usermodel.XSSFSheet) 	sheet	B3	0/14
+metricas.MetricHandler	private void exportResults(org.apache.poi.xssf.usermodel.XSSFSheet) 	sheet	B4	0/13
+metricas.MetricHandler	private void exportResults(org.apache.poi.xssf.usermodel.XSSFSheet) 	sheet	B5	0/12
+metricas.MetricHandler	private void exportResults(org.apache.poi.xssf.usermodel.XSSFSheet) 	sheet	B10	0/4
+metricas.MetricHandler	private void exportResults(org.apache.poi.xssf.usermodel.XSSFSheet) 	sheet	B11	0/3
+GUI.ConditionGUI	public rules.Condition generateCondition() 	conditionThresholdOperator	B1	0/14
+reader.ExcelReader	public static java.lang.String[][] compareCodeSmells(ArrayList<reader.Line>, java.lang.String) 	ruleEvaluation	B9	0/13
+metricas.MetricHandler	private void exportResults(org.apache.poi.xssf.usermodel.XSSFSheet) 	line	B5	0/12
+metricas.MetricHandler	private void exportResults(org.apache.poi.xssf.usermodel.XSSFSheet) 	line	B10	0/4
+metricas.CYCLO_method	public sealed void applyMetricFilter(java.lang.String) 	counter	B2	0/10
+metricas.CYCLO_method	public sealed void applyMetricFilter(java.lang.String) 	counter	B4	0/5
+metricas.CYCLO_method	public sealed void applyMetricFilter(java.lang.String) 	counter	B5	0/4
+metricas.CYCLO_method	public sealed void applyMetricFilter(java.lang.String) 	counter	B6	0/3
+metricas.CYCLO_method	public sealed void applyMetricFilter(java.lang.String) 	counter	B7	0/2
+unitTests.ExcelReaderTest	void testCompareCodeSmells() 	metrics1	B1	0/9
+unitTests.ExcelReaderTest	void testCompareCodeSmells() 	metrics2	B1	0/9
+unitTests.ExcelReaderTest	void testCompareCodeSmells() 	metrics3	B1	0/9
+unitTests.ExcelReaderTest	void testCompareCodeSmells() 	metrics4	B1	0/9
+unitTests.NOM_classTest	void testExtractMetrics() 	cyclo_method	B1	0/9
+GUI.RuleGUI	public rules.Rule generateRule() 	ruleLogicOperators	B1	0/9
+GUI.RuleGUI	public rules.Rule generateRule() 	ruleLogicOperators	B2	0/8
+GUI.RuleGUI	public rules.Rule generateRule() 	ruleLogicOperators	B3	0/7
+unitTests.LineTest	void setValuesTest() 	metrics	B1	0/8
+unitTests.RuleFileManagerTest	public static Stream<org.junit.jupiter.params.provider.Arguments> testReadRulesInfo() 	rule	B1	0/8
+unitTests.RuleFileManagerTest	void testWriteEntry() 	rule	B1	0/8
+unitTests.RuleTest	void setUp() 	rule	B1	0/8
+unitTests.WMC_classTest	void testExtractMetrics() 	cyclo_method	B1	0/8
+GUI.RuleGUI	public void initializePanel() 	i	B1	0/8
+GUI.RuleGUI	public void initializePanel() 	i	B2	0/3
+GUI.RuleGUI	public void initializePanel() 	i	B3	0/2
+metricas.NOM_class	public sealed void extractMetrics() 	counter	B2	0/7
+metricas.NOM_class	public sealed void extractMetrics() 	counter	B3	0/6
+metricas.NOM_class	public sealed void extractMetrics() 	counter	B4	0/3
+metricas.NOM_class	public sealed void extractMetrics() 	counter	B5	0/2
+metricas.WMC_class	public sealed void extractMetrics() 	counter	B2	0/7
+metricas.WMC_class	public sealed void extractMetrics() 	counter	B3	0/6
+metricas.WMC_class	public sealed void extractMetrics() 	counter	B4	0/3
+metricas.WMC_class	public sealed void extractMetrics() 	counter	B5	0/2
+metricas.Metric	public java.lang.String getMethodName(Stack<java.lang.String>) 	dataTypes	B9	0/6
+metricas.MetricHandler	private java.lang.String result() 	e	B1	0/6
+unitTests.CYCLO_methodTest	void testExtractMetrics() 	cyclo_method	B1	0/6
+unitTests.CYCLO_methodTest	void testExtractMetrics() 	metricHandler	B1	0/6
+unitTests.LineTest	void setup() 	metrics	B1	0/6
+metricas.MetricHandler	private void exportResults(org.apache.poi.xssf.usermodel.XSSFSheet) 	lineMetrics	B5	0/6
+GUI.MainWindow	private void initialize() 	importFileBrowserButton	B1	0/5
+GUI.MainWindow	private void initialize() 	title	B1	0/5
+metricas.MetricHandler	private java.lang.String result() 	metrics	B1	0/5
+rules.RuleFileManager	public static void writeEntry(List<rules.Rule>, java.lang.String) 	readInfo	B1	0/5
+unitTests.LOC_classTest	void testExtractMetrics() 	loc_class	B1	0/5
+unitTests.LOC_classTest	void testExtractMetrics() 	metricHandler	B1	0/5
+unitTests.LOC_methodTest	void testExtractMetrics() 	loc_method	B1	0/5
+unitTests.LOC_methodTest	void testExtractMetrics() 	metricHandler	B1	0/5
+metricas.LOC_class	public sealed void extractMetrics() 	counter	B2	0/5
+metricas.LOC_class	public sealed void extractMetrics() 	counter	B3	0/4
+metricas.Metric	public void filterOutJunk() 	p	B1	0/5
+metricas.Metric	public void filterOutJunk() 	p	B2	0/4
+metricas.MetricHandler	private void listFilesForFolder(java.io.File) 	fileEntry	B2	0/5
+metricas.MetricHandler	private void listFilesForFolder(java.io.File) 	fileEntry	B3	0/4
+metricas.MetricHandler	private void listFilesForFolder(java.io.File) 	filesInDirectory	B2	0/5
+metricas.MetricHandler	private void listFilesForFolder(java.io.File) 	filesInDirectory	B3	0/4
+metricas.LOC_method	public sealed void applyMetricFilter(java.lang.String) 	counter	B2	0/4
+unitTests.RuleTest	void setUp() 	line	B1	0/4
+GUI.MainWindow	private void initialize() 	analysisPathTextField	B1	0/3
+GUI.MainWindow	private void initialize() 	importPathTextField	B1	0/3
+GUI.WrapLayout	private java.awt.Dimension layoutSize(java.awt.Container, boolean) 	targetWidth	B1	0/3
+unitTests.LOC_classTest	void testApplyMetricFilter() 	loc_class	B1	0/3
+unitTests.MetricTest	void testGetMethodName() 	stack1	B1	0/3
+unitTests.MetricTest	void testGetMethodName() 	stack2	B1	0/3
+unitTests.RuleTest	void setUp() 	metrics	B1	0/3
+GUI.MainWindow	private void showImportedData(java.lang.String) 	codeSmellFileTextField	B5	0/3
+GUI.MainWindow	private void showImportedData(java.lang.String) 	dialogTitlePanel	B5	0/3
+GUI.ConditionGUI	public void setDefaultMetric(java.lang.String) 	metric	B2	0/2
+GUI.MainWindow	public static void enableDefaultValue(javax.swing.JTextField, java.lang.String) 	tf	B1	0/2
+unitTests.CYCLO_methodTest	void setUp() throws java.lang.Exception	cyclo_method	B1	0/2
+unitTests.LOC_classTest	void setUp() throws java.lang.Exception	loc_class	B1	0/2
+unitTests.LOC_methodTest	void setUp() throws java.lang.Exception	loc_method	B1	0/2
+unitTests.LineTest	void getRuleNameTest() 	metrics	B1	0/2
+GUI.MainWindow	private void showImportedData(java.lang.String) 	metricPanel	B1	1/16
+GUI.MainWindow	private void showImportedData(java.lang.String) 	metricPanel	B6	0/15
+GUI.MainWindow	private void showImportedData(java.lang.String) 	linesAsString	B1	1/4
+GUI.MainWindow	private void showImportedData(java.lang.String) 	linesAsString	B2	0/2
+reader.ExcelReader	public static java.lang.String[][] compareCodeSmells(ArrayList<reader.Line>, java.lang.String) 	correspondingLine	B3	0/5
+reader.ExcelReader	public static java.lang.String[][] compareCodeSmells(ArrayList<reader.Line>, java.lang.String) 	correspondingLine	B4	0/4
+reader.ExcelReader	public static java.lang.String[][] compareCodeSmells(ArrayList<reader.Line>, java.lang.String) 	correspondingLine	B5	1/2
+reader.Line	public void setValues(Iterator<org.apache.poi.ss.usermodel.Cell>, Iterator<org.apache.poi.ss.usermodel.Cell>) 	metrics	B4	0/14
+reader.Line	public void setValues(Iterator<org.apache.poi.ss.usermodel.Cell>, Iterator<org.apache.poi.ss.usermodel.Cell>) 	metrics	B8	1/2
+unitTests.HelperMethodsTest	void testContainsKeyCaseInsensitive() 	map	B1	2/7
+unitTests.MetricHandlerTest	void createHeaderExcelTest() 	workbook	B1	1/3
+unitTests.MetricHandlerTest	void writeExcelTest() 	workbook	B1	1/3
+unitTests.RuleFileManagerTest	void testClearHistory() 	file	B1	1/3
+GUI.MainWindow	private void showImportedData(java.lang.String) 	numClassesLabel	B1	2/4
+GUI.MainWindow	private void showImportedData(java.lang.String) 	numClassesLabel	B6	1/3
+GUI.MainWindow	private void showImportedData(java.lang.String) 	numLinesLabel	B1	2/4
+GUI.MainWindow	private void showImportedData(java.lang.String) 	numLinesLabel	B6	1/3
+GUI.MainWindow	private void showImportedData(java.lang.String) 	numMethodsLabel	B1	2/4
+GUI.MainWindow	private void showImportedData(java.lang.String) 	numMethodsLabel	B6	1/3
+GUI.MainWindow	private void showImportedData(java.lang.String) 	numPackagesLabel	B1	2/4
+GUI.MainWindow	private void showImportedData(java.lang.String) 	numPackagesLabel	B6	1/3
+unitTests.HelperMethodsTest	void testGetCaseInsensitive() 	map	B1	4/7
+reader.ExcelReader	public static ArrayList<reader.Line> readExcelFile(java.lang.String) 	line	B3	3/5
+reader.ExcelReader	public static int[] getProjectStats(ArrayList<reader.Line>) 	totalLinesOfCode	B1	4/6
